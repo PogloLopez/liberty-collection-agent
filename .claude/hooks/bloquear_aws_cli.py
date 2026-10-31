@@ -6,8 +6,10 @@ every cloud command himself.
 
 Command text is all a hook can see: a script that imports boto3 on its own, or shell
 escapes such as a\\ws, are invisible here. The real barrier is that Claude's environment
-has no AWS credentials. Known false positives (blocked names in paths or search patterns)
-are accepted: they err on the safe side.
+has no AWS credentials. The hook also fails open if it cannot even start (uv missing from
+PATH): Claude Code treats that as a non-blocking error. Known false positives (blocked
+names in paths, search patterns or cmdlets like Get-SmbShare) are accepted: they err on
+the safe side.
 """
 
 import json

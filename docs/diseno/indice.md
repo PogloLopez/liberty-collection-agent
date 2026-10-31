@@ -21,6 +21,7 @@ decidir). Lo decidido y lo pendiente vive solo en [[decisiones]]; las notas enla
 - [[decisiones]]: registro de decisiones (abiertas y tomadas) con sus trade-offs.
 - [[framework_strands]]: cómo funciona el framework del agente y por qué se eligió.
 - [[infraestructura_como_codigo]]: qué es IaC y cómo se aplicaría aquí con CDK.
+- [[despliegue_demo]]: qué se despliega para la evaluación, cuándo se enciende y cuánto cuesta.
 - Mapa visual de bajo nivel (flujo + servicios): https://claude.ai/artifact/2M7xQgMLm1MioFVa9TBBmL
 - Claude no ejecuta nada contra AWS (hook `.claude/hooks/bloquear_aws_cli.py`); Pablo corre esos comandos.
 - Fuentes literales, para no perder detalle: [[brainstorming_inicial]] y [[audio_plataforma]].

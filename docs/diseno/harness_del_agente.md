@@ -16,6 +16,26 @@ Cada tipo de agente tiene cuatro piezas:
    otro cliente. El hook bloquea **y explica por qué**, para que el agente no repita la acción ni busque
    rodeos (ver [[riesgos]]).
 
+## Tono, voz y personalidad
+
+Viven en el **prompt del perfil** ([[decisiones#D2 Un agente o muchos]]), en dos capas versionadas en
+`prompts/`:
+
+1. **Base de marca**, común a todos: quién habla (asistente de cobranza de Liberty), registro (cercano,
+   respetuoso, claro, mensajes cortos de WhatsApp), lo prohibido (amenazas, juicios, humor sobre la deuda) y
+   el principio de proponer siempre un siguiente paso.
+2. **Ajuste por segmento**: calidez, firmeza y presión máxima. Por ejemplo, amable y sin urgencia para el
+   olvidadizo, empático y flexible para la dificultad temporal, firme y concreto para el reincidente.
+
+Un cambio de tono es una nueva versión del perfil, aprobada por cartera y legal ([[plataforma_de_gestion]]).
+
+## Turnos y estratega
+
+Antes de cada respuesta, dos hooks añaden contexto ([[decisiones#D16 Turnos y estratega]]):
+- **Contador:** "turno N de M". A 3 turnos del tope, el agente ofrece cierre; en el tope cierra el código.
+- **Estratega:** un modelo pequeño clasifica el momento de la conversación en un catálogo cerrado y se
+  inyecta la tarjeta de estrategia de cartera para ese momento.
+
 ## Feedback
 
 **Un solo agente parametrizado, no N agentes.** Ver [[decisiones#D2 Un agente o muchos]]. "Tipo de agente"
@@ -33,8 +53,9 @@ necesitara lógica realmente distinta, habría que ampliar el runtime. Para cobr
 | Validador de salida | Antes de enviar cada mensaje | Detecta cifras o % fuera de placeholders, longitud máxima, enlaces no permitidos; renderiza los placeholders desde la base | Sí |
 | Guardrail de contenido | Entrada y salida | Temas prohibidos, lenguaje acosador o amenazante, datos personales: Amazon Bedrock Guardrails | No (clasificador administrado) |
 
-Si algo bloquea, se reintenta una vez con el feedback del bloqueo. Si vuelve a fallar, se envía un mensaje
-determinista seguro y se escala a un humano. Es el patrón que ya probamos en el proyecto anterior.
+Si algo bloquea la salida, se reintenta una vez con el motivo. Qué pasa después depende del origen del fallo
+([[decisiones#D15 Fallos]]): si el fallo es nuestro, humano; si la entrada es abusiva, respuesta fija y
+cierre tras 3 strikes.
 
 **Los placeholders son la mejor idea del diseño** y conviene llevarlos al extremo: el LLM nunca escribe un
 monto, una fecha de pago ni un porcentaje. Pide la oferta por ID (`{{oferta.descuento}}`) y el renderizado

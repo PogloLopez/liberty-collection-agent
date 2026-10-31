@@ -57,5 +57,16 @@ madurez operativa, que es lo que la prueba dice valorar ("realidad operativa").
 - La **clasificación del feedback** con LLM se mantiene sobre un catálogo cerrado de etiquetas (consistente
   con los flags de [[memoria]]).
 
-**Para el prototipo:** la plataforma se documenta y, como mucho, se simula con una tabla o vista de
-conversaciones y flags. Ver [[decisiones#D9 Alcance del prototipo]].
+## En la demo y en producción
+
+- **Dueño:** la construye Desarrollo, fuera de Analítica Avanzada. Analítica (IA, MLOps, DS) define qué
+  necesita mostrar.
+- **Demo:** una consola mock dentro del frontend desplegado ([[decisiones#D18 Plataforma de cartera]]). Lee
+  las conversaciones y los handoffs reales del demo; los demás módulos usan datos de ejemplo y cada botón
+  explica qué haría.
+- **Bandeja de handoff con tres colas por dificultad** ([[decisiones#D17 Colas de escalamiento]]).
+- **API Gateway + Lambda:** la web son archivos estáticos. Para leer y escribir datos (perfiles,
+  conversaciones, colas), el navegador llama a una API HTTP propia, como la de Jira o Notion en concepto.
+  API Gateway es la puerta: enruta, autentica y limita el tráfico. Lambda ejecuta el código de cada petición.
+  Otros sistemas podrían usar la misma API.
+- **Datos:** DynamoDB como base operativa; los reportes, desde S3 + Athena ([[despliegue_demo]]).

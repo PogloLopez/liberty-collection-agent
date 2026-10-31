@@ -2,61 +2,39 @@
 
 Piezas del [[harness_del_agente]] y única vía de acceso a los sistemas (ver [[integraciones]]).
 
-## Propuesta
+## Propuesta original
 
-- Extracción de data histórica.
-- Conciliación (puede variar por segmento o agente).
-- Negociación: discute descuentos, beneficios o fechas de pago.
-- Redireccionamiento a un agente de cartera humano cuando la solicitud excede lo que el agente puede aprobar.
-- Memoria: el agente decide qué guardar, en texto libre y como **flags** en una base de datos (ver [[memoria]]).
-- Registrar un acuerdo de pago.
-- Registrar qué beneficio, descuento o campaña se ofreció y si el cliente lo aceptó.
-- Conciliación y negociación con prompts libres que exigen placeholders para los niveles de descuento: el
-  agente consulta una base de beneficios aprobados en vez de escribir "20%".
-- **Registrar feedback del cliente** (añadido el 30-oct): quejas, satisfacción o comentarios sobre el
-  servicio, con la misma doble escritura que la memoria: texto libre + flags en la base.
+Extracción de data histórica, conciliación, negociación (descuentos, beneficios, fechas), redirección a un
+humano, memoria (texto libre + flags), registrar acuerdo de pago, registrar beneficio ofrecido y si se
+aceptó, y registrar feedback del cliente. Conciliación y negociación usan placeholders para los descuentos.
 
-## Feedback
+## Catálogo decidido
 
-**Menos tools, más estrechas.** Cada tool es una superficie de error y de ataque. Propuesta de catálogo
-(nombres en español, como pide el ejemplo de la prueba):
+Menos tools, más estrechas: cada una es una superficie de error y de ataque. 🔒 = sensible: exige la
+verificación de cédula ([[decisiones#D5 Verificación de identidad]]).
 
-| Tool | Qué hace | Escribe | Reemplaza |
-|---|---|---|---|
-| `consultar_estado_cuenta` | Saldo, facturas vencidas, días de mora, servicios | No | "data histórica" |
-| `consultar_pagos_recientes` | Pagos en tránsito ("ya pagué") | No | "conciliación" |
-| `consultar_ofertas_elegibles` | Devuelve **IDs** de ofertas preaprobadas para el segmento y el monto | No | parte de "negociación" |
-| `registrar_promesa_pago` | Fecha y monto (de la oferta o del saldo) | Sí | "acuerdo de pago" |
-| `aceptar_oferta` | Cliente acepta una oferta por ID; el motor de reglas valida | Sí | "negociación" + "registrar beneficio" |
-| `generar_link_pago` | Link de pago por el saldo o la cuota acordada | Sí | nueva |
-| `guardar_nota` | Texto libre + flags de un catálogo cerrado | Sí | "memoria" |
-| `registrar_feedback_cliente` | Texto libre + etiquetas de un catálogo cerrado (`queja_servicio`, `queja_precio`, `satisfecho`, `quiere_cancelar`…) | Sí | nueva (propuesta de Pablo) |
-| `escalar_a_humano` | Handoff con resumen y motivo | Sí | "redireccionamiento" |
+| Tool | Qué hace | Escribe |
+|---|---|---|
+| `consultar_saldo` 🔒 | Saldo, vencimientos, días de mora y pagos en tránsito ("ya pagué"). Cubre el requisito de la prueba ([[decisiones#D14 Tools de saldo]]) | No |
+| `consultar_ofertas_elegibles` 🔒 | IDs de ofertas preaprobadas para el segmento y el monto | No |
+| `aceptar_oferta` 🔒 | Acepta una oferta por ID; el motor de reglas valida | Sí |
+| `registrar_promesa_pago` 🔒 | Fecha y monto (de la oferta o del saldo) | Sí |
+| `generar_link_pago` 🔒 | Link por el saldo o la cuota acordada | Sí |
+| `guardar_nota` 🔒 | Texto libre + flags de catálogo cerrado ([[memoria]]) | Sí |
+| `registrar_feedback_cliente` 🔒 | Texto libre + etiquetas (`queja_servicio`, `queja_precio`, `quiere_cancelar`…) | Sí |
+| `derivar_solicitud_contacto` | El cliente pide no ser contactado: deriva al área de atención, cierra la conversación y pausa WhatsApp ([[decisiones#D13 No contactar]]) | Sí |
+| `escalar_a_humano` | Handoff a la cola que corresponda, con resumen y motivo ([[decisiones#D17 Colas de escalamiento]]) | Sí |
 
-Nada de esto requiere mostrar al LLM un monto que deba copiar: los montos llegan a la respuesta por
-placeholders (ver [[harness_del_agente]]).
+Los montos nunca pasan por el texto del LLM: llegan por placeholders ([[decisiones#Base]], B4).
 
 ### Ofertas
 
-**La negociación no debería ser una tool con su propio prompt.** Ver [[decisiones#D3 Negociación]].
-Negociar es el razonamiento del agente; lo que se acota es **qué puede ofrecer**. El agente pide las ofertas
-elegibles y elige una por ID, y el motor de reglas acepta o rechaza. Así no hay forma de ofrecer algo no
-aprobado, porque la oferta no existe fuera de la tabla. Trade-off: menos flexibilidad ("¿y si le dejo el
-25%?"). Ese caso es justamente el que debe ir a un humano.
+Negociar es el razonamiento del agente; lo que se acota es **qué puede ofrecer**. Pide las ofertas elegibles,
+elige una por ID y el motor de reglas acepta o rechaza: una oferta fuera de la tabla no existe. Lo que no
+está en la tabla ("¿y si me deja el 25%?") va a un humano ([[decisiones#D3 Negociación]]).
 
-**Nuevas con alto valor:**
+### Por qué cada una
 
-- `generar_link_pago`: convierte la conversación en recuperación en el momento. Es la tool con más impacto
-  directo en la métrica principal (ver [[metricas]]).
-- `consultar_pagos_recientes`: evita cobrarle a quien ya pagó, el error más dañino (ver [[riesgos]]).
-
-**Sobre `registrar_feedback_cliente`:** aporta valor porque la mora a veces es un síntoma ("no pago porque
-el internet falla"). Ese dato llega a otros equipos (servicio técnico, retención) y alimenta el churn de
-[[metricas]]. Se separa de `guardar_nota` porque su consumidor es distinto: la nota sirve a la próxima
-conversación, el feedback sirve al negocio. Trade-off: dos tools con esquema parecido podrían confundir al
-modelo sobre cuál usar. Se mitiga con descripciones claras y catálogos de etiquetas disjuntos. Una queja de
-servicio grave puede además activar `disputa_factura` (ver [[memoria]]).
-
-**Para el prototipo** basta con un subconjunto: `consultar_estado_cuenta`, `consultar_ofertas_elegibles`,
-`registrar_promesa_pago` y `escalar_a_humano`, que cubre lo que pide la prueba (consultar saldo y decidir si
-gestiona o escala). Ver [[decisiones#D9 Alcance del prototipo]].
+- `generar_link_pago`: convierte la conversación en recuperación en el momento; es la de mayor impacto en [[metricas]].
+- `registrar_feedback_cliente` vs `guardar_nota`: la nota sirve a la próxima conversación; el feedback, al
+  negocio ("no pago porque el internet falla"). Catálogos de etiquetas disjuntos para que el modelo no las confunda.
