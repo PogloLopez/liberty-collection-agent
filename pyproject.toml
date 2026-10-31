@@ -1,0 +1,29 @@
+[project]
+name = "liberty-collection-agent"
+version = "0.1.0"
+description = "Proyecto Ágil: agentes de IA que gestionan por WhatsApp a clientes con facturas vencidas (prueba técnica LLA)."
+authors = [
+    { name = "poglolopez", email = "poglolopez@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.3",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]
