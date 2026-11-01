@@ -1,0 +1,506 @@
+[
+  {
+    "customer_id": "CL-1019515",
+    "propension_pago": "0.530",
+    "riesgo_churn": "0.547",
+    "riesgo_atraso": "0.666",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1071463",
+    "propension_pago": "0.794",
+    "riesgo_churn": "0.111",
+    "riesgo_atraso": "0.135",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1080054",
+    "propension_pago": "0.586",
+    "riesgo_churn": "0.861",
+    "riesgo_atraso": "0.569",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1084058",
+    "propension_pago": "0.686",
+    "riesgo_churn": "0.389",
+    "riesgo_atraso": "0.617",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1096753",
+    "propension_pago": "0.923",
+    "riesgo_churn": "0.364",
+    "riesgo_atraso": "0.215",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1100708",
+    "propension_pago": "0.675",
+    "riesgo_churn": "0.673",
+    "riesgo_atraso": "0.517",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1107377",
+    "propension_pago": "0.663",
+    "riesgo_churn": "0.742",
+    "riesgo_atraso": "0.305",
+    "fecha_calculo": "2026-10-12",
+    "version_modelo": "scores_cartera_v4.0"
+  },
+  {
+    "customer_id": "CL-1113646",
+    "propension_pago": "0.769",
+    "riesgo_churn": "0.117",
+    "riesgo_atraso": "0.153",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1118538",
+    "propension_pago": "0.639",
+    "riesgo_churn": "0.667",
+    "riesgo_atraso": "0.348",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1121736",
+    "propension_pago": "0.504",
+    "riesgo_churn": "0.348",
+    "riesgo_atraso": "0.893",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1123976",
+    "propension_pago": "0.192",
+    "riesgo_churn": "0.155",
+    "riesgo_atraso": "0.502",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1125516",
+    "propension_pago": "0.557",
+    "riesgo_churn": "0.198",
+    "riesgo_atraso": "0.480",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1126269",
+    "propension_pago": "0.234",
+    "riesgo_churn": "0.748",
+    "riesgo_atraso": "0.746",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1131469",
+    "propension_pago": "0.502",
+    "riesgo_churn": "0.685",
+    "riesgo_atraso": "0.237",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1132503",
+    "propension_pago": "0.665",
+    "riesgo_churn": "0.088",
+    "riesgo_atraso": "0.312",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1138627",
+    "propension_pago": "0.852",
+    "riesgo_churn": "0.239",
+    "riesgo_atraso": "0.070",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1140215",
+    "propension_pago": "0.170",
+    "riesgo_churn": "0.386",
+    "riesgo_atraso": "0.809",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1144614",
+    "propension_pago": "0.228",
+    "riesgo_churn": "0.190",
+    "riesgo_atraso": "0.908",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1145774",
+    "propension_pago": "0.390",
+    "riesgo_churn": "0.456",
+    "riesgo_atraso": "0.334",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1150370",
+    "propension_pago": "0.337",
+    "riesgo_churn": "0.203",
+    "riesgo_atraso": "0.100",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1152084",
+    "propension_pago": "0.769",
+    "riesgo_churn": "0.377",
+    "riesgo_atraso": "0.148",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1152549",
+    "propension_pago": "0.463",
+    "riesgo_churn": "0.135",
+    "riesgo_atraso": "0.371",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1157804",
+    "propension_pago": "0.691",
+    "riesgo_churn": "0.820",
+    "riesgo_atraso": "0.400",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1161090",
+    "propension_pago": "0.793",
+    "riesgo_churn": "0.186",
+    "riesgo_atraso": "0.773",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1163837",
+    "propension_pago": "0.589",
+    "riesgo_churn": "0.309",
+    "riesgo_atraso": "0.663",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1165562",
+    "propension_pago": "0.525",
+    "riesgo_churn": "0.225",
+    "riesgo_atraso": "0.601",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1166034",
+    "propension_pago": "0.874",
+    "riesgo_churn": "0.776",
+    "riesgo_atraso": "0.142",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1168863",
+    "propension_pago": "0.600",
+    "riesgo_churn": "0.202",
+    "riesgo_atraso": "0.419",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1171492",
+    "propension_pago": "0.751",
+    "riesgo_churn": "0.272",
+    "riesgo_atraso": "0.138",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1173697",
+    "propension_pago": "0.497",
+    "riesgo_churn": "0.161",
+    "riesgo_atraso": "0.504",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1175051",
+    "propension_pago": "0.060",
+    "riesgo_churn": "0.719",
+    "riesgo_atraso": "0.848",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1177149",
+    "propension_pago": "0.296",
+    "riesgo_churn": "0.452",
+    "riesgo_atraso": "0.681",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1177911",
+    "propension_pago": "0.612",
+    "riesgo_churn": "0.619",
+    "riesgo_atraso": "0.165",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1178922",
+    "propension_pago": "0.790",
+    "riesgo_churn": "0.359",
+    "riesgo_atraso": "0.226",
+    "fecha_calculo": "2026-10-30",
+    "version_modelo": "scores_cartera_v4.1"
+  },
+  {
+    "customer_id": "CL-1181514",
+    "propension_pago": "0.577",
+    "riesgo_churn": "0.145",
+    "riesgo_atraso": "0.488",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1183069",
+    "propension_pago": "0.043",
+    "riesgo_churn": "0.664",
+    "riesgo_atraso": "0.827",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1185751",
+    "propension_pago": "0.810",
+    "riesgo_churn": "0.298",
+    "riesgo_atraso": "0.284",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1185973",
+    "propension_pago": "0.398",
+    "riesgo_churn": "0.373",
+    "riesgo_atraso": "0.673",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1187267",
+    "propension_pago": "0.372",
+    "riesgo_churn": "0.256",
+    "riesgo_atraso": "0.811",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1190560",
+    "propension_pago": "0.697",
+    "riesgo_churn": "0.369",
+    "riesgo_atraso": "0.121",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1191572",
+    "propension_pago": "0.590",
+    "riesgo_churn": "0.226",
+    "riesgo_atraso": "0.585",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1193431",
+    "propension_pago": "0.465",
+    "riesgo_churn": "0.162",
+    "riesgo_atraso": "0.606",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1193704",
+    "propension_pago": "0.806",
+    "riesgo_churn": "0.417",
+    "riesgo_atraso": "0.754",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1196852",
+    "propension_pago": "0.419",
+    "riesgo_churn": "0.601",
+    "riesgo_atraso": "0.517",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1197204",
+    "propension_pago": "0.854",
+    "riesgo_churn": "0.063",
+    "riesgo_atraso": "0.334",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1198957",
+    "propension_pago": "0.360",
+    "riesgo_churn": "0.412",
+    "riesgo_atraso": "0.638",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1201205",
+    "propension_pago": "0.390",
+    "riesgo_churn": "0.525",
+    "riesgo_atraso": "0.613",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1203027",
+    "propension_pago": "0.842",
+    "riesgo_churn": "0.269",
+    "riesgo_atraso": "0.221",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1205902",
+    "propension_pago": "0.899",
+    "riesgo_churn": "0.342",
+    "riesgo_atraso": "0.325",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1210081",
+    "propension_pago": "0.740",
+    "riesgo_churn": "0.130",
+    "riesgo_atraso": "0.336",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1215806",
+    "propension_pago": "0.812",
+    "riesgo_churn": "0.118",
+    "riesgo_atraso": "0.176",
+    "fecha_calculo": "2026-09-14",
+    "version_modelo": "scores_cartera_v3.9"
+  },
+  {
+    "customer_id": "CL-1218946",
+    "propension_pago": "0.945",
+    "riesgo_churn": "0.367",
+    "riesgo_atraso": "0.244",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1220088",
+    "propension_pago": "0.297",
+    "riesgo_churn": "0.430",
+    "riesgo_atraso": "0.895",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1223431",
+    "propension_pago": "0.869",
+    "riesgo_churn": "0.329",
+    "riesgo_atraso": "0.223",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1226407",
+    "propension_pago": "0.471",
+    "riesgo_churn": "0.364",
+    "riesgo_atraso": "0.478",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1232824",
+    "propension_pago": "0.755",
+    "riesgo_churn": "0.253",
+    "riesgo_atraso": "0.343",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1238224",
+    "propension_pago": "0.874",
+    "riesgo_churn": "0.189",
+    "riesgo_atraso": "0.173",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1243624",
+    "propension_pago": "0.664",
+    "riesgo_churn": "0.126",
+    "riesgo_atraso": "0.308",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1252202",
+    "propension_pago": "0.509",
+    "riesgo_churn": "0.611",
+    "riesgo_atraso": "0.456",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1255409",
+    "propension_pago": "0.692",
+    "riesgo_churn": "0.139",
+    "riesgo_atraso": "0.320",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1262023",
+    "propension_pago": "0.207",
+    "riesgo_churn": "0.778",
+    "riesgo_atraso": "0.801",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1270637",
+    "propension_pago": "0.487",
+    "riesgo_churn": "0.232",
+    "riesgo_atraso": "0.382",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  },
+  {
+    "customer_id": "CL-1272729",
+    "propension_pago": "0.708",
+    "riesgo_churn": "0.125",
+    "riesgo_atraso": "0.204",
+    "fecha_calculo": "2026-11-05",
+    "version_modelo": "scores_cartera_v4.2"
+  }
+]

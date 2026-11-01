@@ -20,6 +20,7 @@ decidir). Lo decidido y lo pendiente vive solo en [[decisiones]]; las notas enla
 ## Transversal
 
 - [[decisiones]]: registro de decisiones (abiertas y tomadas) con sus trade-offs.
+- [[datos_mock]]: los datos sintéticos de la demo, sus reglas aplicadas y sus casos borde.
 - [[framework_strands]]: cómo funciona el framework del agente y por qué se eligió.
 - [[infraestructura_como_codigo]]: qué es IaC y cómo se aplicaría aquí con CDK.
 - [[despliegue_demo]]: qué se despliega para la evaluación, cuándo se enciende y cuánto cuesta.

@@ -1,0 +1,1273 @@
+[
+  {
+    "customer_id": "CL-1019515",
+    "nombre": "Aurelia Domínguez vda. de Herrera",
+    "segmento_esperado": "excluido",
+    "motivo": "Cliente vulnerable: humano directo, el agente no contacta.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "excluido"
+    ],
+    "cola_escalamiento": "especializada",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 37,
+      "saldo_vencido": "66.35",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 210,
+      "arpu_usd": "31.57",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1071463",
+    "nombre": "Gilberto Antonio Vásquez",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 15 días, propensión 0.794 y riesgo de atraso 0.135.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 15,
+      "saldo_vencido": "44.83",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 168,
+      "arpu_usd": "44.83",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1080054",
+    "nombre": "Gloria Esther Wong Achurra",
+    "segmento_esperado": "valioso_churn",
+    "motivo": "ARPU 103.68, 162 meses de antigüedad y churn 0.861 (score vigente).",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 15,
+      "saldo_vencido": "103.68",
+      "moras_12m": 3,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 162,
+      "arpu_usd": "103.68",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1084058",
+    "nombre": "Rogelio Antonio Núñez Atencio",
+    "segmento_esperado": "excluido",
+    "motivo": "Cliente vulnerable: humano directo, el agente no contacta.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "excluido"
+    ],
+    "cola_escalamiento": "especializada",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 11,
+      "saldo_vencido": "26.74",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 158,
+      "arpu_usd": "26.74",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1096753",
+    "nombre": "Iván Ernesto Delgado Espinosa",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 13 días, propensión 0.923 y riesgo de atraso 0.215.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 13,
+      "saldo_vencido": "76.40",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 148,
+      "arpu_usd": "76.40",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1100708",
+    "nombre": "Ricardo Alberto Arosemena Tejada",
+    "segmento_esperado": "valioso_churn",
+    "motivo": "ARPU 141.13, 145 meses de antigüedad y churn 0.673 (score vigente).",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": true,
+    "variables": {
+      "dias_mora": 29,
+      "saldo_vencido": "141.13",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 145,
+      "arpu_usd": "141.13",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1107377",
+    "nombre": "Carlos Alberto Chen Tejada",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "2 mora(s) en 12 meses, 33 días; score vencido, se usa el valor conservador.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 33,
+      "saldo_vencido": "287.42",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 140,
+      "arpu_usd": "141.13",
+      "estado_score": "vencido"
+    }
+  },
+  {
+    "customer_id": "CL-1113646",
+    "nombre": "Marisol del Carmen Jaén",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 4 días, propensión 0.769 y riesgo de atraso 0.153.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 4,
+      "saldo_vencido": "31.57",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 135,
+      "arpu_usd": "31.57",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1118538",
+    "nombre": "Fernando Luis Achurra Barría",
+    "segmento_esperado": "valioso_churn",
+    "motivo": "ARPU 108.50, 131 meses de antigüedad y churn 0.667 (score vigente).",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 45,
+      "saldo_vencido": "218.06",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 131,
+      "arpu_usd": "108.50",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1121736",
+    "nombre": "Yanelis Itzel De León",
+    "segmento_esperado": "reincidente",
+    "motivo": "5 moras en 12 meses (>= 3), 24 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 24,
+      "saldo_vencido": "76.40",
+      "moras_12m": 5,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 128,
+      "arpu_usd": "76.40",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1123976",
+    "nombre": "Ferretería y Materiales El Progreso, S.A.",
+    "segmento_esperado": "excluido",
+    "motivo": "Cuenta empresarial: la gestiona un ejecutivo, el agente no contacta.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "excluido"
+    ],
+    "cola_escalamiento": null,
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 44,
+      "saldo_vencido": "405.66",
+      "moras_12m": 3,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 126,
+      "arpu_usd": "186.98",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1125516",
+    "nombre": "Dayra Esther Vergara",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "2 mora(s) en 12 meses, 36 días.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "grupo_control"
+    ],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 36,
+      "saldo_vencido": "103.79",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 125,
+      "arpu_usd": "50.29",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1126269",
+    "nombre": "Elida Rosa Caballero Vásquez",
+    "segmento_esperado": "mora_avanzada",
+    "motivo": "131 días de mora (> 60).",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "especializada",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 131,
+      "saldo_vencido": "174.74",
+      "moras_12m": 6,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 125,
+      "arpu_usd": "36.38",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1131469",
+    "nombre": "Arturo José Delgado Morán",
+    "segmento_esperado": "valioso_churn",
+    "motivo": "ARPU 141.13, 120 meses de antigüedad y churn 0.685 (score vigente).",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 36,
+      "saldo_vencido": "285.47",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 120,
+      "arpu_usd": "141.13",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1132503",
+    "nombre": "Katherine Lisbeth Moreno de Gallardo",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 14 días, propensión 0.665 y riesgo de atraso 0.312.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "grupo_control"
+    ],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 14,
+      "saldo_vencido": "108.50",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 120,
+      "arpu_usd": "108.50",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1138627",
+    "nombre": "Neftalí Serracín Pitti",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 15 días, propensión 0.852 y riesgo de atraso 0.070.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 15,
+      "saldo_vencido": "26.74",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 115,
+      "arpu_usd": "26.74",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1140215",
+    "nombre": "Euclides Antonio Barría Saldaña",
+    "segmento_esperado": "mora_avanzada",
+    "motivo": "100 días de mora (> 60).",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "especializada",
+    "demo_candidato": true,
+    "variables": {
+      "dias_mora": 100,
+      "saldo_vencido": "427.89",
+      "moras_12m": 6,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 113,
+      "arpu_usd": "103.68",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1144614",
+    "nombre": "Félix Augusto Tejada Arosemena",
+    "segmento_esperado": "reincidente",
+    "motivo": "4 moras en 12 meses (>= 3), 27 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 27,
+      "saldo_vencido": "30.29",
+      "moras_12m": 4,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 110,
+      "arpu_usd": "50.29",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1145774",
+    "nombre": "Aracelly Mendieta Cedeño",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "2 mora(s) en 12 meses, 26 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 26,
+      "saldo_vencido": "71.58",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 109,
+      "arpu_usd": "71.58",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1150370",
+    "nombre": "Ramiro Ernesto Batista Pinzón",
+    "segmento_esperado": "excluido",
+    "motivo": "Reclamo abierto: humano directo, el agente no contacta.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "excluido"
+    ],
+    "cola_escalamiento": "reclamos",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 15,
+      "saldo_vencido": "50.29",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 105,
+      "arpu_usd": "50.29",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1152084",
+    "nombre": "Dalys Aracelly Tuñón Herrera",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 14 días, propensión 0.769 y riesgo de atraso 0.148.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 14,
+      "saldo_vencido": "36.38",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 104,
+      "arpu_usd": "36.38",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1152549",
+    "nombre": "Yariela del Carmen Sanjur de Pitti",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "2 mora(s) en 12 meses, 41 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": true,
+    "variables": {
+      "dias_mora": 41,
+      "saldo_vencido": "225.81",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 103,
+      "arpu_usd": "113.31",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1157804",
+    "nombre": "Héctor Manuel Guerra Saldaña",
+    "segmento_esperado": "valioso_churn",
+    "motivo": "ARPU 108.50, 99 meses de antigüedad y churn 0.820 (score vigente).",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "grupo_control"
+    ],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 21,
+      "saldo_vencido": "108.50",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 99,
+      "arpu_usd": "108.50",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1161090",
+    "nombre": "Kathia Lissette Saldaña Ríos",
+    "segmento_esperado": "excluido",
+    "motivo": "Reclamo abierto: humano directo, el agente no contacta.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "excluido"
+    ],
+    "cola_escalamiento": "reclamos",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 0,
+      "saldo_vencido": "0.00",
+      "moras_12m": 0,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 97,
+      "arpu_usd": "37.44",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1163837",
+    "nombre": "Lourdes Milagros Núñez",
+    "segmento_esperado": "reincidente",
+    "motivo": "4 moras en 12 meses (>= 3), 21 días.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "grupo_control"
+    ],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 21,
+      "saldo_vencido": "26.74",
+      "moras_12m": 4,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 94,
+      "arpu_usd": "26.74",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1165562",
+    "nombre": "Marcos Antonio Rodríguez Pinzón",
+    "segmento_esperado": "reincidente",
+    "motivo": "3 moras en 12 meses (>= 3), 13 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 13,
+      "saldo_vencido": "36.38",
+      "moras_12m": 3,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 93,
+      "arpu_usd": "36.38",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1166034",
+    "nombre": "Lorena Patricia Sanjur",
+    "segmento_esperado": "valioso_churn",
+    "motivo": "ARPU 116.18, 93 meses de antigüedad y churn 0.776 (score vigente).",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 11,
+      "saldo_vencido": "116.18",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 93,
+      "arpu_usd": "116.18",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1168863",
+    "nombre": "Anabel Kathia Herrera Ortega",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "2 mora(s) en 12 meses, 60 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 60,
+      "saldo_vencido": "103.79",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 90,
+      "arpu_usd": "50.29",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1171492",
+    "nombre": "Itzel Marisol Quintero Batista",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 12 días, propensión 0.751 y riesgo de atraso 0.138.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": true,
+    "variables": {
+      "dias_mora": 12,
+      "saldo_vencido": "76.40",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 88,
+      "arpu_usd": "76.40",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1173697",
+    "nombre": "Rodrigo Iván Saldaña",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "1 mora(s) en 12 meses, 22 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 22,
+      "saldo_vencido": "53.49",
+      "moras_12m": 1,
+      "monto_en_transito": "30.00",
+      "antiguedad_meses": 86,
+      "arpu_usd": "53.49",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1175051",
+    "nombre": "Abel Ignacio Montenegro",
+    "segmento_esperado": "mora_avanzada",
+    "motivo": "75 días de mora (> 60).",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "grupo_control"
+    ],
+    "cola_escalamiento": "especializada",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 75,
+      "saldo_vencido": "221.16",
+      "moras_12m": 4,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 85,
+      "arpu_usd": "71.58",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1177149",
+    "nombre": "Maritza Jaén de Samaniego",
+    "segmento_esperado": "reincidente",
+    "motivo": "6 moras en 12 meses (>= 3), 9 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 9,
+      "saldo_vencido": "36.38",
+      "moras_12m": 6,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 84,
+      "arpu_usd": "36.38",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1177911",
+    "nombre": "Itzel Yariela Concepción Mora",
+    "segmento_esperado": "excluido",
+    "motivo": "Sin opt-in de WhatsApp: el agente no contacta.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "excluido"
+    ],
+    "cola_escalamiento": null,
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 58,
+      "saldo_vencido": "75.97",
+      "moras_12m": 3,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 83,
+      "arpu_usd": "36.38",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1178922",
+    "nombre": "Omar Enrique Him Wong",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 13 días, propensión 0.790 y riesgo de atraso 0.226.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 13,
+      "saldo_vencido": "65.27",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 82,
+      "arpu_usd": "65.27",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1181514",
+    "nombre": "Nodier Alberto Gallardo Pinto",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "2 mora(s) en 12 meses, 23 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 23,
+      "saldo_vencido": "58.74",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 80,
+      "arpu_usd": "58.74",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1183069",
+    "nombre": "Yaneth Cristina Mendoza Rosas",
+    "segmento_esperado": "mora_avanzada",
+    "motivo": "61 días de mora (> 60).",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "especializada",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 61,
+      "saldo_vencido": "78.09",
+      "moras_12m": 3,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 79,
+      "arpu_usd": "37.44",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1185751",
+    "nombre": "Luis Carlos De Gracia Montenegro",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 8 días, propensión 0.810 y riesgo de atraso 0.284.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 8,
+      "saldo_vencido": "109.02",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 77,
+      "arpu_usd": "106.02",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1185973",
+    "nombre": "Clínica Odontológica Sonrisa Azul, S.A.",
+    "segmento_esperado": "excluido",
+    "motivo": "Cuenta empresarial: la gestiona un ejecutivo, el agente no contacta.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "excluido"
+    ],
+    "cola_escalamiento": null,
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 21,
+      "saldo_vencido": "202.23",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 77,
+      "arpu_usd": "202.23",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1187267",
+    "nombre": "Jhonatan Abdiel Batista Ortega",
+    "segmento_esperado": "reincidente",
+    "motivo": "4 moras en 12 meses (>= 3), 55 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 55,
+      "saldo_vencido": "120.69",
+      "moras_12m": 4,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 76,
+      "arpu_usd": "58.74",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1190560",
+    "nombre": "Yessenia Ábrego Núñez",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 9 días, propensión 0.697 y riesgo de atraso 0.121.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "pago_en_transito_cubre_saldo"
+    ],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 9,
+      "saldo_vencido": "50.29",
+      "moras_12m": 1,
+      "monto_en_transito": "50.29",
+      "antiguedad_meses": 73,
+      "arpu_usd": "50.29",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1191572",
+    "nombre": "Abdiel Enrique Cedeño Ríos",
+    "segmento_esperado": "reincidente",
+    "motivo": "5 moras en 12 meses (>= 3), 22 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": true,
+    "variables": {
+      "dias_mora": 22,
+      "saldo_vencido": "71.04",
+      "moras_12m": 5,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 72,
+      "arpu_usd": "71.04",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1193431",
+    "nombre": "Ana Gabriela Barría Concepción",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "1 mora(s) en 12 meses, 30 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 30,
+      "saldo_vencido": "21.38",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 71,
+      "arpu_usd": "36.38",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1193704",
+    "nombre": "Gustavo Adolfo Ruiz Him",
+    "segmento_esperado": "excluido",
+    "motivo": "Sin opt-in de WhatsApp: el agente no contacta.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "excluido"
+    ],
+    "cola_escalamiento": null,
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 6,
+      "saldo_vencido": "44.83",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 70,
+      "arpu_usd": "44.83",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1195028",
+    "nombre": "Ricardo Samuel Espinosa Lee",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "1 mora(s) en 12 meses, 15 días; score faltante, se usa el valor conservador.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 15,
+      "saldo_vencido": "65.27",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 69,
+      "arpu_usd": "65.27",
+      "estado_score": "faltante"
+    }
+  },
+  {
+    "customer_id": "CL-1196852",
+    "nombre": "Transportes y Mudanzas Barría Hermanos, S.A.",
+    "segmento_esperado": "excluido",
+    "motivo": "Cuenta empresarial: la gestiona un ejecutivo, el agente no contacta.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "excluido"
+    ],
+    "cola_escalamiento": null,
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 73,
+      "saldo_vencido": "774.75",
+      "moras_12m": 5,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 68,
+      "arpu_usd": "242.89",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1197204",
+    "nombre": "José Luis Castillo Vergara",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 15 días, propensión 0.854 y riesgo de atraso 0.334.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 15,
+      "saldo_vencido": "57.50",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 68,
+      "arpu_usd": "57.50",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1198957",
+    "nombre": "Bolívar Saúl Pitti Serracín",
+    "segmento_esperado": "reincidente",
+    "motivo": "4 moras en 12 meses (>= 3), 38 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 38,
+      "saldo_vencido": "191.19",
+      "moras_12m": 4,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 66,
+      "arpu_usd": "93.99",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1201205",
+    "nombre": "Edilsa Marina Quintero",
+    "segmento_esperado": "reincidente",
+    "motivo": "4 moras en 12 meses (>= 3), 30 días.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "whatsapp_pausado"
+    ],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 30,
+      "saldo_vencido": "48.57",
+      "moras_12m": 4,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 64,
+      "arpu_usd": "37.44",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1203027",
+    "nombre": "Ernesto Rafael Villarreal",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "1 mora(s) en 12 meses, 16 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 16,
+      "saldo_vencido": "37.44",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 63,
+      "arpu_usd": "37.44",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1205902",
+    "nombre": "Elvia Rosa Atencio Caballero",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 10 días, propensión 0.899 y riesgo de atraso 0.325.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 10,
+      "saldo_vencido": "58.74",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 61,
+      "arpu_usd": "58.74",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1210081",
+    "nombre": "Rubén Darío Samaniego",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 7 días, propensión 0.740 y riesgo de atraso 0.336.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 7,
+      "saldo_vencido": "26.74",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 57,
+      "arpu_usd": "26.74",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1215806",
+    "nombre": "Eyra Lizbeth Domínguez",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "1 mora(s) en 12 meses, 11 días; score vencido, se usa el valor conservador.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 11,
+      "saldo_vencido": "26.74",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 53,
+      "arpu_usd": "26.74",
+      "estado_score": "vencido"
+    }
+  },
+  {
+    "customer_id": "CL-1218946",
+    "nombre": "Yamileth Batista Rodríguez",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 11 días, propensión 0.945 y riesgo de atraso 0.244.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 11,
+      "saldo_vencido": "36.38",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 50,
+      "arpu_usd": "36.38",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1220088",
+    "nombre": "Jhon Fredy Ospina Cárdenas",
+    "segmento_esperado": "reincidente",
+    "motivo": "4 moras en 12 meses (>= 3), 17 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 17,
+      "saldo_vencido": "37.44",
+      "moras_12m": 4,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 49,
+      "arpu_usd": "37.44",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1223431",
+    "nombre": "Aristides Guerra Méndez",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 7 días, propensión 0.869 y riesgo de atraso 0.223.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 7,
+      "saldo_vencido": "67.29",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 47,
+      "arpu_usd": "67.29",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1226407",
+    "nombre": "Yorlenis Pérez Caballero",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "1 mora(s) en 12 meses, 8 días; propensión 0.471 / atraso 0.478 no alcanzan olvidadizo.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 8,
+      "saldo_vencido": "36.38",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 44,
+      "arpu_usd": "36.38",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1232824",
+    "nombre": "Edwin Alexis Pinzón",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 5 días, propensión 0.755 y riesgo de atraso 0.343.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "grupo_control"
+    ],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 5,
+      "saldo_vencido": "53.49",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 39,
+      "arpu_usd": "53.49",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1238224",
+    "nombre": "Xiomara Itzel Rosas",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 9 días, propensión 0.874 y riesgo de atraso 0.173.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 9,
+      "saldo_vencido": "37.44",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 35,
+      "arpu_usd": "37.44",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1243624",
+    "nombre": "Andrés Felipe Ospina Rendón",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 10 días, propensión 0.664 y riesgo de atraso 0.308.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 10,
+      "saldo_vencido": "37.44",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 30,
+      "arpu_usd": "37.44",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1248251",
+    "nombre": "Eduardo Javier Gómez Navarro",
+    "segmento_esperado": "excluido",
+    "motivo": "Sin opt-in de WhatsApp: el agente no contacta.",
+    "elegible_contacto": false,
+    "motivos_no_elegible": [
+      "excluido"
+    ],
+    "cola_escalamiento": null,
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 13,
+      "saldo_vencido": "20.32",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 27,
+      "arpu_usd": "20.32",
+      "estado_score": "faltante"
+    }
+  },
+  {
+    "customer_id": "CL-1252202",
+    "nombre": "Natalia Sofía Vergara Castillo",
+    "segmento_esperado": "valioso_churn",
+    "motivo": "ARPU 103.68, 24 meses de antigüedad y churn 0.611 (score vigente).",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "negociacion",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 23,
+      "saldo_vencido": "112.23",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 24,
+      "arpu_usd": "103.68",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1255409",
+    "nombre": "Melvis Yaneth Navarro",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 12 días, propensión 0.692 y riesgo de atraso 0.320.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 12,
+      "saldo_vencido": "50.29",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 21,
+      "arpu_usd": "50.29",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1262023",
+    "nombre": "Cristian Omar Pinto Gómez",
+    "segmento_esperado": "mora_avanzada",
+    "motivo": "Saldo vencido 443.74 > 400 aunque solo 43 días de mora.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "especializada",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 43,
+      "saldo_vencido": "443.74",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 16,
+      "arpu_usd": "120.35",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1270637",
+    "nombre": "Kevin Josué Moreno Batista",
+    "segmento_esperado": "dificultad_temporal",
+    "motivo": "2 mora(s) en 12 meses, 34 días.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 34,
+      "saldo_vencido": "120.69",
+      "moras_12m": 2,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 9,
+      "arpu_usd": "58.74",
+      "estado_score": "vigente"
+    }
+  },
+  {
+    "customer_id": "CL-1272729",
+    "nombre": "Andreína Colmenares Pérez",
+    "segmento_esperado": "olvidadizo",
+    "motivo": "Primera mora, 6 días, propensión 0.708 y riesgo de atraso 0.204.",
+    "elegible_contacto": true,
+    "motivos_no_elegible": [],
+    "cola_escalamiento": "basica",
+    "demo_candidato": false,
+    "variables": {
+      "dias_mora": 6,
+      "saldo_vencido": "20.32",
+      "moras_12m": 1,
+      "monto_en_transito": "0.00",
+      "antiguedad_meses": 7,
+      "arpu_usd": "16.75",
+      "estado_score": "vigente"
+    }
+  }
+]

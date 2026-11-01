@@ -1,0 +1,5915 @@
+[
+  {
+    "pago_id": "PG-30551996",
+    "factura_id": "F001-04721495",
+    "customer_id": "CL-1190560",
+    "fecha": "2025-11-16T12:10:00-05:00",
+    "monto": "48.15",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30552649",
+    "factura_id": "F001-04726879",
+    "customer_id": "CL-1131469",
+    "fecha": "2025-11-17T13:06:00-05:00",
+    "monto": "138.99",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30553189",
+    "factura_id": "F001-04723226",
+    "customer_id": "CL-1084058",
+    "fecha": "2025-11-18T09:12:00-05:00",
+    "monto": "32.08",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30553287",
+    "factura_id": "F001-04724058",
+    "customer_id": "CL-1166034",
+    "fecha": "2025-11-20T08:37:00-05:00",
+    "monto": "116.18",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30553881",
+    "factura_id": "F001-04722462",
+    "customer_id": "CL-1215806",
+    "fecha": "2025-11-21T20:45:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30554387",
+    "factura_id": "F001-04726317",
+    "customer_id": "CL-1238224",
+    "fecha": "2025-11-24T08:56:00-05:00",
+    "monto": "41.21",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30554700",
+    "factura_id": "F001-04729036",
+    "customer_id": "CL-1185751",
+    "fecha": "2025-11-24T12:29:00-05:00",
+    "monto": "106.02",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30554969",
+    "factura_id": "F001-04719987",
+    "customer_id": "CL-1126269",
+    "fecha": "2025-11-24T21:58:00-05:00",
+    "monto": "34.24",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30555596",
+    "factura_id": "F001-04733063",
+    "customer_id": "CL-1193431",
+    "fecha": "2025-11-25T07:12:00-05:00",
+    "monto": "34.24",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30555713",
+    "factura_id": "F001-04722144",
+    "customer_id": "CL-1226407",
+    "fecha": "2025-11-25T12:08:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30555795",
+    "factura_id": "F001-04725935",
+    "customer_id": "CL-1243624",
+    "fecha": "2025-11-25T16:18:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30556427",
+    "factura_id": "F001-04728256",
+    "customer_id": "CL-1198957",
+    "fecha": "2025-11-26T10:29:00-05:00",
+    "monto": "96.47",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30556586",
+    "factura_id": "F001-04733470",
+    "customer_id": "CL-1168863",
+    "fecha": "2025-11-26T10:38:00-05:00",
+    "monto": "48.15",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30557190",
+    "factura_id": "F001-04725230",
+    "customer_id": "CL-1019515",
+    "fecha": "2025-11-26T12:27:00-05:00",
+    "monto": "29.43",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30557282",
+    "factura_id": "F001-04729848",
+    "customer_id": "CL-1210081",
+    "fecha": "2025-11-26T13:10:00-05:00",
+    "monto": "26.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30557878",
+    "factura_id": "F001-04719165",
+    "customer_id": "CL-1145774",
+    "fecha": "2025-11-26T21:49:00-05:00",
+    "monto": "69.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30558454",
+    "factura_id": "F001-04724811",
+    "customer_id": "CL-1140215",
+    "fecha": "2025-11-27T08:28:00-05:00",
+    "monto": "101.54",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30558721",
+    "factura_id": "F001-04732373",
+    "customer_id": "CL-1232824",
+    "fecha": "2025-11-28T07:48:00-05:00",
+    "monto": "53.49",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30558993",
+    "factura_id": "F001-04730567",
+    "customer_id": "CL-1223431",
+    "fecha": "2025-11-28T11:35:00-05:00",
+    "monto": "67.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30559606",
+    "factura_id": "F001-04737207",
+    "customer_id": "CL-1187267",
+    "fecha": "2025-11-29T10:53:00-05:00",
+    "monto": "57.73",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30559988",
+    "factura_id": "F001-04735208",
+    "customer_id": "CL-1177911",
+    "fecha": "2025-11-30T15:49:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30560476",
+    "factura_id": "F001-04727863",
+    "customer_id": "CL-1193704",
+    "fecha": "2025-11-30T19:47:00-05:00",
+    "monto": "42.69",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30560702",
+    "factura_id": "F001-04727485",
+    "customer_id": "CL-1125516",
+    "fecha": "2025-12-01T09:00:00-05:00",
+    "monto": "48.15",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30561356",
+    "factura_id": "F001-04731372",
+    "customer_id": "CL-1113646",
+    "fecha": "2025-12-02T03:32:00-05:00",
+    "monto": "29.43",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30561591",
+    "factura_id": "F001-04731717",
+    "customer_id": "CL-1107377",
+    "fecha": "2025-12-03T08:13:00-05:00",
+    "monto": "138.99",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30562209",
+    "factura_id": "F001-04734663",
+    "customer_id": "CL-1183069",
+    "fecha": "2025-12-05T12:30:00-05:00",
+    "monto": "74.18",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30562801",
+    "factura_id": "F001-04752818",
+    "customer_id": "CL-1197204",
+    "fecha": "2025-12-08T10:16:00-05:00",
+    "monto": "61.50",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30563279",
+    "factura_id": "F001-04741813",
+    "customer_id": "CL-1161090",
+    "fecha": "2025-12-08T17:49:00-05:00",
+    "monto": "37.44",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30563683",
+    "factura_id": "F001-04734013",
+    "customer_id": "CL-1100708",
+    "fecha": "2025-12-08T19:25:00-05:00",
+    "monto": "138.99",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30563752",
+    "factura_id": "F001-04747717",
+    "customer_id": "CL-1220088",
+    "fecha": "2025-12-08T20:08:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30564389",
+    "factura_id": "F001-04750156",
+    "customer_id": "CL-1203027",
+    "fecha": "2025-12-09T09:07:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30564587",
+    "factura_id": "F001-04738710",
+    "customer_id": "CL-1123976",
+    "fecha": "2025-12-10T16:43:00-05:00",
+    "monto": "186.98",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30564872",
+    "factura_id": "F001-04736680",
+    "customer_id": "CL-1121736",
+    "fecha": "2025-12-10T21:17:00-05:00",
+    "monto": "74.26",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30565522",
+    "factura_id": "F001-04738015",
+    "customer_id": "CL-1181514",
+    "fecha": "2025-12-10T21:23:00-05:00",
+    "monto": "56.60",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30566167",
+    "factura_id": "F001-04741070",
+    "customer_id": "CL-1173697",
+    "fecha": "2025-12-11T18:05:00-05:00",
+    "monto": "53.49",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30566420",
+    "factura_id": "F001-04740303",
+    "customer_id": "CL-1191572",
+    "fecha": "2025-12-12T20:12:00-05:00",
+    "monto": "53.49",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30566541",
+    "factura_id": "F001-04755478",
+    "customer_id": "CL-1262023",
+    "fecha": "2025-12-12T20:13:00-05:00",
+    "monto": "120.35",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30566883",
+    "factura_id": "F001-04732698",
+    "customer_id": "CL-1185973",
+    "fecha": "2025-12-12T21:52:00-05:00",
+    "monto": "202.23",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30567453",
+    "factura_id": "F001-04737618",
+    "customer_id": "CL-1252202",
+    "fecha": "2025-12-14T12:58:00-05:00",
+    "monto": "101.54",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30568028",
+    "factura_id": "F001-04743279",
+    "customer_id": "CL-1150370",
+    "fecha": "2025-12-14T18:46:00-05:00",
+    "monto": "48.15",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30568452",
+    "factura_id": "F001-04764633",
+    "customer_id": "CL-1185751",
+    "fecha": "2025-12-15T16:16:00-05:00",
+    "monto": "106.02",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30569140",
+    "factura_id": "F001-04765526",
+    "customer_id": "CL-1223431",
+    "fecha": "2025-12-16T07:28:00-05:00",
+    "monto": "72.34",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30569267",
+    "factura_id": "F001-04739197",
+    "customer_id": "CL-1157804",
+    "fecha": "2025-12-16T10:46:00-05:00",
+    "monto": "106.36",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30569829",
+    "factura_id": "F001-04746236",
+    "customer_id": "CL-1175051",
+    "fecha": "2025-12-17T09:41:00-05:00",
+    "monto": "69.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30570298",
+    "factura_id": "F001-04744808",
+    "customer_id": "CL-1080054",
+    "fecha": "2025-12-17T16:59:00-05:00",
+    "monto": "101.54",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30570573",
+    "factura_id": "F001-04755236",
+    "customer_id": "CL-1248251",
+    "fecha": "2025-12-18T10:59:00-05:00",
+    "monto": "20.32",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30570650",
+    "factura_id": "F001-04752526",
+    "customer_id": "CL-1138627",
+    "fecha": "2025-12-18T11:14:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30570837",
+    "factura_id": "F001-04749634",
+    "customer_id": "CL-1178922",
+    "fecha": "2025-12-18T12:05:00-05:00",
+    "monto": "63.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30571278",
+    "factura_id": "F001-04745289",
+    "customer_id": "CL-1118538",
+    "fecha": "2025-12-18T16:45:00-05:00",
+    "monto": "106.36",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30571554",
+    "factura_id": "F001-04765170",
+    "customer_id": "CL-1198957",
+    "fecha": "2025-12-19T11:58:00-05:00",
+    "monto": "93.99",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30571730",
+    "factura_id": "F001-04761086",
+    "customer_id": "CL-1243624",
+    "fecha": "2025-12-19T16:57:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30571842",
+    "factura_id": "F001-04759620",
+    "customer_id": "CL-1140215",
+    "fecha": "2025-12-19T18:17:00-05:00",
+    "monto": "107.19",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30572124",
+    "factura_id": "F001-04760416",
+    "customer_id": "CL-1166034",
+    "fecha": "2025-12-20T08:21:00-05:00",
+    "monto": "124.73",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30572620",
+    "factura_id": "F001-04748305",
+    "customer_id": "CL-1152084",
+    "fecha": "2025-12-20T15:31:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30572933",
+    "factura_id": "F001-04745824",
+    "customer_id": "CL-1195028",
+    "fecha": "2025-12-21T04:17:00-05:00",
+    "monto": "63.13",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30573625",
+    "factura_id": "F001-04744012",
+    "customer_id": "CL-1071463",
+    "fecha": "2025-12-21T05:37:00-05:00",
+    "monto": "42.69",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30573896",
+    "factura_id": "F001-04759306",
+    "customer_id": "CL-1215806",
+    "fecha": "2025-12-21T07:22:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30574180",
+    "factura_id": "F001-04762277",
+    "customer_id": "CL-1193704",
+    "fecha": "2025-12-21T12:25:00-05:00",
+    "monto": "42.69",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30574239",
+    "factura_id": "F001-04750500",
+    "customer_id": "CL-1096753",
+    "fecha": "2025-12-21T12:45:00-05:00",
+    "monto": "74.26",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30574530",
+    "factura_id": "F001-04747148",
+    "customer_id": "CL-1132503",
+    "fecha": "2025-12-21T13:02:00-05:00",
+    "monto": "118.01",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30575221",
+    "factura_id": "F001-04767296",
+    "customer_id": "CL-1107377",
+    "fecha": "2025-12-22T10:24:00-05:00",
+    "monto": "138.99",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30575452",
+    "factura_id": "F001-04754722",
+    "customer_id": "CL-1205902",
+    "fecha": "2025-12-22T11:51:00-05:00",
+    "monto": "56.60",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30575792",
+    "factura_id": "F001-04753241",
+    "customer_id": "CL-1145774",
+    "fecha": "2025-12-22T12:24:00-05:00",
+    "monto": "69.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30576149",
+    "factura_id": "F001-04720572",
+    "customer_id": "CL-1177149",
+    "fecha": "2025-12-24T10:31:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30576793",
+    "factura_id": "F001-04749224",
+    "customer_id": "CL-1165562",
+    "fecha": "2025-12-24T17:16:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30577223",
+    "factura_id": "F001-04750822",
+    "customer_id": "CL-1171492",
+    "fecha": "2025-12-24T22:48:00-05:00",
+    "monto": "74.26",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30577325",
+    "factura_id": "F001-04751720",
+    "customer_id": "CL-1255409",
+    "fecha": "2025-12-25T09:25:00-05:00",
+    "monto": "48.15",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30577830",
+    "factura_id": "F001-04757670",
+    "customer_id": "CL-1126269",
+    "fecha": "2025-12-25T10:44:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30578509",
+    "factura_id": "F001-04768951",
+    "customer_id": "CL-1193431",
+    "fecha": "2025-12-25T14:47:00-05:00",
+    "monto": "34.24",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30578885",
+    "factura_id": "F001-04735748",
+    "customer_id": "CL-1201205",
+    "fecha": "2025-12-25T18:45:00-05:00",
+    "monto": "37.44",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30579119",
+    "factura_id": "F001-04753013",
+    "customer_id": "CL-1152549",
+    "fecha": "2025-12-25T22:55:00-05:00",
+    "monto": "111.17",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30579691",
+    "factura_id": "F001-04767020",
+    "customer_id": "CL-1210081",
+    "fecha": "2025-12-26T10:28:00-05:00",
+    "monto": "26.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30580345",
+    "factura_id": "F001-04772195",
+    "customer_id": "CL-1144614",
+    "fecha": "2025-12-26T12:18:00-05:00",
+    "monto": "51.36",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30580921",
+    "factura_id": "F001-04763768",
+    "customer_id": "CL-1238224",
+    "fecha": "2025-12-26T12:54:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30581064",
+    "factura_id": "F001-04758673",
+    "customer_id": "CL-1084058",
+    "fecha": "2025-12-26T18:26:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30581104",
+    "factura_id": "F001-04754100",
+    "customer_id": "CL-1218946",
+    "fecha": "2025-12-26T22:39:00-05:00",
+    "monto": "34.24",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30581435",
+    "factura_id": "F001-04761337",
+    "customer_id": "CL-1019515",
+    "fecha": "2025-12-27T11:34:00-05:00",
+    "monto": "29.43",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30581760",
+    "factura_id": "F001-04756911",
+    "customer_id": "CL-1190560",
+    "fecha": "2025-12-27T12:59:00-05:00",
+    "monto": "48.15",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30581841",
+    "factura_id": "F001-04757894",
+    "customer_id": "CL-1226407",
+    "fecha": "2025-12-27T17:20:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30582337",
+    "factura_id": "F001-04763173",
+    "customer_id": "CL-1131469",
+    "fecha": "2025-12-28T10:57:00-05:00",
+    "monto": "138.99",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30582591",
+    "factura_id": "F001-04768161",
+    "customer_id": "CL-1232824",
+    "fecha": "2025-12-29T09:43:00-05:00",
+    "monto": "58.83",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30583082",
+    "factura_id": "F001-04770934",
+    "customer_id": "CL-1183069",
+    "fecha": "2025-12-29T12:20:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30583459",
+    "factura_id": "F001-04756318",
+    "customer_id": "CL-1177149",
+    "fecha": "2025-12-29T13:53:00-05:00",
+    "monto": "20.00",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30583809",
+    "factura_id": "F001-04761653",
+    "customer_id": "CL-1125516",
+    "fecha": "2025-12-30T08:19:00-05:00",
+    "monto": "48.15",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30584087",
+    "factura_id": "F001-04756318",
+    "customer_id": "CL-1177149",
+    "fecha": "2025-12-30T09:55:00-05:00",
+    "monto": "33.50",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30584387",
+    "factura_id": "F001-04773342",
+    "customer_id": "CL-1187267",
+    "fecha": "2025-12-31T14:33:00-05:00",
+    "monto": "65.15",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30584661",
+    "factura_id": "F001-04766176",
+    "customer_id": "CL-1113646",
+    "fecha": "2026-01-01T05:14:00-05:00",
+    "monto": "29.43",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30584859",
+    "factura_id": "F001-04775293",
+    "customer_id": "CL-1181514",
+    "fecha": "2026-01-01T12:08:00-05:00",
+    "monto": "65.15",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30585285",
+    "factura_id": "F001-04734268",
+    "customer_id": "CL-1144614",
+    "fecha": "2026-01-01T12:15:00-05:00",
+    "monto": "48.15",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30585476",
+    "factura_id": "F001-04773118",
+    "customer_id": "CL-1201205",
+    "fecha": "2026-01-01T14:09:00-05:00",
+    "monto": "60.75",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30585592",
+    "factura_id": "F001-04740090",
+    "customer_id": "CL-1196852",
+    "fecha": "2026-01-04T08:51:00-05:00",
+    "monto": "242.89",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30586027",
+    "factura_id": "F001-04771410",
+    "customer_id": "CL-1177911",
+    "fecha": "2026-01-04T10:01:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30586419",
+    "factura_id": "F001-04770716",
+    "customer_id": "CL-1168863",
+    "fecha": "2026-01-04T13:37:00-05:00",
+    "monto": "48.15",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30586779",
+    "factura_id": "F001-04742683",
+    "customer_id": "CL-1163837",
+    "fecha": "2026-01-05T11:40:00-05:00",
+    "monto": "32.08",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30587151",
+    "factura_id": "F001-04778875",
+    "customer_id": "CL-1161090",
+    "fecha": "2026-01-05T16:26:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30587199",
+    "factura_id": "F001-04773611",
+    "customer_id": "CL-1121736",
+    "fecha": "2026-01-06T13:37:00-05:00",
+    "monto": "74.26",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30587525",
+    "factura_id": "F001-04770438",
+    "customer_id": "CL-1100708",
+    "fecha": "2026-01-06T19:07:00-05:00",
+    "monto": "140.98",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30587886",
+    "factura_id": "F001-04780236",
+    "customer_id": "CL-1080054",
+    "fecha": "2026-01-08T16:42:00-05:00",
+    "monto": "101.54",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30587981",
+    "factura_id": "F001-04781811",
+    "customer_id": "CL-1118538",
+    "fecha": "2026-01-08T16:56:00-05:00",
+    "monto": "106.36",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30588373",
+    "factura_id": "F001-04779328",
+    "customer_id": "CL-1150370",
+    "fecha": "2026-01-08T22:22:00-05:00",
+    "monto": "48.15",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30588718",
+    "factura_id": "F001-04778315",
+    "customer_id": "CL-1173697",
+    "fecha": "2026-01-10T09:00:00-05:00",
+    "monto": "53.49",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30589253",
+    "factura_id": "F001-04776547",
+    "customer_id": "CL-1157804",
+    "fecha": "2026-01-10T11:29:00-05:00",
+    "monto": "106.36",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30589308",
+    "factura_id": "F001-04782988",
+    "customer_id": "CL-1175051",
+    "fecha": "2026-01-11T12:24:00-05:00",
+    "monto": "69.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30589611",
+    "factura_id": "F001-04782305",
+    "customer_id": "CL-1132503",
+    "fecha": "2026-01-11T18:03:00-05:00",
+    "monto": "106.36",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30590113",
+    "factura_id": "F001-04776062",
+    "customer_id": "CL-1123976",
+    "fecha": "2026-01-13T10:20:00-05:00",
+    "monto": "186.98",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30590583",
+    "factura_id": "F001-04777526",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-01-13T11:16:00-05:00",
+    "monto": "71.04",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30590701",
+    "factura_id": "F001-04774446",
+    "customer_id": "CL-1252202",
+    "fecha": "2026-01-13T18:21:00-05:00",
+    "monto": "101.54",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30591342",
+    "factura_id": "F001-04769632",
+    "customer_id": "CL-1185973",
+    "fecha": "2026-01-14T07:09:00-05:00",
+    "monto": "202.23",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30591956",
+    "factura_id": "F001-04790231",
+    "customer_id": "CL-1262023",
+    "fecha": "2026-01-14T18:14:00-05:00",
+    "monto": "120.35",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30592510",
+    "factura_id": "F001-04783470",
+    "customer_id": "CL-1220088",
+    "fecha": "2026-01-15T13:01:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30592915",
+    "factura_id": "F001-04792827",
+    "customer_id": "CL-1126269",
+    "fecha": "2026-01-16T12:47:00-05:00",
+    "monto": "34.24",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30593011",
+    "factura_id": "F001-04796515",
+    "customer_id": "CL-1084058",
+    "fecha": "2026-01-16T15:31:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30593491",
+    "factura_id": "F001-04784973",
+    "customer_id": "CL-1165562",
+    "fecha": "2026-01-16T21:30:00-05:00",
+    "monto": "34.24",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30593665",
+    "factura_id": "F001-04797227",
+    "customer_id": "CL-1243624",
+    "fecha": "2026-01-17T12:47:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30593734",
+    "factura_id": "F001-04787851",
+    "customer_id": "CL-1197204",
+    "fecha": "2026-01-17T16:41:00-05:00",
+    "monto": "57.50",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30593957",
+    "factura_id": "F001-04800009",
+    "customer_id": "CL-1198957",
+    "fecha": "2026-01-17T17:38:00-05:00",
+    "monto": "93.99",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30594303",
+    "factura_id": "F001-04799801",
+    "customer_id": "CL-1125516",
+    "fecha": "2026-01-17T21:17:00-05:00",
+    "monto": "48.15",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30594830",
+    "factura_id": "F001-04796272",
+    "customer_id": "CL-1166034",
+    "fecha": "2026-01-18T08:06:00-05:00",
+    "monto": "118.83",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30595237",
+    "factura_id": "F001-04793705",
+    "customer_id": "CL-1177149",
+    "fecha": "2026-01-18T10:36:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30595292",
+    "factura_id": "F001-04785939",
+    "customer_id": "CL-1203027",
+    "fecha": "2026-01-18T16:18:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30595530",
+    "factura_id": "F001-04792092",
+    "customer_id": "CL-1248251",
+    "fecha": "2026-01-19T11:29:00-05:00",
+    "monto": "20.32",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30596153",
+    "factura_id": "F001-04784199",
+    "customer_id": "CL-1152084",
+    "fecha": "2026-01-19T16:19:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30596660",
+    "factura_id": "F001-04787192",
+    "customer_id": "CL-1171492",
+    "fecha": "2026-01-19T19:50:00-05:00",
+    "monto": "74.26",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30597085",
+    "factura_id": "F001-04798041",
+    "customer_id": "CL-1019515",
+    "fecha": "2026-01-20T12:21:00-05:00",
+    "monto": "29.43",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30597331",
+    "factura_id": "F001-04786782",
+    "customer_id": "CL-1138627",
+    "fecha": "2026-01-20T15:40:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30597986",
+    "factura_id": "F001-04780469",
+    "customer_id": "CL-1195028",
+    "fecha": "2026-01-21T03:23:00-05:00",
+    "monto": "63.13",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30598207",
+    "factura_id": "F001-04780992",
+    "customer_id": "CL-1071463",
+    "fecha": "2026-01-21T05:37:00-05:00",
+    "monto": "42.69",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30598833",
+    "factura_id": "F001-04785614",
+    "customer_id": "CL-1096753",
+    "fecha": "2026-01-21T12:32:00-05:00",
+    "monto": "74.26",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30599144",
+    "factura_id": "F001-04786559",
+    "customer_id": "CL-1255409",
+    "fecha": "2026-01-22T08:58:00-05:00",
+    "monto": "48.15",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30599337",
+    "factura_id": "F001-04798868",
+    "customer_id": "CL-1131469",
+    "fecha": "2026-01-23T08:32:00-05:00",
+    "monto": "138.99",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30599879",
+    "factura_id": "F001-04794931",
+    "customer_id": "CL-1215806",
+    "fecha": "2026-01-23T14:28:00-05:00",
+    "monto": "35.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30600266",
+    "factura_id": "F001-04789347",
+    "customer_id": "CL-1145774",
+    "fecha": "2026-01-23T22:07:00-05:00",
+    "monto": "69.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30600883",
+    "factura_id": "F001-04784743",
+    "customer_id": "CL-1178922",
+    "fecha": "2026-01-23T22:15:00-05:00",
+    "monto": "63.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30601049",
+    "factura_id": "F001-04802143",
+    "customer_id": "CL-1210081",
+    "fecha": "2026-01-24T07:00:00-05:00",
+    "monto": "28.24",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30601476",
+    "factura_id": "F001-04800665",
+    "customer_id": "CL-1185751",
+    "fecha": "2026-01-24T07:58:00-05:00",
+    "monto": "106.84",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30602048",
+    "factura_id": "F001-04789974",
+    "customer_id": "CL-1218946",
+    "fecha": "2026-01-24T11:14:00-05:00",
+    "monto": "34.24",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30602574",
+    "factura_id": "F001-04802953",
+    "customer_id": "CL-1232824",
+    "fecha": "2026-01-24T12:24:00-05:00",
+    "monto": "53.49",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30602752",
+    "factura_id": "F001-04776740",
+    "customer_id": "CL-1196852",
+    "fecha": "2026-01-24T21:07:00-05:00",
+    "monto": "246.10",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30602795",
+    "factura_id": "F001-04795560",
+    "customer_id": "CL-1226407",
+    "fecha": "2026-01-26T11:59:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30603424",
+    "factura_id": "F001-04791175",
+    "customer_id": "CL-1205902",
+    "fecha": "2026-01-26T12:29:00-05:00",
+    "monto": "56.60",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30603849",
+    "factura_id": "F001-04788726",
+    "customer_id": "CL-1152549",
+    "fecha": "2026-01-26T21:58:00-05:00",
+    "monto": "111.17",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30604532",
+    "factura_id": "F001-04807101",
+    "customer_id": "CL-1201205",
+    "fecha": "2026-01-27T11:27:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30604681",
+    "factura_id": "F001-04807624",
+    "customer_id": "CL-1183069",
+    "fecha": "2026-01-27T16:19:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30605294",
+    "factura_id": "F001-04799093",
+    "customer_id": "CL-1238224",
+    "fecha": "2026-01-27T18:30:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30605610",
+    "factura_id": "F001-04778559",
+    "customer_id": "CL-1163837",
+    "fecha": "2026-01-28T14:34:00-05:00",
+    "monto": "15.00",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30606296",
+    "factura_id": "F001-04793506",
+    "customer_id": "CL-1190560",
+    "fecha": "2026-01-28T17:15:00-05:00",
+    "monto": "43.45",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30606750",
+    "factura_id": "F001-04799570",
+    "customer_id": "CL-1193704",
+    "fecha": "2026-01-28T20:08:00-05:00",
+    "monto": "42.69",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30607308",
+    "factura_id": "F001-04801068",
+    "customer_id": "CL-1223431",
+    "fecha": "2026-01-29T12:40:00-05:00",
+    "monto": "67.29",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30607350",
+    "factura_id": "F001-04804831",
+    "customer_id": "CL-1168863",
+    "fecha": "2026-01-30T13:41:00-05:00",
+    "monto": "48.15",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30607597",
+    "factura_id": "F001-04805445",
+    "customer_id": "CL-1100708",
+    "fecha": "2026-01-30T20:59:00-05:00",
+    "monto": "141.28",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30607891",
+    "factura_id": "F001-04802564",
+    "customer_id": "CL-1107377",
+    "fecha": "2026-01-31T07:36:00-05:00",
+    "monto": "138.99",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30608135",
+    "factura_id": "F001-04801589",
+    "customer_id": "CL-1113646",
+    "fecha": "2026-02-01T03:38:00-05:00",
+    "monto": "29.43",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30608775",
+    "factura_id": "F001-04803671",
+    "customer_id": "CL-1193431",
+    "fecha": "2026-02-02T14:22:00-05:00",
+    "monto": "34.24",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30608856",
+    "factura_id": "F001-04808855",
+    "customer_id": "CL-1252202",
+    "fecha": "2026-02-03T22:54:00-05:00",
+    "monto": "99.87",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30609149",
+    "factura_id": "F001-04812413",
+    "customer_id": "CL-1173697",
+    "fecha": "2026-02-06T16:39:00-05:00",
+    "monto": "53.49",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30609221",
+    "factura_id": "F001-04808210",
+    "customer_id": "CL-1187267",
+    "fecha": "2026-02-07T18:10:00-05:00",
+    "monto": "56.60",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30609845",
+    "factura_id": "F001-04806428",
+    "customer_id": "CL-1177911",
+    "fecha": "2026-02-08T14:41:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30610220",
+    "factura_id": "F001-04794580",
+    "customer_id": "CL-1140215",
+    "fecha": "2026-02-10T09:31:00-05:00",
+    "monto": "101.54",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30610790",
+    "factura_id": "F001-04826446",
+    "customer_id": "CL-1262023",
+    "fecha": "2026-02-10T11:51:00-05:00",
+    "monto": "126.16",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30610860",
+    "factura_id": "F001-04778559",
+    "customer_id": "CL-1163837",
+    "fecha": "2026-02-10T20:37:00-05:00",
+    "monto": "23.50",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30611494",
+    "factura_id": "F001-04817083",
+    "customer_id": "CL-1080054",
+    "fecha": "2026-02-10T21:43:00-05:00",
+    "monto": "110.56",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30611984",
+    "factura_id": "F001-04814087",
+    "customer_id": "CL-1163837",
+    "fecha": "2026-02-12T08:19:00-05:00",
+    "monto": "35.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30612517",
+    "factura_id": "F001-04803928",
+    "customer_id": "CL-1185973",
+    "fecha": "2026-02-12T12:05:00-05:00",
+    "monto": "202.23",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30613147",
+    "factura_id": "F001-04821889",
+    "customer_id": "CL-1178922",
+    "fecha": "2026-02-12T13:09:00-05:00",
+    "monto": "63.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30613288",
+    "factura_id": "F001-04829302",
+    "customer_id": "CL-1166034",
+    "fecha": "2026-02-12T18:19:00-05:00",
+    "monto": "116.18",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30613395",
+    "factura_id": "F001-04811446",
+    "customer_id": "CL-1157804",
+    "fecha": "2026-02-12T22:07:00-05:00",
+    "monto": "106.36",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30614014",
+    "factura_id": "F001-04827059",
+    "customer_id": "CL-1205902",
+    "fecha": "2026-02-13T10:35:00-05:00",
+    "monto": "56.60",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30614407",
+    "factura_id": "F001-04809767",
+    "customer_id": "CL-1181514",
+    "fecha": "2026-02-13T19:21:00-05:00",
+    "monto": "56.60",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30614939",
+    "factura_id": "F001-04823840",
+    "customer_id": "CL-1138627",
+    "fecha": "2026-02-14T09:52:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30615035",
+    "factura_id": "F001-04814578",
+    "customer_id": "CL-1161090",
+    "fecha": "2026-02-14T12:03:00-05:00",
+    "monto": "44.37",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30615319",
+    "factura_id": "F001-04823263",
+    "customer_id": "CL-1197204",
+    "fecha": "2026-02-14T20:31:00-05:00",
+    "monto": "57.50",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30616014",
+    "factura_id": "F001-04830261",
+    "customer_id": "CL-1226407",
+    "fecha": "2026-02-15T21:22:00-05:00",
+    "monto": "31.02",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30616648",
+    "factura_id": "F001-04826690",
+    "customer_id": "CL-1248251",
+    "fecha": "2026-02-16T18:42:00-05:00",
+    "monto": "20.32",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30616921",
+    "factura_id": "F001-04835069",
+    "customer_id": "CL-1198957",
+    "fecha": "2026-02-17T12:42:00-05:00",
+    "monto": "93.99",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30617368",
+    "factura_id": "F001-04817556",
+    "customer_id": "CL-1132503",
+    "fecha": "2026-02-18T10:04:00-05:00",
+    "monto": "106.36",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30618008",
+    "factura_id": "F001-04820629",
+    "customer_id": "CL-1203027",
+    "fecha": "2026-02-18T12:00:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30618626",
+    "factura_id": "F001-04822437",
+    "customer_id": "CL-1255409",
+    "fecha": "2026-02-19T09:40:00-05:00",
+    "monto": "48.15",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30618789",
+    "factura_id": "F001-04834863",
+    "customer_id": "CL-1185751",
+    "fecha": "2026-02-19T11:50:00-05:00",
+    "monto": "106.02",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30619190",
+    "factura_id": "F001-04836457",
+    "customer_id": "CL-1270637",
+    "fecha": "2026-02-19T13:31:00-05:00",
+    "monto": "83.33",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30619354",
+    "factura_id": "F001-04816632",
+    "customer_id": "CL-1150370",
+    "fecha": "2026-02-19T14:47:00-05:00",
+    "monto": "48.15",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30619402",
+    "factura_id": "F001-04831699",
+    "customer_id": "CL-1243624",
+    "fecha": "2026-02-19T18:22:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30619889",
+    "factura_id": "F001-04830076",
+    "customer_id": "CL-1215806",
+    "fecha": "2026-02-20T09:27:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30620465",
+    "factura_id": "F001-04819538",
+    "customer_id": "CL-1152084",
+    "fecha": "2026-02-20T21:53:00-05:00",
+    "monto": "34.24",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30620695",
+    "factura_id": "F001-04824519",
+    "customer_id": "CL-1152549",
+    "fecha": "2026-02-20T22:19:00-05:00",
+    "monto": "111.17",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30621148",
+    "factura_id": "F001-04815686",
+    "customer_id": "CL-1195028",
+    "fecha": "2026-02-21T03:14:00-05:00",
+    "monto": "63.13",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30621784",
+    "factura_id": "F001-04814989",
+    "customer_id": "CL-1071463",
+    "fecha": "2026-02-21T03:19:00-05:00",
+    "monto": "42.69",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30622295",
+    "factura_id": "F001-04815371",
+    "customer_id": "CL-1118538",
+    "fecha": "2026-02-22T12:18:00-05:00",
+    "monto": "106.36",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30622918",
+    "factura_id": "F001-04828953",
+    "customer_id": "CL-1084058",
+    "fecha": "2026-02-22T15:56:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30623411",
+    "factura_id": "F001-04806202",
+    "customer_id": "CL-1144614",
+    "fecha": "2026-02-22T19:16:00-05:00",
+    "monto": "48.15",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30624111",
+    "factura_id": "F001-04810546",
+    "customer_id": "CL-1123976",
+    "fecha": "2026-02-23T16:03:00-05:00",
+    "monto": "186.98",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30624723",
+    "factura_id": "F001-04833105",
+    "customer_id": "CL-1238224",
+    "fecha": "2026-02-24T08:14:00-05:00",
+    "monto": "44.18",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30624780",
+    "factura_id": "F001-04835863",
+    "customer_id": "CL-1210081",
+    "fecha": "2026-02-24T16:12:00-05:00",
+    "monto": "28.76",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30625334",
+    "factura_id": "F001-04832215",
+    "customer_id": "CL-1019515",
+    "fecha": "2026-02-24T18:03:00-05:00",
+    "monto": "29.43",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30625469",
+    "factura_id": "F001-04822146",
+    "customer_id": "CL-1171492",
+    "fecha": "2026-02-24T21:10:00-05:00",
+    "monto": "74.26",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30625848",
+    "factura_id": "F001-04819874",
+    "customer_id": "CL-1096753",
+    "fecha": "2026-02-24T22:23:00-05:00",
+    "monto": "74.26",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30626321",
+    "factura_id": "F001-04824806",
+    "customer_id": "CL-1218946",
+    "fecha": "2026-02-25T08:33:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30626991",
+    "factura_id": "F001-04825599",
+    "customer_id": "CL-1145774",
+    "fecha": "2026-02-25T10:50:00-05:00",
+    "monto": "69.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30627278",
+    "factura_id": "F001-04828259",
+    "customer_id": "CL-1190560",
+    "fecha": "2026-02-25T16:13:00-05:00",
+    "monto": "48.15",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30627867",
+    "factura_id": "F001-04843558",
+    "customer_id": "CL-1183069",
+    "fecha": "2026-02-25T21:23:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30628296",
+    "factura_id": "F001-04813362",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-02-25T22:51:00-05:00",
+    "monto": "71.04",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30628981",
+    "factura_id": "F001-04830759",
+    "customer_id": "CL-1140215",
+    "fecha": "2026-02-26T09:13:00-05:00",
+    "monto": "104.75",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30629277",
+    "factura_id": "F001-04821537",
+    "customer_id": "CL-1165562",
+    "fecha": "2026-02-26T20:02:00-05:00",
+    "monto": "15.00",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30629724",
+    "factura_id": "F001-04818683",
+    "customer_id": "CL-1175051",
+    "fecha": "2026-02-26T20:24:00-05:00",
+    "monto": "30.00",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30630025",
+    "factura_id": "F001-04833425",
+    "customer_id": "CL-1131469",
+    "fecha": "2026-02-27T13:40:00-05:00",
+    "monto": "138.99",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30630684",
+    "factura_id": "F001-04837666",
+    "customer_id": "CL-1223431",
+    "fecha": "2026-02-27T20:00:00-05:00",
+    "monto": "67.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30630974",
+    "factura_id": "F001-04832908",
+    "customer_id": "CL-1193704",
+    "fecha": "2026-02-27T22:02:00-05:00",
+    "monto": "42.69",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30631664",
+    "factura_id": "F001-04821537",
+    "customer_id": "CL-1165562",
+    "fecha": "2026-02-28T16:02:00-05:00",
+    "monto": "19.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30631749",
+    "factura_id": "F001-04818412",
+    "customer_id": "CL-1220088",
+    "fecha": "2026-03-01T08:44:00-05:00",
+    "monto": "38.99",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30632054",
+    "factura_id": "F001-04811848",
+    "customer_id": "CL-1196852",
+    "fecha": "2026-03-01T13:22:00-05:00",
+    "monto": "242.89",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30632133",
+    "factura_id": "F001-04818683",
+    "customer_id": "CL-1175051",
+    "fecha": "2026-03-02T10:43:00-05:00",
+    "monto": "37.69",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30632828",
+    "factura_id": "F001-04807933",
+    "customer_id": "CL-1121736",
+    "fecha": "2026-03-02T12:17:00-05:00",
+    "monto": "74.26",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30633395",
+    "factura_id": "F001-04834081",
+    "customer_id": "CL-1125516",
+    "fecha": "2026-03-02T16:05:00-05:00",
+    "monto": "48.15",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30633731",
+    "factura_id": "F001-04838849",
+    "customer_id": "CL-1232824",
+    "fecha": "2026-03-02T18:29:00-05:00",
+    "monto": "60.13",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30633937",
+    "factura_id": "F001-04838437",
+    "customer_id": "CL-1107377",
+    "fecha": "2026-03-03T09:26:00-05:00",
+    "monto": "138.99",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30634013",
+    "factura_id": "F001-04837221",
+    "customer_id": "CL-1113646",
+    "fecha": "2026-03-04T05:08:00-05:00",
+    "monto": "29.43",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30634292",
+    "factura_id": "F001-04827446",
+    "customer_id": "CL-1177149",
+    "fecha": "2026-03-04T15:08:00-05:00",
+    "monto": "15.00",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30634460",
+    "factura_id": "F001-04844388",
+    "customer_id": "CL-1121736",
+    "fecha": "2026-03-05T10:15:00-05:00",
+    "monto": "93.51",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30634882",
+    "factura_id": "F001-04843773",
+    "customer_id": "CL-1201205",
+    "fecha": "2026-03-05T20:34:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30635190",
+    "factura_id": "F001-04840694",
+    "customer_id": "CL-1168863",
+    "fecha": "2026-03-06T08:52:00-05:00",
+    "monto": "48.15",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30635434",
+    "factura_id": "F001-04839154",
+    "customer_id": "CL-1193431",
+    "fecha": "2026-03-06T09:58:00-05:00",
+    "monto": "34.24",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30635839",
+    "factura_id": "F001-04827446",
+    "customer_id": "CL-1177149",
+    "fecha": "2026-03-08T11:14:00-05:00",
+    "monto": "19.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30636156",
+    "factura_id": "F001-04841510",
+    "customer_id": "CL-1100708",
+    "fecha": "2026-03-10T12:35:00-05:00",
+    "monto": "160.38",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30636592",
+    "factura_id": "F001-04854869",
+    "customer_id": "CL-1178922",
+    "fecha": "2026-03-10T21:40:00-05:00",
+    "monto": "65.27",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30636683",
+    "factura_id": "F001-04847366",
+    "customer_id": "CL-1173697",
+    "fecha": "2026-03-11T09:50:00-05:00",
+    "monto": "53.49",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30636806",
+    "factura_id": "F001-04854605",
+    "customer_id": "CL-1203027",
+    "fecha": "2026-03-11T10:14:00-05:00",
+    "monto": "42.78",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30637054",
+    "factura_id": "F001-04852306",
+    "customer_id": "CL-1152084",
+    "fecha": "2026-03-11T12:02:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30637470",
+    "factura_id": "F001-04855294",
+    "customer_id": "CL-1096753",
+    "fecha": "2026-03-12T13:52:00-05:00",
+    "monto": "76.40",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30638086",
+    "factura_id": "F001-04846715",
+    "customer_id": "CL-1157804",
+    "fecha": "2026-03-12T14:01:00-05:00",
+    "monto": "106.36",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30638585",
+    "factura_id": "F001-04845409",
+    "customer_id": "CL-1252202",
+    "fecha": "2026-03-13T11:10:00-05:00",
+    "monto": "117.59",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30639039",
+    "factura_id": "F001-04847717",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-03-13T14:59:00-05:00",
+    "monto": "71.04",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30639358",
+    "factura_id": "F001-04859836",
+    "customer_id": "CL-1145774",
+    "fecha": "2026-03-14T07:15:00-05:00",
+    "monto": "71.58",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30639697",
+    "factura_id": "F001-04852875",
+    "customer_id": "CL-1220088",
+    "fecha": "2026-03-14T10:54:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30639851",
+    "factura_id": "F001-04846920",
+    "customer_id": "CL-1196852",
+    "fecha": "2026-03-14T20:28:00-05:00",
+    "monto": "251.44",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30639949",
+    "factura_id": "F001-04848539",
+    "customer_id": "CL-1163837",
+    "fecha": "2026-03-15T08:21:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30640514",
+    "factura_id": "F001-04845114",
+    "customer_id": "CL-1187267",
+    "fecha": "2026-03-15T18:50:00-05:00",
+    "monto": "56.60",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30641030",
+    "factura_id": "F001-04839857",
+    "customer_id": "CL-1185973",
+    "fecha": "2026-03-15T20:53:00-05:00",
+    "monto": "202.23",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30641221",
+    "factura_id": "F001-04858529",
+    "customer_id": "CL-1218946",
+    "fecha": "2026-03-16T11:32:00-05:00",
+    "monto": "36.38",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30641736",
+    "factura_id": "F001-04845745",
+    "customer_id": "CL-1181514",
+    "fecha": "2026-03-16T14:12:00-05:00",
+    "monto": "52.85",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30641786",
+    "factura_id": "F001-04868146",
+    "customer_id": "CL-1238224",
+    "fecha": "2026-03-16T22:12:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30641970",
+    "factura_id": "F001-04856717",
+    "customer_id": "CL-1171492",
+    "fecha": "2026-03-17T10:23:00-05:00",
+    "monto": "76.40",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30642296",
+    "factura_id": "F001-04842431",
+    "customer_id": "CL-1177911",
+    "fecha": "2026-03-17T17:30:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30642677",
+    "factura_id": "F001-04849952",
+    "customer_id": "CL-1150370",
+    "fecha": "2026-03-18T07:57:00-05:00",
+    "monto": "50.29",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30642822",
+    "factura_id": "F001-04871655",
+    "customer_id": "CL-1232824",
+    "fecha": "2026-03-18T12:57:00-05:00",
+    "monto": "53.49",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30643349",
+    "factura_id": "F001-04848303",
+    "customer_id": "CL-1161090",
+    "fecha": "2026-03-18T14:19:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30643416",
+    "factura_id": "F001-04827872",
+    "customer_id": "CL-1126269",
+    "fecha": "2026-03-18T18:57:00-05:00",
+    "monto": "34.24",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30644108",
+    "factura_id": "F001-04853381",
+    "customer_id": "CL-1175051",
+    "fecha": "2026-03-18T21:20:00-05:00",
+    "monto": "71.58",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30644337",
+    "factura_id": "F001-04854135",
+    "customer_id": "CL-1165562",
+    "fecha": "2026-03-19T09:54:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30644506",
+    "factura_id": "F001-04855676",
+    "customer_id": "CL-1138627",
+    "fecha": "2026-03-19T16:12:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30645114",
+    "factura_id": "F001-04851803",
+    "customer_id": "CL-1132503",
+    "fecha": "2026-03-19T16:57:00-05:00",
+    "monto": "108.50",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30645643",
+    "factura_id": "F001-04843083",
+    "customer_id": "CL-1144614",
+    "fecha": "2026-03-20T08:01:00-05:00",
+    "monto": "15.00",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30645729",
+    "factura_id": "F001-04850290",
+    "customer_id": "CL-1195028",
+    "fecha": "2026-03-21T03:41:00-05:00",
+    "monto": "65.27",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30646223",
+    "factura_id": "F001-04851160",
+    "customer_id": "CL-1071463",
+    "fecha": "2026-03-21T05:47:00-05:00",
+    "monto": "44.83",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30646363",
+    "factura_id": "F001-04861155",
+    "customer_id": "CL-1262023",
+    "fecha": "2026-03-21T07:34:00-05:00",
+    "monto": "120.35",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30646978",
+    "factura_id": "F001-04849075",
+    "customer_id": "CL-1118538",
+    "fecha": "2026-03-21T17:50:00-05:00",
+    "monto": "108.50",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30647033",
+    "factura_id": "F001-04857605",
+    "customer_id": "CL-1197204",
+    "fecha": "2026-03-21T22:00:00-05:00",
+    "monto": "57.50",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30647536",
+    "factura_id": "F001-04855967",
+    "customer_id": "CL-1255409",
+    "fecha": "2026-03-22T08:12:00-05:00",
+    "monto": "50.29",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30647636",
+    "factura_id": "F001-04866200",
+    "customer_id": "CL-1243624",
+    "fecha": "2026-03-22T12:17:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30647840",
+    "factura_id": "F001-04870827",
+    "customer_id": "CL-1210081",
+    "fecha": "2026-03-22T14:30:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30648366",
+    "factura_id": "F001-04846274",
+    "customer_id": "CL-1123976",
+    "fecha": "2026-03-23T08:33:00-05:00",
+    "monto": "186.98",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30648466",
+    "factura_id": "F001-04864061",
+    "customer_id": "CL-1215806",
+    "fecha": "2026-03-23T12:54:00-05:00",
+    "monto": "26.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30649134",
+    "factura_id": "F001-04860456",
+    "customer_id": "CL-1248251",
+    "fecha": "2026-03-23T14:49:00-05:00",
+    "monto": "20.32",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30649758",
+    "factura_id": "F001-04864920",
+    "customer_id": "CL-1084058",
+    "fecha": "2026-03-23T16:57:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30650051",
+    "factura_id": "F001-04863116",
+    "customer_id": "CL-1166034",
+    "fecha": "2026-03-24T09:41:00-05:00",
+    "monto": "135.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30650495",
+    "factura_id": "F001-04865380",
+    "customer_id": "CL-1140215",
+    "fecha": "2026-03-24T11:24:00-05:00",
+    "monto": "103.68",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30650801",
+    "factura_id": "F001-04863389",
+    "customer_id": "CL-1226407",
+    "fecha": "2026-03-24T14:11:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30650866",
+    "factura_id": "F001-04860103",
+    "customer_id": "CL-1205902",
+    "fecha": "2026-03-24T18:00:00-05:00",
+    "monto": "58.74",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30651210",
+    "factura_id": "F001-04859068",
+    "customer_id": "CL-1152549",
+    "fecha": "2026-03-24T22:32:00-05:00",
+    "monto": "113.31",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30651468",
+    "factura_id": "F001-04861727",
+    "customer_id": "CL-1190560",
+    "fecha": "2026-03-25T08:01:00-05:00",
+    "monto": "50.29",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30652029",
+    "factura_id": "F001-04869442",
+    "customer_id": "CL-1185751",
+    "fecha": "2026-03-25T21:11:00-05:00",
+    "monto": "106.02",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30652208",
+    "factura_id": "F001-04866854",
+    "customer_id": "CL-1193704",
+    "fecha": "2026-03-26T13:17:00-05:00",
+    "monto": "40.27",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30652784",
+    "factura_id": "F001-04874512",
+    "customer_id": "CL-1177911",
+    "fecha": "2026-03-26T18:23:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30653142",
+    "factura_id": "F001-04866674",
+    "customer_id": "CL-1125516",
+    "fecha": "2026-03-26T20:57:00-05:00",
+    "monto": "50.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30653243",
+    "factura_id": "F001-04870134",
+    "customer_id": "CL-1270637",
+    "fecha": "2026-03-27T20:45:00-05:00",
+    "monto": "53.39",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30653637",
+    "factura_id": "F001-04849424",
+    "customer_id": "CL-1080054",
+    "fecha": "2026-03-28T12:00:00-05:00",
+    "monto": "103.68",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30653871",
+    "factura_id": "F001-04871077",
+    "customer_id": "CL-1223431",
+    "fecha": "2026-03-28T19:13:00-05:00",
+    "monto": "67.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30654448",
+    "factura_id": "F001-04862459",
+    "customer_id": "CL-1126269",
+    "fecha": "2026-03-28T20:43:00-05:00",
+    "monto": "39.59",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30654509",
+    "factura_id": "F001-04865594",
+    "customer_id": "CL-1019515",
+    "fecha": "2026-03-29T13:34:00-05:00",
+    "monto": "31.57",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30655024",
+    "factura_id": "F001-04843083",
+    "customer_id": "CL-1144614",
+    "fecha": "2026-03-29T18:00:00-05:00",
+    "monto": "36.36",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30655155",
+    "factura_id": "F001-04867345",
+    "customer_id": "CL-1131469",
+    "fecha": "2026-03-30T14:52:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30655661",
+    "factura_id": "F001-04873393",
+    "customer_id": "CL-1168863",
+    "fecha": "2026-03-30T16:45:00-05:00",
+    "monto": "66.34",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30656086",
+    "factura_id": "F001-04873049",
+    "customer_id": "CL-1193431",
+    "fecha": "2026-03-31T12:26:00-05:00",
+    "monto": "36.38",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30656642",
+    "factura_id": "F001-04870432",
+    "customer_id": "CL-1113646",
+    "fecha": "2026-04-01T04:09:00-05:00",
+    "monto": "31.57",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30657242",
+    "factura_id": "F001-04873713",
+    "customer_id": "CL-1100708",
+    "fecha": "2026-04-01T07:47:00-05:00",
+    "monto": "149.68",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30657802",
+    "factura_id": "F001-04871292",
+    "customer_id": "CL-1107377",
+    "fecha": "2026-04-01T12:55:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30657934",
+    "factura_id": "F001-04875038",
+    "customer_id": "CL-1183069",
+    "fecha": "2026-04-02T08:56:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30658174",
+    "factura_id": "F001-04873972",
+    "customer_id": "CL-1201205",
+    "fecha": "2026-04-03T16:33:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30658370",
+    "factura_id": "F001-04876627",
+    "customer_id": "CL-1252202",
+    "fecha": "2026-04-03T19:50:00-05:00",
+    "monto": "103.68",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30658845",
+    "factura_id": "F001-04862766",
+    "customer_id": "CL-1177149",
+    "fecha": "2026-04-06T17:16:00-05:00",
+    "monto": "39.59",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30659053",
+    "factura_id": "F001-04875326",
+    "customer_id": "CL-1144614",
+    "fecha": "2026-04-08T18:24:00-05:00",
+    "monto": "50.86",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30659199",
+    "factura_id": "F001-04880911",
+    "customer_id": "CL-1161090",
+    "fecha": "2026-04-09T11:03:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30659489",
+    "factura_id": "F001-04879436",
+    "customer_id": "CL-1173697",
+    "fecha": "2026-04-09T13:05:00-05:00",
+    "monto": "53.49",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30659715",
+    "factura_id": "F001-04876177",
+    "customer_id": "CL-1121736",
+    "fecha": "2026-04-09T16:55:00-05:00",
+    "monto": "76.40",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30660169",
+    "factura_id": "F001-04884761",
+    "customer_id": "CL-1152084",
+    "fecha": "2026-04-09T17:20:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30660633",
+    "factura_id": "F001-04872540",
+    "customer_id": "CL-1185973",
+    "fecha": "2026-04-09T21:03:00-05:00",
+    "monto": "202.23",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30661126",
+    "factura_id": "F001-04875937",
+    "customer_id": "CL-1187267",
+    "fecha": "2026-04-11T14:35:00-05:00",
+    "monto": "65.21",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30661795",
+    "factura_id": "F001-04885538",
+    "customer_id": "CL-1132503",
+    "fecha": "2026-04-11T19:33:00-05:00",
+    "monto": "108.50",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30662067",
+    "factura_id": "F001-04886255",
+    "customer_id": "CL-1175051",
+    "fecha": "2026-04-11T21:27:00-05:00",
+    "monto": "71.58",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30662604",
+    "factura_id": "F001-04880068",
+    "customer_id": "CL-1163837",
+    "fecha": "2026-04-12T16:20:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30662717",
+    "factura_id": "F001-04891182",
+    "customer_id": "CL-1145774",
+    "fecha": "2026-04-12T18:19:00-05:00",
+    "monto": "71.58",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30663046",
+    "factura_id": "F001-04876947",
+    "customer_id": "CL-1181514",
+    "fecha": "2026-04-12T19:09:00-05:00",
+    "monto": "58.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30663605",
+    "factura_id": "F001-04878381",
+    "customer_id": "CL-1157804",
+    "fecha": "2026-04-14T19:43:00-05:00",
+    "monto": "108.50",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30663671",
+    "factura_id": "F001-04878897",
+    "customer_id": "CL-1196852",
+    "fecha": "2026-04-15T18:07:00-05:00",
+    "monto": "242.89",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30663868",
+    "factura_id": "F001-04890288",
+    "customer_id": "CL-1171492",
+    "fecha": "2026-04-15T19:50:00-05:00",
+    "monto": "76.40",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30664111",
+    "factura_id": "F001-04884151",
+    "customer_id": "CL-1220088",
+    "fecha": "2026-04-15T21:36:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30664300",
+    "factura_id": "F001-04893164",
+    "customer_id": "CL-1248251",
+    "fecha": "2026-04-16T16:41:00-05:00",
+    "monto": "20.32",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30664848",
+    "factura_id": "F001-04905251",
+    "customer_id": "CL-1223431",
+    "fecha": "2026-04-16T21:16:00-05:00",
+    "monto": "67.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30665399",
+    "factura_id": "F001-04900675",
+    "customer_id": "CL-1125516",
+    "fecha": "2026-04-17T10:48:00-05:00",
+    "monto": "50.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30666099",
+    "factura_id": "F001-04868821",
+    "customer_id": "CL-1198957",
+    "fecha": "2026-04-17T15:14:00-05:00",
+    "monto": "93.99",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30666599",
+    "factura_id": "F001-04883896",
+    "customer_id": "CL-1080054",
+    "fecha": "2026-04-18T11:52:00-05:00",
+    "monto": "103.68",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30666662",
+    "factura_id": "F001-04890847",
+    "customer_id": "CL-1152549",
+    "fecha": "2026-04-18T12:52:00-05:00",
+    "monto": "113.31",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30667340",
+    "factura_id": "F001-04879194",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-04-18T19:22:00-05:00",
+    "monto": "30.00",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30667623",
+    "factura_id": "F001-04886953",
+    "customer_id": "CL-1165562",
+    "fecha": "2026-04-19T11:13:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30667895",
+    "factura_id": "F001-04889764",
+    "customer_id": "CL-1138627",
+    "fecha": "2026-04-19T17:51:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30668069",
+    "factura_id": "F001-04899830",
+    "customer_id": "CL-1243624",
+    "fecha": "2026-04-19T21:27:00-05:00",
+    "monto": "38.58",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30668393",
+    "factura_id": "F001-04898649",
+    "customer_id": "CL-1215806",
+    "fecha": "2026-04-20T08:23:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30668510",
+    "factura_id": "F001-04889268",
+    "customer_id": "CL-1255409",
+    "fecha": "2026-04-20T10:48:00-05:00",
+    "monto": "50.29",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30668703",
+    "factura_id": "F001-04882089",
+    "customer_id": "CL-1071463",
+    "fecha": "2026-04-21T03:54:00-05:00",
+    "monto": "44.83",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30669337",
+    "factura_id": "F001-04881457",
+    "customer_id": "CL-1195028",
+    "fecha": "2026-04-21T04:14:00-05:00",
+    "monto": "65.27",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30669610",
+    "factura_id": "F001-04882954",
+    "customer_id": "CL-1150370",
+    "fecha": "2026-04-21T08:51:00-05:00",
+    "monto": "50.29",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30670252",
+    "factura_id": "F001-04888770",
+    "customer_id": "CL-1197204",
+    "fecha": "2026-04-21T10:41:00-05:00",
+    "monto": "57.50",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30670331",
+    "factura_id": "F001-04892223",
+    "customer_id": "CL-1262023",
+    "fecha": "2026-04-21T12:27:00-05:00",
+    "monto": "120.35",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30670707",
+    "factura_id": "F001-04888346",
+    "customer_id": "CL-1203027",
+    "fecha": "2026-04-21T14:43:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30671224",
+    "factura_id": "F001-04887588",
+    "customer_id": "CL-1178922",
+    "fecha": "2026-04-21T18:36:00-05:00",
+    "monto": "65.27",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30671618",
+    "factura_id": "F001-04891769",
+    "customer_id": "CL-1218946",
+    "fecha": "2026-04-21T21:51:00-05:00",
+    "monto": "36.38",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30672046",
+    "factura_id": "F001-04879194",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-04-22T14:44:00-05:00",
+    "monto": "41.04",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30672512",
+    "factura_id": "F001-04894587",
+    "customer_id": "CL-1177149",
+    "fecha": "2026-04-22T16:50:00-05:00",
+    "monto": "36.38",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30672673",
+    "factura_id": "F001-04883314",
+    "customer_id": "CL-1118538",
+    "fecha": "2026-04-22T17:42:00-05:00",
+    "monto": "108.50",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30672948",
+    "factura_id": "F001-04877782",
+    "customer_id": "CL-1123976",
+    "fecha": "2026-04-22T21:14:00-05:00",
+    "monto": "186.98",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30673330",
+    "factura_id": "F001-04903909",
+    "customer_id": "CL-1270637",
+    "fecha": "2026-04-23T11:45:00-05:00",
+    "monto": "50.57",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30673935",
+    "factura_id": "F001-04897978",
+    "customer_id": "CL-1166034",
+    "fecha": "2026-04-23T14:07:00-05:00",
+    "monto": "116.18",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30674353",
+    "factura_id": "F001-04901543",
+    "customer_id": "CL-1131469",
+    "fecha": "2026-04-23T18:33:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30674482",
+    "factura_id": "F001-04906328",
+    "customer_id": "CL-1107377",
+    "fecha": "2026-04-24T11:48:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30674738",
+    "factura_id": "F001-04896980",
+    "customer_id": "CL-1084058",
+    "fecha": "2026-04-24T13:05:00-05:00",
+    "monto": "26.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30675084",
+    "factura_id": "F001-04908618",
+    "customer_id": "CL-1100708",
+    "fecha": "2026-04-24T21:06:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30675422",
+    "factura_id": "F001-04886589",
+    "customer_id": "CL-1096753",
+    "fecha": "2026-04-24T21:37:00-05:00",
+    "monto": "76.40",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30675753",
+    "factura_id": "F001-04902330",
+    "customer_id": "CL-1238224",
+    "fecha": "2026-04-25T13:57:00-05:00",
+    "monto": "40.49",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30675812",
+    "factura_id": "F001-04900010",
+    "customer_id": "CL-1193704",
+    "fecha": "2026-04-25T19:29:00-05:00",
+    "monto": "44.83",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30676496",
+    "factura_id": "F001-04897784",
+    "customer_id": "CL-1226407",
+    "fecha": "2026-04-26T12:09:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30677077",
+    "factura_id": "F001-04910443",
+    "customer_id": "CL-1177911",
+    "fecha": "2026-04-26T13:28:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30677537",
+    "factura_id": "F001-04895440",
+    "customer_id": "CL-1126269",
+    "fecha": "2026-04-26T14:18:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30678194",
+    "factura_id": "F001-04893822",
+    "customer_id": "CL-1205902",
+    "fecha": "2026-04-26T14:39:00-05:00",
+    "monto": "58.74",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30678459",
+    "factura_id": "F001-04899152",
+    "customer_id": "CL-1019515",
+    "fecha": "2026-04-26T18:23:00-05:00",
+    "monto": "31.57",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30678816",
+    "factura_id": "F001-04904765",
+    "customer_id": "CL-1210081",
+    "fecha": "2026-04-27T07:39:00-05:00",
+    "monto": "26.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30679303",
+    "factura_id": "F001-04896092",
+    "customer_id": "CL-1190560",
+    "fecha": "2026-04-27T16:11:00-05:00",
+    "monto": "50.29",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30679614",
+    "factura_id": "F001-04903093",
+    "customer_id": "CL-1185751",
+    "fecha": "2026-04-28T11:10:00-05:00",
+    "monto": "106.02",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30679755",
+    "factura_id": "F001-04909545",
+    "customer_id": "CL-1168863",
+    "fecha": "2026-04-30T15:52:00-05:00",
+    "monto": "50.29",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30680113",
+    "factura_id": "F001-04906554",
+    "customer_id": "CL-1272729",
+    "fecha": "2026-04-30T16:08:00-05:00",
+    "monto": "32.58",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30680286",
+    "factura_id": "F001-04906925",
+    "customer_id": "CL-1232824",
+    "fecha": "2026-04-30T21:25:00-05:00",
+    "monto": "54.32",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30680480",
+    "factura_id": "F001-04908120",
+    "customer_id": "CL-1193431",
+    "fecha": "2026-05-01T08:41:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30680886",
+    "factura_id": "F001-04916150",
+    "customer_id": "CL-1173697",
+    "fecha": "2026-05-01T09:17:00-05:00",
+    "monto": "53.49",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30681001",
+    "factura_id": "F001-04905490",
+    "customer_id": "CL-1113646",
+    "fecha": "2026-05-02T04:39:00-05:00",
+    "monto": "31.57",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30681546",
+    "factura_id": "F001-04910209",
+    "customer_id": "CL-1144614",
+    "fecha": "2026-05-02T20:02:00-05:00",
+    "monto": "50.29",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30681597",
+    "factura_id": "F001-04915839",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-05-03T22:37:00-05:00",
+    "monto": "71.04",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30682063",
+    "factura_id": "F001-04917647",
+    "customer_id": "CL-1163837",
+    "fecha": "2026-05-06T11:45:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30682734",
+    "factura_id": "F001-04911084",
+    "customer_id": "CL-1183069",
+    "fecha": "2026-05-07T18:11:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30683100",
+    "factura_id": "F001-04912582",
+    "customer_id": "CL-1187267",
+    "fecha": "2026-05-08T08:30:00-05:00",
+    "monto": "58.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30683677",
+    "factura_id": "F001-04925978",
+    "customer_id": "CL-1138627",
+    "fecha": "2026-05-08T11:54:00-05:00",
+    "monto": "26.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30683806",
+    "factura_id": "F001-04921930",
+    "customer_id": "CL-1152084",
+    "fecha": "2026-05-09T17:06:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30684144",
+    "factura_id": "F001-04917017",
+    "customer_id": "CL-1161090",
+    "fecha": "2026-05-10T07:17:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30684505",
+    "factura_id": "F001-04925607",
+    "customer_id": "CL-1197204",
+    "fecha": "2026-05-12T12:48:00-05:00",
+    "monto": "57.50",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30684639",
+    "factura_id": "F001-04915149",
+    "customer_id": "CL-1157804",
+    "fecha": "2026-05-12T13:46:00-05:00",
+    "monto": "108.50",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30685032",
+    "factura_id": "F001-04915592",
+    "customer_id": "CL-1196852",
+    "fecha": "2026-05-12T13:57:00-05:00",
+    "monto": "242.89",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30685191",
+    "factura_id": "F001-04917834",
+    "customer_id": "CL-1150370",
+    "fecha": "2026-05-12T21:21:00-05:00",
+    "monto": "50.29",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30685557",
+    "factura_id": "F001-04921228",
+    "customer_id": "CL-1175051",
+    "fecha": "2026-05-13T10:43:00-05:00",
+    "monto": "71.58",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30686056",
+    "factura_id": "F001-04936484",
+    "customer_id": "CL-1243624",
+    "fecha": "2026-05-13T12:02:00-05:00",
+    "monto": "55.68",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30686214",
+    "factura_id": "F001-04914168",
+    "customer_id": "CL-1252202",
+    "fecha": "2026-05-13T14:55:00-05:00",
+    "monto": "103.68",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30686289",
+    "factura_id": "F001-04929502",
+    "customer_id": "CL-1262023",
+    "fecha": "2026-05-14T08:51:00-05:00",
+    "monto": "121.93",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30686950",
+    "factura_id": "F001-04939102",
+    "customer_id": "CL-1185751",
+    "fecha": "2026-05-15T11:57:00-05:00",
+    "monto": "106.02",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30687626",
+    "factura_id": "F001-04907622",
+    "customer_id": "CL-1185973",
+    "fecha": "2026-05-15T19:31:00-05:00",
+    "monto": "202.23",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30688111",
+    "factura_id": "F001-04924205",
+    "customer_id": "CL-1178922",
+    "fecha": "2026-05-16T07:19:00-05:00",
+    "monto": "65.27",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30688774",
+    "factura_id": "F001-04940971",
+    "customer_id": "CL-1210081",
+    "fecha": "2026-05-16T09:08:00-05:00",
+    "monto": "26.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30689155",
+    "factura_id": "F001-04902633",
+    "customer_id": "CL-1198957",
+    "fecha": "2026-05-16T10:27:00-05:00",
+    "monto": "102.54",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30689626",
+    "factura_id": "F001-04928205",
+    "customer_id": "CL-1145774",
+    "fecha": "2026-05-16T10:49:00-05:00",
+    "monto": "71.58",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30689690",
+    "factura_id": "F001-04913360",
+    "customer_id": "CL-1181514",
+    "fecha": "2026-05-17T11:36:00-05:00",
+    "monto": "25.00",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30690131",
+    "factura_id": "F001-04927537",
+    "customer_id": "CL-1218946",
+    "fecha": "2026-05-18T12:26:00-05:00",
+    "monto": "36.38",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30690512",
+    "factura_id": "F001-04935915",
+    "customer_id": "CL-1019515",
+    "fecha": "2026-05-18T15:57:00-05:00",
+    "monto": "31.57",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30690908",
+    "factura_id": "F001-04939896",
+    "customer_id": "CL-1223431",
+    "fecha": "2026-05-18T18:46:00-05:00",
+    "monto": "67.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30691182",
+    "factura_id": "F001-04933954",
+    "customer_id": "CL-1084058",
+    "fecha": "2026-05-18T18:52:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30691596",
+    "factura_id": "F001-04922435",
+    "customer_id": "CL-1203027",
+    "fecha": "2026-05-19T08:25:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30692084",
+    "factura_id": "F001-04924668",
+    "customer_id": "CL-1165562",
+    "fecha": "2026-05-19T11:37:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30692457",
+    "factura_id": "F001-04919174",
+    "customer_id": "CL-1118538",
+    "fecha": "2026-05-19T14:48:00-05:00",
+    "monto": "108.50",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30692870",
+    "factura_id": "F001-04937530",
+    "customer_id": "CL-1125516",
+    "fecha": "2026-05-19T18:08:00-05:00",
+    "monto": "50.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30693315",
+    "factura_id": "F001-04897583",
+    "customer_id": "CL-1140215",
+    "fecha": "2026-05-20T12:31:00-05:00",
+    "monto": "103.68",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30693962",
+    "factura_id": "F001-04918416",
+    "customer_id": "CL-1080054",
+    "fecha": "2026-05-20T13:08:00-05:00",
+    "monto": "103.68",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30694334",
+    "factura_id": "F001-04913360",
+    "customer_id": "CL-1181514",
+    "fecha": "2026-05-20T17:07:00-05:00",
+    "monto": "33.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30694504",
+    "factura_id": "F001-04942840",
+    "customer_id": "CL-1232824",
+    "fecha": "2026-05-20T21:04:00-05:00",
+    "monto": "53.49",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30694868",
+    "factura_id": "F001-04919689",
+    "customer_id": "CL-1195028",
+    "fecha": "2026-05-21T03:56:00-05:00",
+    "monto": "65.27",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30695205",
+    "factura_id": "F001-04920000",
+    "customer_id": "CL-1071463",
+    "fecha": "2026-05-21T05:44:00-05:00",
+    "monto": "44.83",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30695489",
+    "factura_id": "F001-04926395",
+    "customer_id": "CL-1255409",
+    "fecha": "2026-05-21T16:54:00-05:00",
+    "monto": "50.29",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30696103",
+    "factura_id": "F001-04936866",
+    "customer_id": "CL-1193704",
+    "fecha": "2026-05-21T21:42:00-05:00",
+    "monto": "44.83",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30696491",
+    "factura_id": "F001-04920743",
+    "customer_id": "CL-1132503",
+    "fecha": "2026-05-22T11:27:00-05:00",
+    "monto": "129.89",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30696690",
+    "factura_id": "F001-04931063",
+    "customer_id": "CL-1126269",
+    "fecha": "2026-05-22T12:08:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30697036",
+    "factura_id": "F001-04923360",
+    "customer_id": "CL-1096753",
+    "fecha": "2026-05-22T13:48:00-05:00",
+    "monto": "76.40",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30697195",
+    "factura_id": "F001-04934790",
+    "customer_id": "CL-1166034",
+    "fecha": "2026-05-22T17:25:00-05:00",
+    "monto": "116.18",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30697742",
+    "factura_id": "F001-04927143",
+    "customer_id": "CL-1171492",
+    "fecha": "2026-05-22T18:05:00-05:00",
+    "monto": "76.40",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30697853",
+    "factura_id": "F001-04911917",
+    "customer_id": "CL-1201205",
+    "fecha": "2026-05-22T18:08:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30697948",
+    "factura_id": "F001-04932436",
+    "customer_id": "CL-1177149",
+    "fecha": "2026-05-23T12:12:00-05:00",
+    "monto": "36.38",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30698564",
+    "factura_id": "F001-04930097",
+    "customer_id": "CL-1248251",
+    "fecha": "2026-05-23T13:59:00-05:00",
+    "monto": "20.32",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30699096",
+    "factura_id": "F001-04938857",
+    "customer_id": "CL-1198957",
+    "fecha": "2026-05-23T17:26:00-05:00",
+    "monto": "97.20",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30699384",
+    "factura_id": "F001-04928565",
+    "customer_id": "CL-1152549",
+    "fecha": "2026-05-23T22:10:00-05:00",
+    "monto": "113.31",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30699999",
+    "factura_id": "F001-04933117",
+    "customer_id": "CL-1215806",
+    "fecha": "2026-05-25T10:24:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30700470",
+    "factura_id": "F001-04931799",
+    "customer_id": "CL-1190560",
+    "fecha": "2026-05-25T11:02:00-05:00",
+    "monto": "50.29",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30700842",
+    "factura_id": "F001-04930760",
+    "customer_id": "CL-1205902",
+    "fecha": "2026-05-26T12:04:00-05:00",
+    "monto": "58.74",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30701139",
+    "factura_id": "F001-04933500",
+    "customer_id": "CL-1140215",
+    "fecha": "2026-05-26T17:27:00-05:00",
+    "monto": "106.89",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30701630",
+    "factura_id": "F001-04937788",
+    "customer_id": "CL-1131469",
+    "fecha": "2026-05-27T14:18:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30701846",
+    "factura_id": "F001-04938394",
+    "customer_id": "CL-1238224",
+    "fecha": "2026-05-27T14:19:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30702251",
+    "factura_id": "F001-04935429",
+    "customer_id": "CL-1226407",
+    "fecha": "2026-05-28T14:39:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30702452",
+    "factura_id": "F001-04942615",
+    "customer_id": "CL-1272729",
+    "fecha": "2026-05-28T21:21:00-05:00",
+    "monto": "14.97",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30702765",
+    "factura_id": "F001-04940762",
+    "customer_id": "CL-1270637",
+    "fecha": "2026-05-31T14:31:00-05:00",
+    "monto": "53.39",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30703023",
+    "factura_id": "F001-04941787",
+    "customer_id": "CL-1107377",
+    "fecha": "2026-05-31T21:45:00-05:00",
+    "monto": "149.68",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30703654",
+    "factura_id": "F001-04941173",
+    "customer_id": "CL-1113646",
+    "fecha": "2026-06-01T03:22:00-05:00",
+    "monto": "31.57",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30704110",
+    "factura_id": "F001-04913104",
+    "customer_id": "CL-1121736",
+    "fecha": "2026-06-01T08:35:00-05:00",
+    "monto": "76.40",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30704303",
+    "factura_id": "F001-04946260",
+    "customer_id": "CL-1183069",
+    "fecha": "2026-06-01T08:50:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30704961",
+    "factura_id": "F001-04920409",
+    "customer_id": "CL-1220088",
+    "fecha": "2026-06-02T14:26:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30705060",
+    "factura_id": "F001-04947099",
+    "customer_id": "CL-1144614",
+    "fecha": "2026-06-04T12:15:00-05:00",
+    "monto": "48.42",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30705718",
+    "factura_id": "F001-04948226",
+    "customer_id": "CL-1121736",
+    "fecha": "2026-06-04T20:17:00-05:00",
+    "monto": "79.61",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30705785",
+    "factura_id": "F001-04949796",
+    "customer_id": "CL-1252202",
+    "fecha": "2026-06-05T13:00:00-05:00",
+    "monto": "103.68",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30706014",
+    "factura_id": "F001-04943699",
+    "customer_id": "CL-1193431",
+    "fecha": "2026-06-05T16:23:00-05:00",
+    "monto": "36.38",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30706112",
+    "factura_id": "F001-04959473",
+    "customer_id": "CL-1220088",
+    "fecha": "2026-06-06T22:54:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30706214",
+    "factura_id": "F001-04945564",
+    "customer_id": "CL-1168863",
+    "fecha": "2026-06-07T09:13:00-05:00",
+    "monto": "50.29",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30706841",
+    "factura_id": "F001-04950674",
+    "customer_id": "CL-1181514",
+    "fecha": "2026-06-07T09:21:00-05:00",
+    "monto": "58.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30707264",
+    "factura_id": "F001-04914375",
+    "customer_id": "CL-1123976",
+    "fecha": "2026-06-07T16:41:00-05:00",
+    "monto": "186.98",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30707862",
+    "factura_id": "F001-04947311",
+    "customer_id": "CL-1177911",
+    "fecha": "2026-06-08T15:44:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30708416",
+    "factura_id": "F001-04944728",
+    "customer_id": "CL-1100708",
+    "fecha": "2026-06-09T09:27:00-05:00",
+    "monto": "70.00",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30708523",
+    "factura_id": "F001-04944265",
+    "customer_id": "CL-1185973",
+    "fecha": "2026-06-09T22:02:00-05:00",
+    "monto": "202.23",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30709188",
+    "factura_id": "F001-04954924",
+    "customer_id": "CL-1161090",
+    "fecha": "2026-06-10T13:18:00-05:00",
+    "monto": "38.49",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30709235",
+    "factura_id": "F001-04954019",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-06-11T08:04:00-05:00",
+    "monto": "71.04",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30709424",
+    "factura_id": "F001-04953155",
+    "customer_id": "CL-1173697",
+    "fecha": "2026-06-11T11:30:00-05:00",
+    "monto": "53.49",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30710087",
+    "factura_id": "F001-04964117",
+    "customer_id": "CL-1171492",
+    "fecha": "2026-06-11T12:05:00-05:00",
+    "monto": "76.40",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30710657",
+    "factura_id": "F001-04944728",
+    "customer_id": "CL-1100708",
+    "fecha": "2026-06-11T18:16:00-05:00",
+    "monto": "71.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30711287",
+    "factura_id": "F001-04971466",
+    "customer_id": "CL-1166034",
+    "fecha": "2026-06-12T10:27:00-05:00",
+    "monto": "116.18",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30711742",
+    "factura_id": "F001-04967461",
+    "customer_id": "CL-1218946",
+    "fecha": "2026-06-12T12:35:00-05:00",
+    "monto": "36.38",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30712381",
+    "factura_id": "F001-04968730",
+    "customer_id": "CL-1248251",
+    "fecha": "2026-06-12T21:43:00-05:00",
+    "monto": "20.32",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30712702",
+    "factura_id": "F001-04952021",
+    "customer_id": "CL-1157804",
+    "fecha": "2026-06-14T14:26:00-05:00",
+    "monto": "108.50",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30713166",
+    "factura_id": "F001-04977236",
+    "customer_id": "CL-1238224",
+    "fecha": "2026-06-14T18:11:00-05:00",
+    "monto": "40.60",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30713590",
+    "factura_id": "F001-04978083",
+    "customer_id": "CL-1185751",
+    "fecha": "2026-06-15T09:00:00-05:00",
+    "monto": "106.02",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30713745",
+    "factura_id": "F001-04975013",
+    "customer_id": "CL-1243624",
+    "fecha": "2026-06-15T13:33:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30713965",
+    "factura_id": "F001-04973077",
+    "customer_id": "CL-1140215",
+    "fecha": "2026-06-15T17:26:00-05:00",
+    "monto": "109.17",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30714360",
+    "factura_id": "F001-04972257",
+    "customer_id": "CL-1215806",
+    "fecha": "2026-06-16T09:26:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30714816",
+    "factura_id": "F001-04970893",
+    "customer_id": "CL-1190560",
+    "fecha": "2026-06-16T11:45:00-05:00",
+    "monto": "50.29",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30715389",
+    "factura_id": "F001-04963580",
+    "customer_id": "CL-1165562",
+    "fecha": "2026-06-16T16:14:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30716028",
+    "factura_id": "F001-04957105",
+    "customer_id": "CL-1118538",
+    "fecha": "2026-06-16T19:15:00-05:00",
+    "monto": "111.11",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30716669",
+    "factura_id": "F001-04951212",
+    "customer_id": "CL-1123976",
+    "fecha": "2026-06-17T07:23:00-05:00",
+    "monto": "190.19",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30717305",
+    "factura_id": "F001-04978450",
+    "customer_id": "CL-1198957",
+    "fecha": "2026-06-17T10:24:00-05:00",
+    "monto": "93.99",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30717391",
+    "factura_id": "F001-04961528",
+    "customer_id": "CL-1132503",
+    "fecha": "2026-06-18T16:55:00-05:00",
+    "monto": "108.50",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30717495",
+    "factura_id": "F001-04960769",
+    "customer_id": "CL-1152084",
+    "fecha": "2026-06-18T22:01:00-05:00",
+    "monto": "36.38",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30717608",
+    "factura_id": "F001-04973944",
+    "customer_id": "CL-1226407",
+    "fecha": "2026-06-19T10:36:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30718065",
+    "factura_id": "F001-04948894",
+    "customer_id": "CL-1187267",
+    "fecha": "2026-06-19T11:02:00-05:00",
+    "monto": "25.00",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30718351",
+    "factura_id": "F001-04966120",
+    "customer_id": "CL-1197204",
+    "fecha": "2026-06-19T13:39:00-05:00",
+    "monto": "57.50",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30718654",
+    "factura_id": "F001-04960398",
+    "customer_id": "CL-1175051",
+    "fecha": "2026-06-19T19:19:00-05:00",
+    "monto": "92.97",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30719031",
+    "factura_id": "F001-04981710",
+    "customer_id": "CL-1272729",
+    "fecha": "2026-06-19T21:17:00-05:00",
+    "monto": "17.57",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30719152",
+    "factura_id": "F001-04963040",
+    "customer_id": "CL-1203027",
+    "fecha": "2026-06-20T10:09:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30719258",
+    "factura_id": "F001-04982197",
+    "customer_id": "CL-1232824",
+    "fecha": "2026-06-20T12:41:00-05:00",
+    "monto": "53.49",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30719720",
+    "factura_id": "F001-04956322",
+    "customer_id": "CL-1195028",
+    "fecha": "2026-06-21T03:40:00-05:00",
+    "monto": "65.27",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30720336",
+    "factura_id": "F001-04958691",
+    "customer_id": "CL-1071463",
+    "fecha": "2026-06-21T03:53:00-05:00",
+    "monto": "44.83",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30720396",
+    "factura_id": "F001-04968385",
+    "customer_id": "CL-1262023",
+    "fecha": "2026-06-21T09:12:00-05:00",
+    "monto": "120.35",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30720911",
+    "factura_id": "F001-04962772",
+    "customer_id": "CL-1096753",
+    "fecha": "2026-06-21T11:09:00-05:00",
+    "monto": "76.40",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30721000",
+    "factura_id": "F001-04947701",
+    "customer_id": "CL-1201205",
+    "fecha": "2026-06-22T12:17:00-05:00",
+    "monto": "40.65",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30721353",
+    "factura_id": "F001-04964760",
+    "customer_id": "CL-1138627",
+    "fecha": "2026-06-22T14:10:00-05:00",
+    "monto": "26.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30721772",
+    "factura_id": "F001-04955474",
+    "customer_id": "CL-1150370",
+    "fecha": "2026-06-22T16:04:00-05:00",
+    "monto": "50.29",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30722332",
+    "factura_id": "F001-04962278",
+    "customer_id": "CL-1178922",
+    "fecha": "2026-06-22T19:41:00-05:00",
+    "monto": "65.27",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30722638",
+    "factura_id": "F001-04977563",
+    "customer_id": "CL-1131469",
+    "fecha": "2026-06-23T10:00:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30722936",
+    "factura_id": "F001-04975618",
+    "customer_id": "CL-1125516",
+    "fecha": "2026-06-23T22:41:00-05:00",
+    "monto": "50.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30722997",
+    "factura_id": "F001-04965255",
+    "customer_id": "CL-1255409",
+    "fecha": "2026-06-24T18:51:00-05:00",
+    "monto": "50.29",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30723088",
+    "factura_id": "F001-04967265",
+    "customer_id": "CL-1152549",
+    "fecha": "2026-06-24T19:09:00-05:00",
+    "monto": "113.31",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30723157",
+    "factura_id": "F001-04952239",
+    "customer_id": "CL-1196852",
+    "fecha": "2026-06-24T22:50:00-05:00",
+    "monto": "242.89",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30723276",
+    "factura_id": "F001-04969303",
+    "customer_id": "CL-1205902",
+    "fecha": "2026-06-25T10:58:00-05:00",
+    "monto": "58.74",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30723734",
+    "factura_id": "F001-04948894",
+    "customer_id": "CL-1187267",
+    "fecha": "2026-06-26T13:05:00-05:00",
+    "monto": "33.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30723951",
+    "factura_id": "F001-04976383",
+    "customer_id": "CL-1193704",
+    "fecha": "2026-06-27T12:09:00-05:00",
+    "monto": "44.83",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30724436",
+    "factura_id": "F001-04954604",
+    "customer_id": "CL-1163837",
+    "fecha": "2026-06-27T21:38:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30724702",
+    "factura_id": "F001-04974262",
+    "customer_id": "CL-1019515",
+    "fecha": "2026-06-28T08:30:00-05:00",
+    "monto": "31.57",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30725376",
+    "factura_id": "F001-04979752",
+    "customer_id": "CL-1223431",
+    "fecha": "2026-06-29T14:15:00-05:00",
+    "monto": "72.63",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30725425",
+    "factura_id": "F001-04979329",
+    "customer_id": "CL-1210081",
+    "fecha": "2026-06-30T07:09:00-05:00",
+    "monto": "26.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30725477",
+    "factura_id": "F001-04973594",
+    "customer_id": "CL-1084058",
+    "fecha": "2026-06-30T15:42:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30725882",
+    "factura_id": "F001-04957792",
+    "customer_id": "CL-1080054",
+    "fecha": "2026-07-01T10:23:00-05:00",
+    "monto": "103.68",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30726503",
+    "factura_id": "F001-04980642",
+    "customer_id": "CL-1270637",
+    "fecha": "2026-07-01T11:10:00-05:00",
+    "monto": "53.39",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30726900",
+    "factura_id": "F001-04980055",
+    "customer_id": "CL-1113646",
+    "fecha": "2026-07-02T03:23:00-05:00",
+    "monto": "31.57",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30727180",
+    "factura_id": "F001-04988886",
+    "customer_id": "CL-1252202",
+    "fecha": "2026-07-02T14:08:00-05:00",
+    "monto": "103.68",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30727834",
+    "factura_id": "F001-04983931",
+    "customer_id": "CL-1168863",
+    "fecha": "2026-07-03T17:25:00-05:00",
+    "monto": "50.29",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30727951",
+    "factura_id": "F001-04981431",
+    "customer_id": "CL-1107377",
+    "fecha": "2026-07-04T13:32:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30728237",
+    "factura_id": "F001-04992398",
+    "customer_id": "CL-1163837",
+    "fecha": "2026-07-04T16:58:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30728873",
+    "factura_id": "F001-04982883",
+    "customer_id": "CL-1185973",
+    "fecha": "2026-07-04T20:45:00-05:00",
+    "monto": "202.23",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30729419",
+    "factura_id": "F001-04966583",
+    "customer_id": "CL-1145774",
+    "fecha": "2026-07-05T09:18:00-05:00",
+    "monto": "25.00",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30729646",
+    "factura_id": "F001-04983644",
+    "customer_id": "CL-1193431",
+    "fecha": "2026-07-05T11:23:00-05:00",
+    "monto": "36.38",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30730114",
+    "factura_id": "F001-04986744",
+    "customer_id": "CL-1201205",
+    "fecha": "2026-07-06T11:25:00-05:00",
+    "monto": "49.20",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30730557",
+    "factura_id": "F001-04984218",
+    "customer_id": "CL-1100708",
+    "fecha": "2026-07-07T14:26:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30730965",
+    "factura_id": "F001-04984829",
+    "customer_id": "CL-1177911",
+    "fecha": "2026-07-09T11:36:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30731529",
+    "factura_id": "F001-04985894",
+    "customer_id": "CL-1144614",
+    "fecha": "2026-07-09T11:41:00-05:00",
+    "monto": "50.29",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30731888",
+    "factura_id": "F001-04993381",
+    "customer_id": "CL-1150370",
+    "fecha": "2026-07-10T10:01:00-05:00",
+    "monto": "50.29",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30732077",
+    "factura_id": "F001-05005889",
+    "customer_id": "CL-1248251",
+    "fecha": "2026-07-10T13:30:00-05:00",
+    "monto": "20.32",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30732520",
+    "factura_id": "F001-04991774",
+    "customer_id": "CL-1173697",
+    "fecha": "2026-07-10T15:52:00-05:00",
+    "monto": "53.49",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30732722",
+    "factura_id": "F001-04994013",
+    "customer_id": "CL-1080054",
+    "fecha": "2026-07-12T09:02:00-05:00",
+    "monto": "112.23",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30733253",
+    "factura_id": "F001-04998448",
+    "customer_id": "CL-1096753",
+    "fecha": "2026-07-12T12:15:00-05:00",
+    "monto": "76.40",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30733512",
+    "factura_id": "F001-05007181",
+    "customer_id": "CL-1166034",
+    "fecha": "2026-07-12T12:23:00-05:00",
+    "monto": "116.18",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30734042",
+    "factura_id": "F001-05001840",
+    "customer_id": "CL-1197204",
+    "fecha": "2026-07-12T14:42:00-05:00",
+    "monto": "66.05",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30734174",
+    "factura_id": "F001-04989990",
+    "customer_id": "CL-1157804",
+    "fecha": "2026-07-13T13:41:00-05:00",
+    "monto": "108.50",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30734296",
+    "factura_id": "F001-04987945",
+    "customer_id": "CL-1181514",
+    "fecha": "2026-07-13T18:20:00-05:00",
+    "monto": "58.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30734465",
+    "factura_id": "F001-04993197",
+    "customer_id": "CL-1161090",
+    "fecha": "2026-07-14T13:02:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30734570",
+    "factura_id": "F001-05000368",
+    "customer_id": "CL-1255409",
+    "fecha": "2026-07-15T15:59:00-05:00",
+    "monto": "50.29",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30734910",
+    "factura_id": "F001-04966583",
+    "customer_id": "CL-1145774",
+    "fecha": "2026-07-15T20:43:00-05:00",
+    "monto": "46.58",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30735337",
+    "factura_id": "F001-04970135",
+    "customer_id": "CL-1177149",
+    "fecha": "2026-07-16T16:55:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30735726",
+    "factura_id": "F001-05004046",
+    "customer_id": "CL-1218946",
+    "fecha": "2026-07-16T21:15:00-05:00",
+    "monto": "36.38",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30735792",
+    "factura_id": "F001-04999229",
+    "customer_id": "CL-1203027",
+    "fecha": "2026-07-17T08:36:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30736417",
+    "factura_id": "F001-05009016",
+    "customer_id": "CL-1226407",
+    "fecha": "2026-07-17T09:53:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30736977",
+    "factura_id": "F001-05001079",
+    "customer_id": "CL-1171492",
+    "fecha": "2026-07-17T11:41:00-05:00",
+    "monto": "76.40",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30737319",
+    "factura_id": "F001-05012444",
+    "customer_id": "CL-1193704",
+    "fecha": "2026-07-17T21:58:00-05:00",
+    "monto": "44.83",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30737558",
+    "factura_id": "F001-05006268",
+    "customer_id": "CL-1190560",
+    "fecha": "2026-07-18T12:18:00-05:00",
+    "monto": "50.29",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30737802",
+    "factura_id": "F001-05001509",
+    "customer_id": "CL-1138627",
+    "fecha": "2026-07-18T13:34:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30737875",
+    "factura_id": "F001-05005606",
+    "customer_id": "CL-1205902",
+    "fecha": "2026-07-19T09:13:00-05:00",
+    "monto": "58.74",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30738553",
+    "factura_id": "F001-04994253",
+    "customer_id": "CL-1118538",
+    "fecha": "2026-07-19T10:27:00-05:00",
+    "monto": "108.50",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30739206",
+    "factura_id": "F001-04996481",
+    "customer_id": "CL-1175051",
+    "fecha": "2026-07-20T12:24:00-05:00",
+    "monto": "71.58",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30739263",
+    "factura_id": "F001-04996238",
+    "customer_id": "CL-1132503",
+    "fecha": "2026-07-20T12:59:00-05:00",
+    "monto": "108.50",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30739489",
+    "factura_id": "F001-04985509",
+    "customer_id": "CL-1183069",
+    "fecha": "2026-07-20T15:02:00-05:00",
+    "monto": "37.44",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30739969",
+    "factura_id": "F001-04993678",
+    "customer_id": "CL-1195028",
+    "fecha": "2026-07-21T04:27:00-05:00",
+    "monto": "65.27",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30740208",
+    "factura_id": "F001-04994935",
+    "customer_id": "CL-1071463",
+    "fecha": "2026-07-21T04:39:00-05:00",
+    "monto": "44.83",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30740683",
+    "factura_id": "F001-04989699",
+    "customer_id": "CL-1123976",
+    "fecha": "2026-07-21T12:50:00-05:00",
+    "monto": "193.36",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30741366",
+    "factura_id": "F001-05007569",
+    "customer_id": "CL-1084058",
+    "fecha": "2026-07-21T13:44:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30741847",
+    "factura_id": "F001-05003228",
+    "customer_id": "CL-1145774",
+    "fecha": "2026-07-21T21:49:00-05:00",
+    "monto": "74.79",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30742513",
+    "factura_id": "F001-04999956",
+    "customer_id": "CL-1178922",
+    "fecha": "2026-07-22T07:57:00-05:00",
+    "monto": "65.27",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30742720",
+    "factura_id": "F001-04995570",
+    "customer_id": "CL-1152084",
+    "fecha": "2026-07-22T11:03:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30743159",
+    "factura_id": "F001-05016557",
+    "customer_id": "CL-1232824",
+    "fecha": "2026-07-22T18:54:00-05:00",
+    "monto": "53.49",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30743521",
+    "factura_id": "F001-05014053",
+    "customer_id": "CL-1210081",
+    "fecha": "2026-07-22T20:38:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30744216",
+    "factura_id": "F001-05004873",
+    "customer_id": "CL-1262023",
+    "fecha": "2026-07-23T08:33:00-05:00",
+    "monto": "125.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30744645",
+    "factura_id": "F001-05019501",
+    "customer_id": "CL-1201205",
+    "fecha": "2026-07-23T11:27:00-05:00",
+    "monto": "45.99",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30744903",
+    "factura_id": "F001-05015875",
+    "customer_id": "CL-1272729",
+    "fecha": "2026-07-23T13:40:00-05:00",
+    "monto": "14.97",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30745501",
+    "factura_id": "F001-05015315",
+    "customer_id": "CL-1107377",
+    "fecha": "2026-07-24T18:03:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30745877",
+    "factura_id": "F001-05018197",
+    "customer_id": "CL-1193431",
+    "fecha": "2026-07-25T11:26:00-05:00",
+    "monto": "36.38",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30746309",
+    "factura_id": "F001-04987110",
+    "customer_id": "CL-1121736",
+    "fecha": "2026-07-25T12:25:00-05:00",
+    "monto": "35.00",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30746898",
+    "factura_id": "F001-05002516",
+    "customer_id": "CL-1152549",
+    "fecha": "2026-07-25T12:56:00-05:00",
+    "monto": "115.88",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30747020",
+    "factura_id": "F001-04990867",
+    "customer_id": "CL-1196852",
+    "fecha": "2026-07-25T19:42:00-05:00",
+    "monto": "250.50",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30747369",
+    "factura_id": "F001-05009309",
+    "customer_id": "CL-1019515",
+    "fecha": "2026-07-26T08:24:00-05:00",
+    "monto": "31.57",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30747616",
+    "factura_id": "F001-05006964",
+    "customer_id": "CL-1215806",
+    "fecha": "2026-07-26T12:09:00-05:00",
+    "monto": "56.27",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30747948",
+    "factura_id": "F001-05010200",
+    "customer_id": "CL-1243624",
+    "fecha": "2026-07-26T14:38:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30748552",
+    "factura_id": "F001-05012968",
+    "customer_id": "CL-1198957",
+    "fecha": "2026-07-26T14:45:00-05:00",
+    "monto": "93.99",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30748985",
+    "factura_id": "F001-05011599",
+    "customer_id": "CL-1238224",
+    "fecha": "2026-07-26T16:09:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30749411",
+    "factura_id": "F001-05006084",
+    "customer_id": "CL-1177149",
+    "fecha": "2026-07-27T10:39:00-05:00",
+    "monto": "39.59",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30749616",
+    "factura_id": "F001-04997082",
+    "customer_id": "CL-1220088",
+    "fecha": "2026-07-27T11:12:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30749712",
+    "factura_id": "F001-05011923",
+    "customer_id": "CL-1125516",
+    "fecha": "2026-07-28T12:17:00-05:00",
+    "monto": "50.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30750193",
+    "factura_id": "F001-05012641",
+    "customer_id": "CL-1185751",
+    "fecha": "2026-07-28T17:55:00-05:00",
+    "monto": "110.94",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30750789",
+    "factura_id": "F001-05011122",
+    "customer_id": "CL-1131469",
+    "fecha": "2026-07-29T18:07:00-05:00",
+    "monto": "149.68",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30750946",
+    "factura_id": "F001-05014453",
+    "customer_id": "CL-1223431",
+    "fecha": "2026-07-29T22:02:00-05:00",
+    "monto": "67.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30751215",
+    "factura_id": "F001-05014743",
+    "customer_id": "CL-1270637",
+    "fecha": "2026-07-30T19:33:00-05:00",
+    "monto": "53.39",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30751847",
+    "factura_id": "F001-04991443",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-07-31T08:07:00-05:00",
+    "monto": "71.04",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30752352",
+    "factura_id": "F001-05013837",
+    "customer_id": "CL-1113646",
+    "fecha": "2026-08-01T04:06:00-05:00",
+    "monto": "31.57",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30752813",
+    "factura_id": "F001-05026468",
+    "customer_id": "CL-1163837",
+    "fecha": "2026-08-01T08:56:00-05:00",
+    "monto": "26.74",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30753062",
+    "factura_id": "F001-05018976",
+    "customer_id": "CL-1168863",
+    "fecha": "2026-08-01T18:34:00-05:00",
+    "monto": "50.29",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30753539",
+    "factura_id": "F001-04997686",
+    "customer_id": "CL-1165562",
+    "fecha": "2026-08-02T12:59:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30753711",
+    "factura_id": "F001-05020994",
+    "customer_id": "CL-1187267",
+    "fecha": "2026-08-04T12:50:00-05:00",
+    "monto": "68.21",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30754153",
+    "factura_id": "F001-05021814",
+    "customer_id": "CL-1121736",
+    "fecha": "2026-08-04T14:25:00-05:00",
+    "monto": "79.61",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30754760",
+    "factura_id": "F001-05026168",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-08-04T20:07:00-05:00",
+    "monto": "80.96",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30755302",
+    "factura_id": "F001-04986927",
+    "customer_id": "CL-1187267",
+    "fecha": "2026-08-05T09:19:00-05:00",
+    "monto": "65.84",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30755897",
+    "factura_id": "F001-05019812",
+    "customer_id": "CL-1183069",
+    "fecha": "2026-08-05T12:20:00-05:00",
+    "monto": "40.65",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30756241",
+    "factura_id": "F001-05020682",
+    "customer_id": "CL-1177911",
+    "fecha": "2026-08-05T17:45:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30756488",
+    "factura_id": "F001-05018750",
+    "customer_id": "CL-1100708",
+    "fecha": "2026-08-06T16:46:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30756628",
+    "factura_id": "F001-04987110",
+    "customer_id": "CL-1121736",
+    "fecha": "2026-08-06T20:25:00-05:00",
+    "monto": "41.40",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30756692",
+    "factura_id": "F001-05023495",
+    "customer_id": "CL-1252202",
+    "fecha": "2026-08-07T21:10:00-05:00",
+    "monto": "103.68",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30757207",
+    "factura_id": "F001-05020143",
+    "customer_id": "CL-1144614",
+    "fecha": "2026-08-08T18:43:00-05:00",
+    "monto": "50.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30757881",
+    "factura_id": "F001-05025238",
+    "customer_id": "CL-1173697",
+    "fecha": "2026-08-10T15:38:00-05:00",
+    "monto": "55.01",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30758392",
+    "factura_id": "F001-05022548",
+    "customer_id": "CL-1181514",
+    "fecha": "2026-08-10T18:29:00-05:00",
+    "monto": "58.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30758925",
+    "factura_id": "F001-05017391",
+    "customer_id": "CL-1185973",
+    "fecha": "2026-08-13T21:15:00-05:00",
+    "monto": "202.23",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30759013",
+    "factura_id": "F001-05041254",
+    "customer_id": "CL-1190560",
+    "fecha": "2026-08-14T08:07:00-05:00",
+    "monto": "48.62",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30759361",
+    "factura_id": "F001-05036420",
+    "customer_id": "CL-1138627",
+    "fecha": "2026-08-14T08:17:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30759873",
+    "factura_id": "F001-05024705",
+    "customer_id": "CL-1157804",
+    "fecha": "2026-08-14T19:18:00-05:00",
+    "monto": "108.50",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30760102",
+    "factura_id": "F001-05033628",
+    "customer_id": "CL-1203027",
+    "fecha": "2026-08-15T10:17:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30760801",
+    "factura_id": "F001-05047928",
+    "customer_id": "CL-1198957",
+    "fecha": "2026-08-15T12:00:00-05:00",
+    "monto": "93.99",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30761317",
+    "factura_id": "F001-05027060",
+    "customer_id": "CL-1161090",
+    "fecha": "2026-08-15T22:09:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30761772",
+    "factura_id": "F001-05032766",
+    "customer_id": "CL-1096753",
+    "fecha": "2026-08-16T12:18:00-05:00",
+    "monto": "76.40",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30761856",
+    "factura_id": "F001-05031091",
+    "customer_id": "CL-1220088",
+    "fecha": "2026-08-17T18:58:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30762138",
+    "factura_id": "F001-05050769",
+    "customer_id": "CL-1223431",
+    "fecha": "2026-08-18T13:59:00-05:00",
+    "monto": "67.29",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30762394",
+    "factura_id": "F001-05042708",
+    "customer_id": "CL-1215806",
+    "fecha": "2026-08-18T16:39:00-05:00",
+    "monto": "30.85",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30762517",
+    "factura_id": "F001-05043394",
+    "customer_id": "CL-1084058",
+    "fecha": "2026-08-18T18:14:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30762611",
+    "factura_id": "F001-05037790",
+    "customer_id": "CL-1218946",
+    "fecha": "2026-08-18T18:22:00-05:00",
+    "monto": "36.38",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30763169",
+    "factura_id": "F001-05049992",
+    "customer_id": "CL-1270637",
+    "fecha": "2026-08-19T08:17:00-05:00",
+    "monto": "52.82",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30763763",
+    "factura_id": "F001-05035872",
+    "customer_id": "CL-1171492",
+    "fecha": "2026-08-19T09:36:00-05:00",
+    "monto": "76.40",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30764088",
+    "factura_id": "F001-05028344",
+    "customer_id": "CL-1118538",
+    "fecha": "2026-08-19T16:14:00-05:00",
+    "monto": "108.50",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30764369",
+    "factura_id": "F001-05044605",
+    "customer_id": "CL-1019515",
+    "fecha": "2026-08-20T08:57:00-05:00",
+    "monto": "31.57",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30764933",
+    "factura_id": "F001-05029253",
+    "customer_id": "CL-1150370",
+    "fecha": "2026-08-20T12:48:00-05:00",
+    "monto": "50.29",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30765313",
+    "factura_id": "F001-05034740",
+    "customer_id": "CL-1178922",
+    "fecha": "2026-08-20T13:16:00-05:00",
+    "monto": "65.27",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30766009",
+    "factura_id": "F001-05027395",
+    "customer_id": "CL-1195028",
+    "fecha": "2026-08-21T04:38:00-05:00",
+    "monto": "65.27",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30766618",
+    "factura_id": "F001-05028614",
+    "customer_id": "CL-1071463",
+    "fecha": "2026-08-21T04:50:00-05:00",
+    "monto": "44.83",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30766897",
+    "factura_id": "F001-05034115",
+    "customer_id": "CL-1165562",
+    "fecha": "2026-08-21T09:27:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30767575",
+    "factura_id": "F001-05038078",
+    "customer_id": "CL-1152549",
+    "fecha": "2026-08-21T12:57:00-05:00",
+    "monto": "113.31",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30767700",
+    "factura_id": "F001-05034925",
+    "customer_id": "CL-1197204",
+    "fecha": "2026-08-21T12:58:00-05:00",
+    "monto": "62.84",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30768186",
+    "factura_id": "F001-05030804",
+    "customer_id": "CL-1132503",
+    "fecha": "2026-08-21T18:16:00-05:00",
+    "monto": "108.50",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30768344",
+    "factura_id": "F001-05029968",
+    "customer_id": "CL-1080054",
+    "fecha": "2026-08-21T18:30:00-05:00",
+    "monto": "98.46",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30768904",
+    "factura_id": "F001-05023818",
+    "customer_id": "CL-1123976",
+    "fecha": "2026-08-22T07:05:00-05:00",
+    "monto": "186.98",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30769161",
+    "factura_id": "F001-05039239",
+    "customer_id": "CL-1248251",
+    "fecha": "2026-08-22T07:28:00-05:00",
+    "monto": "20.32",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30769657",
+    "factura_id": "F001-05043901",
+    "customer_id": "CL-1166034",
+    "fecha": "2026-08-22T12:07:00-05:00",
+    "monto": "116.18",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30770114",
+    "factura_id": "F001-05031942",
+    "customer_id": "CL-1152084",
+    "fecha": "2026-08-22T13:57:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30770603",
+    "factura_id": "F001-05046625",
+    "customer_id": "CL-1238224",
+    "fecha": "2026-08-23T09:53:00-05:00",
+    "monto": "42.33",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30770924",
+    "factura_id": "F001-05040102",
+    "customer_id": "CL-1262023",
+    "fecha": "2026-08-23T13:11:00-05:00",
+    "monto": "120.35",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30771195",
+    "factura_id": "F001-05038825",
+    "customer_id": "CL-1205902",
+    "fecha": "2026-08-24T21:09:00-05:00",
+    "monto": "58.74",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30771420",
+    "factura_id": "F001-05037003",
+    "customer_id": "CL-1255409",
+    "fecha": "2026-08-25T11:58:00-05:00",
+    "monto": "50.29",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30771678",
+    "factura_id": "F001-05048604",
+    "customer_id": "CL-1210081",
+    "fecha": "2026-08-25T12:26:00-05:00",
+    "monto": "26.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30772286",
+    "factura_id": "F001-05040555",
+    "customer_id": "CL-1177149",
+    "fecha": "2026-08-25T17:36:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30772658",
+    "factura_id": "F001-05053246",
+    "customer_id": "CL-1232824",
+    "fecha": "2026-08-26T07:17:00-05:00",
+    "monto": "53.49",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30772921",
+    "factura_id": "F001-05045106",
+    "customer_id": "CL-1243624",
+    "fecha": "2026-08-26T09:43:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30773043",
+    "factura_id": "F001-05042353",
+    "customer_id": "CL-1226407",
+    "fecha": "2026-08-26T11:50:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30773620",
+    "factura_id": "F001-05052601",
+    "customer_id": "CL-1272729",
+    "fecha": "2026-08-26T14:23:00-05:00",
+    "monto": "16.68",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30773938",
+    "factura_id": "F001-05045887",
+    "customer_id": "CL-1193704",
+    "fecha": "2026-08-26T16:40:00-05:00",
+    "monto": "44.83",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30774522",
+    "factura_id": "F001-05047510",
+    "customer_id": "CL-1125516",
+    "fecha": "2026-08-27T14:42:00-05:00",
+    "monto": "50.29",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30775111",
+    "factura_id": "F001-05046260",
+    "customer_id": "CL-1131469",
+    "fecha": "2026-08-27T21:24:00-05:00",
+    "monto": "141.13",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30775493",
+    "factura_id": "F001-05048305",
+    "customer_id": "CL-1185751",
+    "fecha": "2026-08-29T07:08:00-05:00",
+    "monto": "106.02",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30775663",
+    "factura_id": "F001-05056642",
+    "customer_id": "CL-1201205",
+    "fecha": "2026-08-29T08:06:00-05:00",
+    "monto": "45.99",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30775847",
+    "factura_id": "F001-05054710",
+    "customer_id": "CL-1100708",
+    "fecha": "2026-08-30T18:20:00-05:00",
+    "monto": "153.87",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30776547",
+    "factura_id": "F001-05049334",
+    "customer_id": "CL-1113646",
+    "fecha": "2026-09-01T04:43:00-05:00",
+    "monto": "31.57",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30776937",
+    "factura_id": "F001-05051703",
+    "customer_id": "CL-1107377",
+    "fecha": "2026-09-02T22:06:00-05:00",
+    "monto": "141.13",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30777401",
+    "factura_id": "F001-05064024",
+    "customer_id": "CL-1161090",
+    "fecha": "2026-09-03T22:09:00-05:00",
+    "monto": "37.44",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30777941",
+    "factura_id": "F001-05057212",
+    "customer_id": "CL-1144614",
+    "fecha": "2026-09-04T07:50:00-05:00",
+    "monto": "50.29",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30778527",
+    "factura_id": "F001-05054143",
+    "customer_id": "CL-1193431",
+    "fecha": "2026-09-05T19:11:00-05:00",
+    "monto": "36.38",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30779142",
+    "factura_id": "F001-05058599",
+    "customer_id": "CL-1145774",
+    "fecha": "2026-09-07T13:38:00-05:00",
+    "monto": "107.37",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30779457",
+    "factura_id": "F001-05060608",
+    "customer_id": "CL-1181514",
+    "fecha": "2026-09-07T14:22:00-05:00",
+    "monto": "58.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30779891",
+    "factura_id": "F001-05067528",
+    "customer_id": "CL-1080054",
+    "fecha": "2026-09-08T14:57:00-05:00",
+    "monto": "103.68",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30780083",
+    "factura_id": "F001-05053874",
+    "customer_id": "CL-1185973",
+    "fecha": "2026-09-10T10:36:00-05:00",
+    "monto": "202.23",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30780741",
+    "factura_id": "F001-05061476",
+    "customer_id": "CL-1157804",
+    "fecha": "2026-09-11T21:24:00-05:00",
+    "monto": "108.50",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30781192",
+    "factura_id": "F001-05072338",
+    "customer_id": "CL-1197204",
+    "fecha": "2026-09-12T08:30:00-05:00",
+    "monto": "57.50",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30781779",
+    "factura_id": "F001-05059903",
+    "customer_id": "CL-1252202",
+    "fecha": "2026-09-12T19:45:00-05:00",
+    "monto": "103.68",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30782477",
+    "factura_id": "F001-05063201",
+    "customer_id": "CL-1173697",
+    "fecha": "2026-09-13T08:42:00-05:00",
+    "monto": "53.49",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30782839",
+    "factura_id": "F001-05067902",
+    "customer_id": "CL-1132503",
+    "fecha": "2026-09-13T16:04:00-05:00",
+    "monto": "124.55",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30783422",
+    "factura_id": "F001-05082199",
+    "customer_id": "CL-1243624",
+    "fecha": "2026-09-13T19:55:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30783742",
+    "factura_id": "F001-05070727",
+    "customer_id": "CL-1178922",
+    "fecha": "2026-09-14T08:48:00-05:00",
+    "monto": "65.27",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30783940",
+    "factura_id": "F001-05086585",
+    "customer_id": "CL-1185751",
+    "fecha": "2026-09-15T08:21:00-05:00",
+    "monto": "111.35",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30784035",
+    "factura_id": "F001-05064595",
+    "customer_id": "CL-1163837",
+    "fecha": "2026-09-15T11:39:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30784589",
+    "factura_id": "F001-05081345",
+    "customer_id": "CL-1226407",
+    "fecha": "2026-09-15T16:01:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30785149",
+    "factura_id": "F001-05066681",
+    "customer_id": "CL-1150370",
+    "fecha": "2026-09-16T21:11:00-05:00",
+    "monto": "50.29",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30785522",
+    "factura_id": "F001-05075028",
+    "customer_id": "CL-1248251",
+    "fecha": "2026-09-16T21:59:00-05:00",
+    "monto": "20.32",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30785576",
+    "factura_id": "F001-05068800",
+    "customer_id": "CL-1220088",
+    "fecha": "2026-09-17T21:27:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30785636",
+    "factura_id": "F001-04970449",
+    "customer_id": "CL-1126269",
+    "fecha": "2026-09-18T10:35:00-05:00",
+    "monto": "20.00",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30786150",
+    "factura_id": "F001-05089141",
+    "customer_id": "CL-1210081",
+    "fecha": "2026-09-18T13:43:00-05:00",
+    "monto": "26.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30786572",
+    "factura_id": "F001-05063005",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-09-19T09:02:00-05:00",
+    "monto": "76.65",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30787098",
+    "factura_id": "F001-05069800",
+    "customer_id": "CL-1165562",
+    "fecha": "2026-09-19T13:07:00-05:00",
+    "monto": "36.38",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30787778",
+    "factura_id": "F001-05072003",
+    "customer_id": "CL-1171492",
+    "fecha": "2026-09-19T20:12:00-05:00",
+    "monto": "73.74",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30787979",
+    "factura_id": "F001-05079066",
+    "customer_id": "CL-1215806",
+    "fecha": "2026-09-20T10:12:00-05:00",
+    "monto": "26.74",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30788260",
+    "factura_id": "F001-05072947",
+    "customer_id": "CL-1138627",
+    "fecha": "2026-09-20T14:11:00-05:00",
+    "monto": "32.77",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30788764",
+    "factura_id": "F001-05067047",
+    "customer_id": "CL-1195028",
+    "fecha": "2026-09-21T04:11:00-05:00",
+    "monto": "65.27",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30788939",
+    "factura_id": "F001-05065793",
+    "customer_id": "CL-1071463",
+    "fecha": "2026-09-21T05:42:00-05:00",
+    "monto": "44.83",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30789166",
+    "factura_id": "F001-05079957",
+    "customer_id": "CL-1084058",
+    "fecha": "2026-09-21T09:42:00-05:00",
+    "monto": "26.74",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30789439",
+    "factura_id": "F001-05069084",
+    "customer_id": "CL-1152084",
+    "fecha": "2026-09-21T15:44:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30789827",
+    "factura_id": "F001-05071363",
+    "customer_id": "CL-1203027",
+    "fecha": "2026-09-21T16:20:00-05:00",
+    "monto": "45.21",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30790434",
+    "factura_id": "F001-05080615",
+    "customer_id": "CL-1166034",
+    "fecha": "2026-09-21T20:56:00-05:00",
+    "monto": "116.18",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30790982",
+    "factura_id": "F001-05058860",
+    "customer_id": "CL-1121736",
+    "fecha": "2026-09-22T07:25:00-05:00",
+    "monto": "76.40",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30791256",
+    "factura_id": "F001-05090039",
+    "customer_id": "CL-1272729",
+    "fecha": "2026-09-23T13:49:00-05:00",
+    "monto": "14.97",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30791512",
+    "factura_id": "F001-05071619",
+    "customer_id": "CL-1255409",
+    "fecha": "2026-09-23T16:58:00-05:00",
+    "monto": "50.29",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30792160",
+    "factura_id": "F001-05070082",
+    "customer_id": "CL-1096753",
+    "fecha": "2026-09-24T12:29:00-05:00",
+    "monto": "76.40",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30792860",
+    "factura_id": "F001-05089527",
+    "customer_id": "CL-1223431",
+    "fecha": "2026-09-25T10:14:00-05:00",
+    "monto": "67.29",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30793504",
+    "factura_id": "F001-05075586",
+    "customer_id": "CL-1205902",
+    "fecha": "2026-09-26T12:04:00-05:00",
+    "monto": "58.74",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30794150",
+    "factura_id": "F001-05074281",
+    "customer_id": "CL-1218946",
+    "fecha": "2026-09-26T13:01:00-05:00",
+    "monto": "32.70",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30794357",
+    "factura_id": "F001-05085521",
+    "customer_id": "CL-1193704",
+    "fecha": "2026-09-26T13:54:00-05:00",
+    "monto": "44.83",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30794660",
+    "factura_id": "F001-05084348",
+    "customer_id": "CL-1238224",
+    "fecha": "2026-09-26T18:50:00-05:00",
+    "monto": "37.44",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30794746",
+    "factura_id": "F001-05076570",
+    "customer_id": "CL-1190560",
+    "fecha": "2026-09-27T11:27:00-05:00",
+    "monto": "50.29",
+    "canal": "banca_en_linea",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30794834",
+    "factura_id": "F001-05077506",
+    "customer_id": "CL-1177149",
+    "fecha": "2026-09-27T14:58:00-05:00",
+    "monto": "36.38",
+    "canal": "punto_de_pago",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30795085",
+    "factura_id": "F001-05091545",
+    "customer_id": "CL-1232824",
+    "fecha": "2026-10-01T21:49:00-05:00",
+    "monto": "53.49",
+    "canal": "billetera_movil",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30795713",
+    "factura_id": "F001-05088356",
+    "customer_id": "CL-1113646",
+    "fecha": "2026-10-02T03:23:00-05:00",
+    "monto": "31.57",
+    "canal": "debito_automatico",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30795764",
+    "factura_id": "F001-05095599",
+    "customer_id": "CL-1144614",
+    "fecha": "2026-10-17T20:10:00-05:00",
+    "monto": "20.00",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30796327",
+    "factura_id": "F001-05092852",
+    "customer_id": "CL-1193431",
+    "fecha": "2026-10-21T18:09:00-05:00",
+    "monto": "15.00",
+    "canal": "app",
+    "estado": "aplicado"
+  },
+  {
+    "pago_id": "PG-30796833",
+    "factura_id": "F001-05102856",
+    "customer_id": "CL-1173697",
+    "fecha": "2026-11-04T11:20:00-05:00",
+    "monto": "30.00",
+    "canal": "punto_de_pago",
+    "estado": "en_transito"
+  },
+  {
+    "pago_id": "PG-30797067",
+    "factura_id": "F001-05118649",
+    "customer_id": "CL-1190560",
+    "fecha": "2026-11-04T19:48:00-05:00",
+    "monto": "50.29",
+    "canal": "banca_en_linea",
+    "estado": "en_transito"
+  }
+]
