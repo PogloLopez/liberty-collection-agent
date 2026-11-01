@@ -288,3 +288,17 @@ def test_promesa_ilegible_pide_no_calcular_la_fecha(repo, ahora):
     msg = t["registrar_promesa_pago"](fecha="la próxima semana")
     assert "No la calcules" in msg and "dentro de N días" in msg
     assert sesion.tarjeta is None
+
+
+def test_consultar_ofertas_calcula_la_cuenta_una_vez(repo, ahora, monkeypatch):
+    from agil.agente import tools
+    from agil.dominio.reglas import ofertas
+
+    llamadas = []
+    original = tools.estado_cuenta
+    for modulo in (tools, ofertas):
+        monkeypatch.setattr(modulo, "estado_cuenta", lambda *a: llamadas.append(a) or original(*a))
+    sesion = _sesion("CL-1140215", Segmento.mora_avanzada, Cola.especializada)
+    t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
+    assert len(t["consultar_ofertas_elegibles"]()["ofertas"]) > 1
+    assert len(llamadas) == 1

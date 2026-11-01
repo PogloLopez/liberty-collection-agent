@@ -13,6 +13,7 @@ from agil.agente.sesion import Sesion, Tarjeta
 from agil.dominio.modelos import (
     Cola,
     CondicionesOferta,
+    EstadoCuenta,
     EtiquetaFeedback,
     Feedback,
     FlagMemoria,
@@ -118,11 +119,13 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
         id_ = id_de(prefijo_id, *partes)
         return None if id_ in sesion.escrituras else id_
 
-    def oferta(oferta_id: str) -> tuple[Oferta, CondicionesOferta]:
+    def oferta(
+        oferta_id: str, estado: EstadoCuenta | None = None
+    ) -> tuple[Oferta, CondicionesOferta]:
         o = next((o for o in repo.ofertas() if o.oferta_id == oferta_id), None)
         if o is None:  # el hook ya lo impide; respaldo
             raise ValueError(f"La oferta {oferta_id} no existe.")
-        c = sesion.condiciones.get(oferta_id) or condiciones(repo, cid, o)
+        c = sesion.condiciones.get(oferta_id) or condiciones(repo, cid, o, estado)
         sesion.condiciones[oferta_id] = c
         sesion.valores.update(cifras_oferta(c))
         return o, c
@@ -159,9 +162,9 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
     def consultar_ofertas_elegibles() -> dict:
         """Ofertas preaprobadas para este cliente, de la menos a la más generosa, con sus cifras."""
         resultado = []
-        elegibles = ofertas_elegibles(repo, cid, sesion.segmento)
-        for o in sorted(elegibles, key=_generosidad):
-            _, c = oferta(o.oferta_id)
+        e = estado_cuenta(repo, cid)
+        for o in sorted(ofertas_elegibles(repo, cid, sesion.segmento, e), key=_generosidad):
+            _, c = oferta(o.oferta_id, e)
             resultado.append(
                 {
                     "oferta_id": o.oferta_id,

@@ -56,13 +56,17 @@ def _motivo_rechazo(
     return None
 
 
-def ofertas_elegibles(repo: Repositorio, customer_id: str, segmento: Segmento) -> list[Oferta]:
+def ofertas_elegibles(
+    repo: Repositorio, customer_id: str, segmento: Segmento, estado: EstadoCuenta | None = None
+) -> list[Oferta]:
     """Segmento elegible, vigente y monto base (según `aplica_a`) en [monto_min, monto_max].
 
     `segmento` lo inyecta la sesión desde `segmentar`, nunca el LLM. Incluye las que requieren
     aprobación humana: `validar_oferta` las rechaza para escalar. KeyError si el cliente no existe.
+    `estado` evita recalcular la cuenta si el llamador ya la tiene.
     """
-    estado = estado_cuenta(repo, customer_id)
+    if estado is None:
+        estado = estado_cuenta(repo, customer_id)
     return [
         o for o in repo.ofertas() if _motivo_rechazo(repo, customer_id, segmento, o, estado) is None
     ]
@@ -91,14 +95,17 @@ def _redondear(monto: Decimal, modo: str = ROUND_HALF_UP) -> Decimal:
     return monto.quantize(_CENTAVO, rounding=modo)
 
 
-def condiciones(repo: Repositorio, customer_id: str, oferta: Oferta) -> CondicionesOferta:
+def condiciones(
+    repo: Repositorio, customer_id: str, oferta: Oferta, estado: EstadoCuenta | None = None
+) -> CondicionesOferta:
     """Cifras que el código calcula para la oferta (D28). Llamar solo con ofertas elegibles.
 
     El descuento se calcula sobre lo que queda por pagar (nunca más que el saldo tras los pagos en
     tránsito) y se resta de él, salvo el del cargo mensual, que aplica a las facturas futuras. Las
     cuotas se redondean hacia abajo y la última absorbe los centavos: suman exacto.
     """
-    estado = estado_cuenta(repo, customer_id)
+    if estado is None:
+        estado = estado_cuenta(repo, customer_id)
     base = _monto_base(repo, customer_id, oferta, estado)
     if base is None:
         raise ValueError(f"La oferta {oferta.oferta_id} no aplica a {customer_id}")
