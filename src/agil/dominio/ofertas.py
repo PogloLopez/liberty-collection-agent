@@ -37,18 +37,15 @@ def _monto_base(
 
 
 def _motivo_rechazo(
-    repo: Repositorio, customer_id: str, segmento: Segmento, oferta: Oferta
+    repo: Repositorio, customer_id: str, segmento: Segmento, oferta: Oferta, estado: EstadoCuenta
 ) -> str | None:
     oid = oferta.oferta_id
     if not oferta.vigencia_desde <= repo.fecha_referencia <= oferta.vigencia_hasta:
         return f"La oferta {oid} no está vigente. No la menciones."
     if segmento not in oferta.segmentos_elegibles:
         return f"La oferta {oid} no aplica al segmento de este cliente."
-    estado = estado_cuenta(repo, customer_id)
-    if estado.saldo_vencido <= 0:
-        return "El cliente no tiene saldo vencido: ninguna oferta aplica."
     if estado.saldo_tras_transito <= 0:
-        return "El pago en tránsito del cliente ya cubre su saldo: ninguna oferta aplica."
+        return "El cliente no tiene saldo pendiente (o un pago en tránsito lo cubre): no aplica."
     monto = _monto_base(repo, customer_id, oferta, estado)
     if monto is None:
         return f"La oferta {oid} no aplica: el cliente no tiene cargos sobre los que aplicarla."
@@ -61,11 +58,12 @@ def ofertas_elegibles(repo: Repositorio, customer_id: str, segmento: Segmento) -
     """Segmento elegible, vigente y monto base (según `aplica_a`) en [monto_min, monto_max].
 
     `segmento` lo inyecta la sesión desde `segmentar`, nunca el LLM. Incluye las que requieren
-    aprobación humana: `validar_oferta` las rechaza para escalar.
+    aprobación humana: `validar_oferta` las rechaza para escalar. KeyError si el cliente no existe.
     """
-    if repo.cliente(customer_id) is None:
-        return []
-    return [o for o in repo.ofertas() if _motivo_rechazo(repo, customer_id, segmento, o) is None]
+    estado = estado_cuenta(repo, customer_id)
+    return [
+        o for o in repo.ofertas() if _motivo_rechazo(repo, customer_id, segmento, o, estado) is None
+    ]
 
 
 def validar_oferta(
@@ -78,9 +76,7 @@ def validar_oferta(
             ok=False,
             motivo=f"La oferta {oferta_id} no existe. Usa solo IDs de consultar_ofertas_elegibles.",
         )
-    if repo.cliente(customer_id) is None:
-        return Validacion(ok=False, motivo="Cliente desconocido.")
-    motivo = _motivo_rechazo(repo, customer_id, segmento, oferta)
+    motivo = _motivo_rechazo(repo, customer_id, segmento, oferta, estado_cuenta(repo, customer_id))
     if motivo is None and oferta.requiere_aprobacion_humana:
         motivo = (
             f"La oferta {oferta_id} requiere aprobación humana: no la aceptes, "
