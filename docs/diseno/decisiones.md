@@ -306,6 +306,16 @@ implementa `ApplyGuardrail` y exige el plan Ultimate). Entrada abusiva: respuest
 cierra sin humano ([[decisiones#D15 Fallos]]). En la nube lo reemplaza Guardrails ([[decisiones#D4 Guardia de contenido]]).
 Trade-off: su límite gratuito es de 2.000 tokens por minuto (cabeceras de Groq, 1-nov); si falla, el mensaje pasa (no bloquea al cliente).
 
+### D36 Configuración de modelos
+**`config.yaml` + `.env` con `pydantic-settings`** (pedido de Pablo en su revisión, 1-nov): el YAML tiene las
+secciones `dev` (Groq) y `prod` (Bedrock, la completa Pablo en el hito 4) con URL, tiempo de espera y, por
+rol, una lista ordenada de modelos y su `max_tokens`; `LLM_PROVIDER` sigue eligiendo la sección (D7). La key
+es `SecretStr` y, si falta, la configuración no se construye. Alternativas (Claude, 1-nov): si un modelo
+falla (error de la API, cuota, tiempo de espera o respuesta vacía) se pasa al siguiente sin reintentarlo;
+si fallan todos, Strands reintenta solo si fue por cuota y, si no, es un fallo que va a un asesor (D15). En dev el agente cae de gpt-oss-120b a gpt-oss-20b (misma
+familia y otro límite por modelo en Groq); el estratega y el moderador no tienen alternativa. Trade-off: cada
+alternativa obliga a correr los evals con ella.
+
 ## Pendientes
 
 - **V1:** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).

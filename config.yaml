@@ -1,0 +1,27 @@
+# Modelos por entorno (D7, D36). `LLM_PROVIDER` elige la sección por su `proveedor` (por defecto
+# groq). Cada rol lista modelos en orden: los siguientes son alternativas si el anterior falla.
+dev:
+  proveedor: groq
+  url: https://api.groq.com/openai/v1
+  timeout_s: 30
+  agente:
+    modelos: [openai/gpt-oss-120b, openai/gpt-oss-20b]
+    max_tokens: 1500
+  estratega: # también escribe el resumen al cierre (D34)
+    modelos: [openai/gpt-oss-20b]
+    max_tokens: 600
+  moderador: # D35; si falla, el mensaje pasa
+    modelos: [openai/gpt-oss-safeguard-20b]
+    max_tokens: 300
+
+# Demo y producción: lo activa y verifica Pablo en el hito 4 (IDs y perfiles de inferencia por región).
+prod:
+  proveedor: bedrock
+  timeout_s: 30
+  agente:
+    modelos: [amazon.nova-lite-v1:0]
+    max_tokens: 1500
+  estratega:
+    modelos: [amazon.nova-micro-v1:0]
+    max_tokens: 600
+  # sin moderador: en la nube lo reemplaza Guardrails (D4)
