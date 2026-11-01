@@ -20,6 +20,14 @@ _MESES = (
 _DIAS = r"lunes|martes|miercoles|jueves|viernes|sabado|domingo"
 _MONEDA = r"dolar|dolares|balboas|usd|centavos?"  # "balboa" solo es también Avenida Balboa
 _HORAS = r"la una|mediodia|medianoche|el primero del?|dia primero"
+# Plazos relativos que suenan a compromiso. Se permiten "hoy", "mañana", "ayer", "esta semana" y
+# "fin de semana", que usan los textos de referencia del mock (D29).
+_PLAZOS = (
+    r"pasado manana|(?:proxim[oa]|siguiente) (?:semana|mes|quincena|ano)"
+    r"|(?:semana|mes|quincena|ano) (?:que viene|siguiente|entrante)|fin(?:al(?:es)?)? del? mes"
+    r"|(?:en|dentro de) (?:unos|unas|pocos|pocas|algunos|algunas|un par de"
+    r"|los proximos|las proximas) (?:horas|dias|semanas|meses)"
+)
 
 _REGLAS = [
     (
@@ -34,6 +42,7 @@ _REGLAS = [
     (re.compile(rf"\b(?:{_MESES})\b", re.I), "un mes"),
     (re.compile(rf"\b(?:{_DIAS})\b", re.I), "un día de la semana"),
     (re.compile(rf"\b(?:{_HORAS})\b", re.I), "una hora o fecha"),
+    (re.compile(rf"\b(?:{_PLAZOS})\b", re.I), "un plazo"),
     (re.compile(rf"\b(?:{_NUMEROS})\b", re.I), "un número en palabras"),
 ]
 
@@ -41,8 +50,9 @@ _REGLAS = [
 def validar_salida(
     texto: str, placeholders_permitidos: set[str], max_caracteres: int
 ) -> Validacion:
-    """Bloquea cifras, %, montos, fechas, horas, meses o números en palabras fuera de placeholders
-    (salvo "cuatro dígitos"), placeholders desconocidos, URLs literales y textos largos."""
+    """Bloquea cifras, %, montos, fechas, horas, plazos, meses o números en palabras fuera de
+    placeholders (salvo "cuatro dígitos"), placeholders desconocidos, URLs literales y textos
+    largos."""
     if len(texto) > max_caracteres:
         return Validacion(
             ok=False, motivo=f"Mensaje demasiado largo: máximo {max_caracteres} caracteres."
