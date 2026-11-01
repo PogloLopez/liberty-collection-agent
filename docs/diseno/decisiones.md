@@ -89,6 +89,9 @@ consentimiento), así que el agente no da de baja la obligación. `derivar_solic
 solicitud para el área de atención, cierra la conversación y pausa WhatsApp para ese cliente; la cobranza
 sigue por otros canales autorizados. Detección en dos capas: la Lambda router atrapa las frases explícitas
 ("STOP", "no me escriban") sin pasar por el LLM, y el agente usa la tool en los casos ambiguos.
+"Explícita" es lista blanca del mensaje entero: solo la frase, "más"/"nunca" y cortesía; con cualquier
+otro texto o una pregunta va al agente (Claude, 31-oct). Un falso negativo cuesta un turno; uno positivo
+pausaría WhatsApp a quien solo dijo "no me escriban hoy".
 
 Excepción: si cartera ya revisó una solicitud previa y ratificó el contacto, el agente explica el motivo con
 `{{motivo_cartera}}` una vez y vuelve a la resolución, sin presionar. Riesgo (Claude): insistir por WhatsApp
