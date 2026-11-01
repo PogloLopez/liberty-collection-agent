@@ -5,10 +5,10 @@ from datetime import date, datetime
 
 import pytest
 
-from agil.dominio.calendario import ZONA
-from agil.dominio.datos import DATOS_MOCK, RepositorioMemoria
-from agil.dominio.elegibilidad import elegible_para_contacto, puede_enviar_ahora
 from agil.dominio.modelos import MotivoNoElegible
+from agil.dominio.reglas.calendario import ZONA
+from agil.dominio.reglas.elegibilidad import elegible_para_contacto, puede_enviar_ahora
+from agil.dominio.repositorio.memoria import DATOS_MOCK, RepositorioMemoria
 
 ORACULO = json.loads((DATOS_MOCK / "etiquetas_esperadas.json").read_text(encoding="utf-8"))
 REPO = RepositorioMemoria()

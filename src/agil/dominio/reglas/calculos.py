@@ -3,9 +3,9 @@
 from datetime import date, timedelta
 from decimal import Decimal
 
-from agil.dominio.calendario import ZONA
-from agil.dominio.datos import Repositorio
 from agil.dominio.modelos import EstadoCuenta, EstadoScore, Factura, Pago, Variables
+from agil.dominio.reglas.calendario import ZONA
+from agil.dominio.repositorio.interfaz import Repositorio
 
 _VENCIDAS = ("vencida", "parcial")
 _CERO = Decimal("0.00")

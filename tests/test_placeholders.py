@@ -1,6 +1,6 @@
 import pytest
 
-from agil.dominio.placeholders import placeholders_en, renderizar
+from agil.dominio.harness.placeholders import placeholders_en, renderizar
 
 
 def test_placeholders_en():

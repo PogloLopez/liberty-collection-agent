@@ -3,9 +3,9 @@ import unicodedata
 
 import pytest
 
-from agil.dominio.datos import DATOS_MOCK
-from agil.dominio.placeholders import placeholders_en
-from agil.dominio.validador import validar_salida
+from agil.dominio.harness.placeholders import placeholders_en
+from agil.dominio.harness.validador import validar_salida
+from agil.dominio.repositorio.memoria import DATOS_MOCK
 
 MAX = 400
 

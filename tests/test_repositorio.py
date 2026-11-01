@@ -3,7 +3,6 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from agil.dominio.datos import RepositorioMemoria
 from agil.dominio.modelos import (
     AceptacionOferta,
     Cola,
@@ -14,6 +13,7 @@ from agil.dominio.modelos import (
     PromesaPago,
     SolicitudNoContacto,
 )
+from agil.dominio.repositorio.memoria import RepositorioMemoria
 
 AHORA = datetime.fromisoformat("2026-11-06T09:00:00-05:00")
 

@@ -5,9 +5,9 @@ from decimal import Decimal
 
 import pytest
 
-from agil.dominio.calculos import estado_cuenta, variables
-from agil.dominio.datos import DATOS_MOCK, RepositorioMemoria
 from agil.dominio.modelos import EstadoScore
+from agil.dominio.reglas.calculos import estado_cuenta, variables
+from agil.dominio.repositorio.memoria import DATOS_MOCK, RepositorioMemoria
 
 ORACULO = json.loads((DATOS_MOCK / "etiquetas_esperadas.json").read_text(encoding="utf-8"))
 REPO = RepositorioMemoria()
@@ -99,8 +99,8 @@ def test_cliente_inexistente():
 def test_transito_de_factura_no_vencida_no_cuenta():
     from datetime import datetime
 
-    from agil.dominio.calendario import ZONA
     from agil.dominio.modelos import Pago
+    from agil.dominio.reglas.calendario import ZONA
 
     repo = RepositorioMemoria()
     antes = estado_cuenta(repo, "CL-1171492").monto_en_transito

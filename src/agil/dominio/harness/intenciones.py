@@ -3,7 +3,7 @@
 import re
 from enum import StrEnum
 
-from agil.dominio.texto import sin_tildes
+from agil.dominio.harness.texto import sin_tildes
 
 
 class Boton(StrEnum):

@@ -211,7 +211,8 @@ verdad.
   S3 en local, y para un ensayo opcional del stack sin AgentCore antes del deploy, que ejecuta Pablo; no
   emula AgentCore ni Nova. La app local sí habla con LocalStack por `localhost`.
 - **Contratos:** pydantic v2 (montos en `Decimal`).
-- **Código:** en `src/agil/`, y el dominio en `src/agil/dominio/`.
+- **Código:** en `src/agil/`, y el dominio en `src/agil/dominio/`: `repositorio/`, `reglas/`
+  (deterministas) y `harness/` ([[harness_del_agente]]); `modelos.py` en la raíz (Claude, 1-nov).
 
 Trade-off: el adaptador DynamoDB solo se ejercita contra LocalStack, no en pytest.
 
