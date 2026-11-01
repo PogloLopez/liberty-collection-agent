@@ -87,9 +87,11 @@ def test_sin_saldo_no_hay_ofertas(repo):
     assert not validar_oferta(repo, sin_deuda, S.olvidadizo, "OF-101").ok
 
 
-def test_cliente_desconocido(repo):
-    assert _ids(repo, "CL-0000000", S.olvidadizo) == []
-    assert not validar_oferta(repo, "CL-0000000", S.olvidadizo, "OF-101").ok
+def test_cliente_desconocido_lanza_key_error(repo):
+    with pytest.raises(KeyError):
+        ofertas_elegibles(repo, "CL-0000000", S.olvidadizo)
+    with pytest.raises(KeyError):
+        validar_oferta(repo, "CL-0000000", S.olvidadizo, "OF-101")
 
 
 def test_motivos_sin_nota_interna(repo):

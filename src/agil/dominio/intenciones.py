@@ -1,8 +1,9 @@
 """Lo que la Lambda router resuelve sin LLM: no contactar explícito (D13) y botones (D22)."""
 
 import re
-import unicodedata
 from enum import StrEnum
+
+from agil.dominio.texto import sin_tildes
 
 
 class Boton(StrEnum):
@@ -32,9 +33,7 @@ _SOLO_CORTESIA = re.compile(rf"^(?:{_CORTESIA})(?: (?:{_CORTESIA}))*$")
 
 
 def _normalizar(mensaje: str) -> str:
-    sin_tildes = unicodedata.normalize("NFKD", mensaje.lower())
-    sin_tildes = "".join(c for c in sin_tildes if not unicodedata.combining(c))
-    return " ".join(re.sub(r"[^\w\s]", " ", sin_tildes).split())
+    return " ".join(re.sub(r"[^\w\s]", " ", sin_tildes(mensaje.lower())).split())
 
 
 def pide_no_contacto(mensaje: str) -> bool:

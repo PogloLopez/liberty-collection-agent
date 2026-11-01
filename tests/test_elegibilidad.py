@@ -71,3 +71,10 @@ def test_sin_saldo_vencido_no_se_envia():
     resultado = puede_enviar_ahora(repo, "CL-1171492", _pa(2026, 11, 6, 10))
     assert not resultado.ok
     assert "saldo" in resultado.motivo
+
+
+def test_cliente_inexistente_lanza_key_error():
+    with pytest.raises(KeyError):
+        elegible_para_contacto(REPO, "CL-0000000")
+    with pytest.raises(KeyError):
+        puede_enviar_ahora(REPO, "CL-0000000", _pa(2026, 11, 6, 9, 0))

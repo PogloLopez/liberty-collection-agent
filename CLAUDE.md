@@ -26,7 +26,7 @@ Colombia), a Santiago Quiroz.
 
 - Claude no toca AWS: ni CLI, ni SDK, ni IaC, ni `LLM_PROVIDER=bedrock`. Escribe el comando en `docs/` y
   avisa a Pablo para que lo ejecute.
-- `revisor` y `tester` antes de **cada** commit, sin excepción.
+- `revisor`, `simplificador` y `tester` antes de **cada** commit, sin excepción (orden en [[git_flow]]).
 - Documentación concisa: si cabe en una frase, una frase. Enlaces tipo Obsidian `[[nota]]` en vez de repetir.
   Cada decisión tomada en conversación se registra en `decisiones.md` en el mismo turno.
 - Lo determinista decide; el LLM conversa. El LLM nunca escribe montos (placeholders) ni decide identidad.

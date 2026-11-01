@@ -17,7 +17,7 @@ _COLAS = {
 }
 
 
-def _exclusion(cliente: Cliente) -> tuple[str, Cola | None] | None:
+def exclusion(cliente: Cliente) -> tuple[str, Cola | None] | None:
     """Motivo y cola del excluido (D17: disputa → reclamos, vulnerable → especializada)."""
     if cliente.flags.reclamo_abierto:
         return "Reclamo abierto: humano directo, el agente no contacta.", Cola.reclamos
@@ -55,9 +55,9 @@ def segmentar(repo: Repositorio, customer_id: str) -> Segmentacion:
             variables=v,
         )
 
-    exclusion = _exclusion(cliente)
-    if exclusion:
-        return resultado(Segmento.excluido, *exclusion)
+    excluido = exclusion(cliente)
+    if excluido:
+        return resultado(Segmento.excluido, *excluido)
 
     s = _scores(repo, customer_id, v.estado_score)
     nota_score = (
