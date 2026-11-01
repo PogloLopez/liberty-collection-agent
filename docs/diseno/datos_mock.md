@@ -83,7 +83,7 @@ solo para mora avanzada.
 opt-in; `llamada` para empresas y vulnerables), `plantilla`, `segmento_campana`, `respondio`, `resultado`
 (`pagó`, `promesa`, `promesa_incumplida`, `sin_respuesta`, `escaló`). Máximo un contacto por día sumando todos los canales,
 en el horario de [[marco_regulatorio]]: lunes a viernes de 8:00 a 18:00 (las 18:00 ya quedan fuera), sábado de
-8:00 a 15:00, sin domingos ni feriados nacionales (incluido el 20-dic, día de duelo nacional). El 2-nov también
+8:00 a 15:00, sin domingos ni feriados nacionales (incluido el 20-dic, día de duelo nacional); el feriado que cae en domingo se descansa el lunes. El 2-nov también
 se excluye; el 4-nov (Día de la Bandera) se trata como hábil porque no está en el art. 46 del Código de Trabajo. Nunca con la deuda ya cubierta ni al grupo
 control en la campaña actual.
 
