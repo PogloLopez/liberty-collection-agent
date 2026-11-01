@@ -36,7 +36,7 @@ Los esquemas de las tools no aceptan parámetros numéricos libres (`monto_descu
 ### D4 Guardia de contenido
 **Bedrock Guardrails + validador determinista en línea**; juez LLM solo en auditoría por muestreo (Pablo,
 30-oct). Descartado: juez tipo JEV en cada turno (latencia y costo). En desarrollo local con Groq
-([[decisiones#D7 Modelo para correr el prototipo]]) solo corre el validador; la demo desplegada usa ambos. → [[riesgos]]
+([[decisiones#D7 Modelo para correr el prototipo]]) corren el validador y la moderación de [[decisiones#D35 Moderación en local]]; la demo desplegada usa Guardrails y el validador. → [[riesgos]]
 
 ### D5 Verificación de identidad
 **Últimos 4 dígitos de la cédula, pedidos tarde** (Pablo, 30-oct): solo al empezar la negociación, al pedir
@@ -232,12 +232,18 @@ Trade-off: no distingue combos (dos `doble_play` distintos) ni clientes con vari
 sería una tabla de servicios contratados (1 cliente → N servicios), con la factura y la mora por cuenta.
 
 ### D28 Qué ve el LLM de una oferta
-**Metadatos y placeholders, sin cifras** (Pablo, 1-nov): `consultar_ofertas_elegibles` devuelve `oferta_id`,
-`nombre`, `tipo` y los nombres de los placeholders de esa oferta (p. ej. `{{numero_cuotas}}`,
-`{{monto_cuota}}`); nunca los valores ni `nota_interna`. El LLM redacta según el tipo de oferta y el código
-pone las cifras.
+**Lee las cifras, no las escribe** (Pablo, 1-nov):
+`consultar_ofertas_elegibles` devuelve `oferta_id`, `nombre`, `tipo` y cada valor (porcentaje, cuotas,
+monto) junto al placeholder que debe usar; nunca `nota_interna`. Así puede negociar: el prompt le pide
+proponer primero la oferta más baja y subir solo ante insistencia clara del cliente. En el texto sigue
+escribiendo placeholders y el validador bloquea cualquier cifra ([[decisiones#Base]], B4).
+Placeholders con prefijo de oferta (`{{of_104.monto_cuota}}`) para que el código no ponga la cifra de otra
+oferta (Claude, 1-nov). Igual con `consultar_saldo`: cifras visibles, texto con placeholders.
+El descuento se calcula sobre lo que queda por pagar tras los pagos en tránsito, y las cuotas suman
+exacto: la última absorbe los centavos del redondeo (Claude, 1-nov).
 
-Trade-off: el LLM no puede comparar ofertas por monto; eso lo hacen el perfil y el estratega.
+Trade-off: el LLM conoce el techo de la negociación; si el prompt falla, puede ofrecer el máximo de entrada
+(siempre dentro de la tabla).
 
 ### D29 Plazos relativos
 **El validador bloquea plazos que suenan a compromiso** (Pablo, 1-nov): "pasado mañana", "la próxima
@@ -254,6 +260,44 @@ desmiente y solo da `{{plazo_aplicacion}}`. El LLM detecta el caso; la regla va 
 El valor ("1 a 3 días hábiles") lo pone el código desde `meta.json > parametros_reglas`; se añade en el
 hito 2.
 → [[decisiones#D14 Tools de saldo]]
+
+### D31 Orquestador de turno
+**El hito 2 incluye todo lo que el router resuelve sin LLM** (Pablo, 1-nov): una función en Python puro
+atiende cada mensaje (cédula, no contactar explícito, toques de botones, moderación, contador, estratega,
+validador con un reintento y render de placeholders) y llama al agente; el hito 3 solo la envuelve en
+FastAPI. Sin chat de consola: se prueba con un modelo guionado en pytest (offline) y un script de humo contra
+Groq. Trade-off: el guion no mide la calidad del LLM; eso queda para los evals.
+Detalles (Claude, 1-nov): sin verificar, ningún dígito llega a un modelo y, verificado, ninguna cédula; tres
+intentos fallidos bloquean la verificación y el agente ofrece un asesor; el contexto del turno y la estrategia
+no se guarda en el historial; las ofertas llegan ordenadas de menos a más generosa; los textos fijos (no
+contactar, abuso, tope, fallo, handoff) viven en el código y en producción serían plantillas aprobadas por legal.
+
+### D32 Fecha de la promesa
+**El LLM propone, el código valida** (Pablo, 1-nov): `registrar_promesa_pago` recibe el día acordado con
+el cliente, tal como lo dijo ("el miércoles", "mañana") o en ISO, y el código lo convierte en fecha: en el
+humo el LLM calculó mal los días de la semana (Claude, 1-nov). La tool la rechaza con motivo si cae
+fuera de la ventana (mañana … hoy + la prórroga máxima de las ofertas elegibles, o la fecha límite de la
+oferta elegida). El monto lo pone siempre el código. Es la única excepción a "solo IDs" de
+[[decisiones#D3 Negociación]]: una fecha acotada, nunca en el texto. Trade-off: el LLM puede proponer una
+fecha que el cliente no dijo; lo mitiga la confirmación con botones ([[decisiones#D22 Confirmación con botones]]).
+
+### D33 Perfiles del prototipo
+**Cinco perfiles, tres detallados** (Pablo, 1-nov): olvidadizo, dificultad temporal y mora avanzada (los de
+la demo, [[decisiones#D20 Formato de la demo]]) con prompt y tarjetas completas; reincidente y valioso con
+churn con un prompt corto que dice que se dejó así a propósito para la demo. Trade-off: esos dos segmentos
+no se demuestran con calidad.
+
+### D34 Resumen al cierre
+**En el hito 2** (Pablo, 1-nov): al cerrar la conversación, gpt-oss-20b (en la nube, Nova Micro) escribe una nota de origen
+`sistema` con flags del catálogo, y la siguiente conversación la recibe en el contexto ([[memoria]]).
+Trade-off: una llamada más por conversación.
+
+### D35 Moderación en local
+**`gpt-oss-safeguard-20b` de Groq evalúa el mensaje nuevo** con una política propia (Pablo pidió otro modelo
+de Groq o LocalStack, 1-nov; Claude eligió el modelo). LocalStack no emula Guardrails (su Bedrock no
+implementa `ApplyGuardrail` y exige el plan Ultimate). Entrada abusiva: respuesta fija y strike; al tercero
+cierra sin humano ([[decisiones#D15 Fallos]]). En la nube lo reemplaza Guardrails ([[decisiones#D4 Guardia de contenido]]).
+Trade-off: su límite gratuito es de 2.000 tokens por minuto (cabeceras de Groq, 1-nov); si falla, el mensaje pasa (no bloquea al cliente).
 
 ## Pendientes
 

@@ -16,9 +16,9 @@ verificación de cédula ([[decisiones#D5 Verificación de identidad]]).
 | Tool | Qué hace | Escribe |
 |---|---|---|
 | `consultar_saldo` 🔒 | Saldo, vencimientos, días de mora y pagos en tránsito ("ya pagué", [[decisiones#D30 Pagos recientes]]). Cubre el requisito de la prueba ([[decisiones#D14 Tools de saldo]]) | No |
-| `consultar_ofertas_elegibles` 🔒 | Ofertas preaprobadas para el segmento y el monto: ID, nombre, tipo y sus placeholders, sin cifras ([[decisiones#D28 Qué ve el LLM de una oferta]]) | No |
+| `consultar_ofertas_elegibles` 🔒 | Ofertas preaprobadas para el segmento y el monto: ID, nombre, tipo y cada cifra con el placeholder que debe escribir ([[decisiones#D28 Qué ve el LLM de una oferta]]) | No |
 | `aceptar_oferta` 🔒 | Acepta una oferta por ID; el motor de reglas valida | Sí |
-| `registrar_promesa_pago` 🔒 | Fecha y monto (de la oferta o del saldo) | Sí |
+| `registrar_promesa_pago` 🔒 | Fecha propuesta por el LLM y validada por el código; monto de la oferta o del saldo ([[decisiones#D32 Fecha de la promesa]]) | Sí |
 | `generar_link_pago` 🔒 | Link por el saldo o la cuota acordada | Sí |
 | `guardar_nota` 🔒 | Texto libre + flags de catálogo cerrado ([[memoria]]) | Sí |
 | `registrar_feedback_cliente` 🔒 | Texto libre + etiquetas (`queja_servicio`, `queja_precio`, `quiere_cancelar`…) | Sí |
@@ -26,7 +26,7 @@ verificación de cédula ([[decisiones#D5 Verificación de identidad]]).
 | `escalar_a_humano` | Handoff a la cola que corresponda, con resumen y motivo ([[decisiones#D17 Colas de escalamiento]]) | Sí |
 
 Los montos nunca pasan por el texto del LLM: llegan por placeholders ([[decisiones#Base]], B4). Los esquemas
-no aceptan montos libres, solo IDs ([[decisiones#D3 Negociación]]). `aceptar_oferta` y `registrar_promesa_pago`
+no aceptan montos libres, solo IDs y la fecha de la promesa ([[decisiones#D32 Fecha de la promesa]]) ([[decisiones#D3 Negociación]]). `aceptar_oferta` y `registrar_promesa_pago`
 se confirman con botones de WhatsApp que el código procesa sin LLM ([[decisiones#D22 Confirmación con botones]]).
 
 ### Ofertas

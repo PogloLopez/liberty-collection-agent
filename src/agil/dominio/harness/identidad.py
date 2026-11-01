@@ -39,6 +39,16 @@ def extraer_digitos(mensaje: str) -> str | None:
     return None
 
 
+def enmascarar(texto: str, solo_cedula: bool) -> str:
+    """Tapa las cédulas completas y, si `solo_cedula` es False (sin verificar), cualquier dígito.
+
+    Corre antes de cualquier modelo (D24), aparte de `extraer_digitos`: un mensaje con dos números
+    no es un intento de verificación, pero igual se enmascara.
+    """
+    texto = _CEDULA.sub(lambda m: re.sub(r"[0-9]", "•", m.group(0)), texto)
+    return texto if solo_cedula else re.sub(r"[0-9]", "•", texto)
+
+
 def verificar(cliente: Cliente, digitos: str) -> bool:
     if not re.fullmatch(r"[0-9]{4}", digitos):
         return False

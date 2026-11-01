@@ -2,11 +2,11 @@
 
 import json
 from collections import Counter
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 
 import pytest
 
-from agil.dominio.reglas.calendario import ZONA, en_horario_permitido, es_feriado
+from agil.dominio.reglas.calendario import ZONA, en_horario_permitido, es_feriado, resolver_dia
 from agil.dominio.repositorio.memoria import DATOS_MOCK
 
 CONTACTOS = json.loads((DATOS_MOCK / "historial_contactos.json").read_text(encoding="utf-8"))
@@ -84,3 +84,70 @@ def test_historial_maximo_un_contacto_por_cliente_y_dia():
 def test_anio_sin_calendario_falla():
     with pytest.raises(ValueError):
         es_feriado(date(2027, 1, 1))
+
+
+@pytest.mark.parametrize(
+    ("texto", "esperado"),
+    [
+        ("el miércoles", date(2026, 11, 11)),
+        ("Mañana", date(2026, 11, 7)),
+        ("pasado mañana", date(2026, 11, 8)),
+        ("hoy", date(2026, 11, 6)),
+        ("viernes", date(2026, 11, 13)),  # dicho un viernes: el de la otra semana
+        ("EL  SÁBADO", date(2026, 11, 7)),
+        ("2026-11-09", date(2026, 11, 9)),
+        ("el 15", None),
+        ("cuando pueda", None),
+        ("el próximo martes.", date(2026, 11, 10)),
+        ("este lunes?", date(2026, 11, 9)),
+        ("", None),
+    ],
+)
+def test_resolver_dia(texto, esperado):
+    assert resolver_dia(texto, date(2026, 11, 6)) == esperado
+
+
+_SEMANA = ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")
+
+
+@pytest.mark.parametrize("hoy", [date(2026, 11, 2) + timedelta(days=i) for i in range(7)])
+@pytest.mark.parametrize("nombre", _SEMANA)
+def test_resolver_dia_de_la_semana_es_el_proximo(nombre, hoy):
+    dia = resolver_dia(nombre, hoy)
+    assert dia.weekday() == _SEMANA.index(nombre)
+    assert 1 <= (dia - hoy).days <= 7
+
+
+@pytest.mark.parametrize(
+    ("texto", "hoy", "esperado"),
+    [
+        ("mañana", date(2026, 12, 31), date(2027, 1, 1)),
+        ("pasado mañana", date(2026, 12, 31), date(2027, 1, 2)),
+        ("el lunes", date(2026, 12, 31), date(2027, 1, 4)),
+        ("jueves", date(2026, 12, 31), date(2027, 1, 7)),
+        ("mañana", date(2028, 2, 28), date(2028, 2, 29)),
+    ],
+)
+def test_resolver_dia_cruza_mes_y_anio(texto, hoy, esperado):
+    assert resolver_dia(texto, hoy) == esperado
+
+
+@pytest.mark.parametrize(
+    ("texto", "esperado"),
+    [
+        ("2026-02-30", None),
+        ("2026-13-01", None),
+        ("...", None),
+        ("¿?!", None),
+        ("   ", None),
+        ("el", None),
+        ("proximo jueves", date(2026, 11, 12)),
+        ("  Pasado   Manana!!", date(2026, 11, 8)),
+        ("¡el viernes!", date(2026, 11, 13)),
+        ("MIERCOLES,", date(2026, 11, 11)),
+        (" 2026-11-09. ", date(2026, 11, 9)),
+        ("lunes o martes", None),
+    ],
+)
+def test_resolver_dia_bordes(texto, esperado):
+    assert resolver_dia(texto, date(2026, 11, 6)) == esperado

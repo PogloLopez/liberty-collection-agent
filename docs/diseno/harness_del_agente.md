@@ -51,14 +51,14 @@ necesitara lógica realmente distinta, habría que ampliar el runtime. Para cobr
 |---|---|---|---|
 | Hooks antes de una tool | Antes de ejecutar cada tool | El `customer_id` siempre sale de la sesión, nunca del LLM; valida la oferta contra el motor de reglas; aplica límites de turnos y costo | Sí |
 | Validador de salida | Antes de enviar cada mensaje | Detecta cifras o % fuera de placeholders, longitud máxima, enlaces no permitidos; renderiza los placeholders desde la base | Sí |
-| Guardrail de contenido | Entrada y salida | Temas prohibidos, lenguaje acosador o amenazante, datos personales: Amazon Bedrock Guardrails | No (clasificador administrado) |
+| Guardrail de contenido | Entrada y salida | Temas prohibidos, lenguaje acosador o amenazante, datos personales: Amazon Bedrock Guardrails (en local, la moderación de [[decisiones#D35 Moderación en local]]) | No (clasificador administrado) |
 
 Si algo bloquea la salida, se reintenta una vez con el motivo. Qué pasa después depende del origen del fallo
 ([[decisiones#D15 Fallos]]): si el fallo es nuestro, humano; si la entrada es abusiva, respuesta fija y
 cierre tras 3 strikes.
 
 **Los placeholders son la mejor idea del diseño** y conviene llevarlos al extremo: el LLM nunca escribe un
-monto, una fecha de pago ni un porcentaje. Pide la oferta por ID (`{{oferta.descuento}}`) y el renderizado
+monto, una fecha de pago ni un porcentaje en el texto. Escribe el placeholder de la oferta (`{{of_130.porcentaje_descuento}}`) y el renderizado
 determinista pone el valor aprobado (ver [[tools#Ofertas]]).
 
 **Verificación ligera antes de dar detalles de la deuda.** El número de WhatsApp puede pertenecer a otra

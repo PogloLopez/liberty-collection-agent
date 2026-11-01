@@ -1,9 +1,16 @@
+from datetime import timedelta
 from decimal import Decimal
 
 import pytest
 
-from agil.dominio.modelos import Cargo, Segmento
-from agil.dominio.reglas.ofertas import ofertas_elegibles, validar_oferta
+from agil.dominio.modelos import Cargo, Pago, Segmento
+from agil.dominio.reglas.calculos import estado_cuenta
+from agil.dominio.reglas.ofertas import (
+    condiciones,
+    ofertas_elegibles,
+    validar_fecha_promesa,
+    validar_oferta,
+)
 from agil.dominio.repositorio.memoria import RepositorioMemoria
 
 S = Segmento
@@ -147,3 +154,166 @@ def test_base_none_sin_facturas_o_aplica_a_desconocido(repo, oferta_id, aplica_a
 def test_pago_en_transito_que_cubre_el_saldo_no_abre_ofertas(repo):
     # CL-1190560: "ya pagué" el 4-nov; el pago en tránsito cubre todo el saldo
     assert ofertas_elegibles(repo, "CL-1190560", Segmento.olvidadizo) == []
+
+
+def _oferta(repo, oferta_id):
+    return next(o for o in repo.ofertas() if o.oferta_id == oferta_id)
+
+
+def test_condiciones_liquidacion_en_cuotas(repo):
+    c = condiciones(repo, "CL-1140215", _oferta(repo, "OF-142"))
+    assert c.monto_base == Decimal("427.89")
+    assert c.monto_descuento == Decimal("106.97")
+    assert c.monto_a_pagar == Decimal("320.92")
+    assert (c.numero_cuotas, c.monto_cuota) == (2, Decimal("160.46"))
+    assert c.primer_pago == Decimal("160.46")
+
+
+def test_cuotas_suman_exacto(repo):
+    c = condiciones(repo, "CL-1140215", _oferta(repo, "OF-112"))
+    assert (c.monto_cuota, c.monto_ultima_cuota) == (Decimal("71.31"), Decimal("71.34"))
+    assert c.monto_cuota * 5 + c.monto_ultima_cuota == c.monto_a_pagar
+    assert c.monto_descuento is None
+
+
+def test_descuento_sobre_lo_que_queda_tras_el_transito():
+    repo = RepositorioMemoria()
+    factura = repo.facturas("CL-1140215")[-1]
+    repo._pagos.append(
+        Pago(
+            pago_id="PG-TEST",
+            factura_id=factura.factura_id,
+            customer_id="CL-1140215",
+            fecha="2026-11-05T10:00:00-05:00",
+            monto=Decimal("27.89"),
+            canal="app",
+            estado="en_transito",
+        )
+    )
+    c = condiciones(repo, "CL-1140215", _oferta(repo, "OF-140"))
+    assert c.monto_descuento == Decimal("80.00")  # 20 % de 400.00, no de 427.89
+    assert c.monto_a_pagar == Decimal("320.00")
+
+
+def test_condiciones_prorroga_da_fecha_limite(repo):
+    c = condiciones(repo, "CL-1171492", _oferta(repo, "OF-102"))
+    assert c.fecha_limite == repo.fecha_referencia + timedelta(days=5)
+    assert c.primer_pago == c.monto_a_pagar == Decimal("76.40")
+
+
+def test_descuento_al_cargo_mensual_no_cambia_lo_que_se_paga_hoy(repo):
+    c = condiciones(repo, "CL-1100708", _oferta(repo, "OF-131"))
+    assert c.monto_a_pagar == Decimal("141.13")
+    assert c.monto_descuento == Decimal("21.17")
+
+
+def test_condiciones_descuentan_el_pago_en_transito(repo):
+    c = condiciones(repo, "CL-1173697", _oferta(repo, "OF-101"))
+    assert c.monto_base == Decimal("53.49") and c.monto_a_pagar == Decimal("23.49")
+
+
+def test_condiciones_de_oferta_que_no_aplica(repo):
+    with pytest.raises(ValueError):
+        condiciones(repo, "CL-1100708", _oferta(repo, "OF-133"))
+
+
+@pytest.mark.parametrize(("dias", "ok"), [(0, False), (1, True), (5, True), (6, False)])
+def test_ventana_de_la_promesa(repo, dias, ok):
+    fecha = repo.fecha_referencia + timedelta(days=dias)
+    v = validar_fecha_promesa(repo, "CL-1171492", S.olvidadizo, fecha)
+    assert v.ok is ok and (ok or "ventana" in v.motivo)
+
+
+def test_promesa_sin_prorroga_aprobada(repo):
+    fecha = repo.fecha_referencia + timedelta(days=1)
+    v = validar_fecha_promesa(repo, "CL-1140215", S.mora_avanzada, fecha)
+    assert not v.ok and "prórroga" in v.motivo
+
+
+def _todas_las_condiciones(repo):
+    for c in repo.clientes():
+        for seg in Segmento:
+            for o in ofertas_elegibles(repo, c.customer_id, seg):
+                yield c.customer_id, o, condiciones(repo, c.customer_id, o)
+
+
+def test_invariantes_de_condiciones_en_todo_el_mock(repo):
+    vistas = 0
+    for cid, o, c in _todas_las_condiciones(repo):
+        vistas += 1
+        assert c.monto_a_pagar >= 0, (cid, o.oferta_id)
+        assert c.monto_a_pagar <= estado_cuenta(repo, cid).saldo_tras_transito
+        if c.monto_descuento is not None and o.aplica_a != "cargo_mensual":
+            assert c.monto_descuento <= c.monto_base
+        if c.numero_cuotas:
+            n = c.numero_cuotas
+            assert c.monto_cuota * (n - 1) + c.monto_ultima_cuota == c.monto_a_pagar
+            assert 0 <= c.monto_ultima_cuota - c.monto_cuota < Decimal("0.01") * n
+            assert c.monto_cuota.as_tuple().exponent == -2
+    assert vistas > 0
+
+
+def test_sin_descuento_ni_cuotas_paga_el_saldo_tras_transito(repo):
+    for cid, _o, c in _todas_las_condiciones(repo):
+        if c.monto_descuento is None:
+            assert c.monto_a_pagar == estado_cuenta(repo, cid).saldo_tras_transito
+        if not c.numero_cuotas:
+            assert c.monto_cuota is None and c.monto_ultima_cuota is None
+        if not c.dias_prorroga:
+            assert c.fecha_limite is None
+
+
+def test_reconexion_al_cien_por_ciento_resta_todo_el_cargo():
+    repo = RepositorioMemoria()
+    cid = "CL-1100708"
+    vieja = min(
+        (f for f in repo.facturas(cid) if f.estado in ("vencida", "parcial")),
+        key=lambda f: f.fecha_vencimiento,
+    )
+    cargo = Cargo(concepto="Cargo por reconexión", monto=Decimal("15.00"))
+    con_cargo = vieja.model_copy(update={"detalle": [*vieja.detalle, cargo]})
+    repo._facturas = [con_cargo if f is vieja else f for f in repo._facturas]
+    saldo = estado_cuenta(repo, cid).saldo_tras_transito
+    c = condiciones(repo, cid, _oferta(repo, "OF-133"))
+    assert c.monto_base == c.monto_descuento == Decimal("15.00")
+    assert c.monto_a_pagar == saldo - Decimal("15.00")
+
+
+def test_cargo_mensual_descuenta_sobre_arpu(repo):
+    c = condiciones(repo, "CL-1100708", _oferta(repo, "OF-131"))
+    assert c.monto_base == repo.cliente("CL-1100708").arpu_usd
+    assert c.monto_a_pagar == estado_cuenta(repo, "CL-1100708").saldo_tras_transito
+
+
+def test_descuento_redondea_al_centavo(repo):
+    # 20 % de 427.89 = 85.578 -> 85.58
+    c = condiciones(repo, "CL-1140215", _oferta(repo, "OF-140"))
+    assert c.monto_descuento == Decimal("85.58")
+    assert c.monto_a_pagar == Decimal("342.31")
+
+
+def test_ventana_usa_la_prorroga_maxima_de_las_elegibles():
+    # Se añade una prórroga más larga para el segmento: la ventana debe crecer hasta ella.
+    repo = RepositorioMemoria()
+    of102 = _oferta(repo, "OF-102")
+    larga = of102.model_copy(
+        update={
+            "oferta_id": "OF-TEST",
+            "parametros": of102.parametros.model_copy(update={"dias_prorroga": 10}),
+        }
+    )
+    repo._ofertas = [*repo._ofertas, larga]
+    hoy = repo.fecha_referencia
+    assert validar_fecha_promesa(repo, "CL-1171492", S.olvidadizo, hoy + timedelta(days=10)).ok
+    assert not validar_fecha_promesa(repo, "CL-1171492", S.olvidadizo, hoy + timedelta(days=11)).ok
+
+
+def test_promesa_en_el_pasado_se_rechaza(repo):
+    fecha = repo.fecha_referencia - timedelta(days=1)
+    v = validar_fecha_promesa(repo, "CL-1171492", S.olvidadizo, fecha)
+    assert not v.ok and "ventana" in v.motivo
+
+
+def test_promesa_cliente_desconocido_lanza_key_error(repo):
+    with pytest.raises(KeyError):
+        validar_fecha_promesa(repo, "CL-0000000", S.olvidadizo, repo.fecha_referencia)
