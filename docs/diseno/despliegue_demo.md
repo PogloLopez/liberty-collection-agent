@@ -35,7 +35,7 @@ Precios de lista de us-east-1 consultados el 31-oct-2026, sin free tier ni créd
 blog de AWS porque la tabla vigente no se pudo leer ([[decisiones#Pendientes]], V3).
 
 **Una corrida** = una ejecución de Step Functions + una conversación de 8 turnos. Por turno: 2 llamadas a Nova
-Lite (~3.500 tokens de entrada), 1 al estratega en Nova Micro, Guardrails en la entrada y la salida, Runtime,
+Lite (~3.500 tokens de entrada cada una), 1 al estratega en Nova Micro, Guardrails en la entrada y la salida, Runtime,
 Memory, Lambda, API Gateway y DynamoDB.
 
 | Concepto | Por turno |

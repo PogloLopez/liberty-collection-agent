@@ -181,9 +181,9 @@ Lambda router** (Pablo, 31-oct).
 → [[integraciones]]
 
 ### D24 Datos personales y costo de Guardrails
-**Propuesta de Claude (31-oct), pendiente de que Pablo la confirme:**
+**Propuesta de Claude, confirmada por Pablo (31-oct):**
 - **Guardrails evalúa solo el mensaje nuevo** (`guardContent`). Si no, reevalúa todo el historial en cada
-  llamada al modelo: su costo por turno se multiplica por ~16 y pasa a ser ~9 veces el de los modelos.
+  llamada al modelo: su costo por turno se multiplica por ~16 y pasa a ser ~20 veces el de los modelos.
 - **Los logs no quedan protegidos por Guardrails.** Enmascara datos personales para el modelo, pero el log de
   invocación y sus trazas guardan el texto original. La aplicación enmascara antes de escribir en logs, OTEL,
   Memory o DynamoDB.
@@ -203,6 +203,7 @@ verdad.
 - **V2:** saber si el Proyecto de Ley 306 se sancionó. Mientras tanto se adopta como política interna.
 - **V3:** precios vigentes de Nova Lite y Micro. La tabla oficial no se pudo leer; las cifras usadas
   vienen de un blog de AWS.
-- **P1:** perfiles de los segmentos: plantillas, prompts de tono y tarjetas de estrategia.
-- **P2:** que Pablo confirme [[decisiones#D24 Datos personales y costo de Guardrails]]. El resto de las notas y
-  el documento de arquitectura ya la asumen.
+- **P1:** perfiles de los segmentos: plantillas, prompts de tono y tarjetas de estrategia. Se redactan
+  durante el desarrollo y Pablo los revisa antes de desplegar.
+
+Las ideas de [[feedback_estudio]] quedaron en D22, D23 y D24.

@@ -27,7 +27,8 @@ decidir). Lo decidido y lo pendiente vive solo en [[decisiones]]; las notas enla
   `docs/documento_arquitectura.html`, publicado en https://claude.ai/artifact/2M7xQgMLm1MioFVa9TBBmL
   ([[decisiones#D25 Documento de arquitectura]]).
 - Claude no ejecuta nada contra AWS (hook `.claude/hooks/bloquear_aws_cli.py`); Pablo corre esos comandos.
-- Fuentes literales, para no perder detalle: [[brainstorming_inicial]] y [[audio_plataforma]].
+- Fuentes literales, para no perder detalle: [[brainstorming_inicial]], [[audio_plataforma]] y
+  [[feedback_estudio]].
 
 ## Principio rector
 
