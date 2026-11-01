@@ -1,10 +1,10 @@
 """Validador de salida, antes de renderizar (harness_del_agente, D4)."""
 
 import re
-import unicodedata
 
 from agil.dominio.modelos import Validacion
 from agil.dominio.placeholders import PATRON, placeholders_en
+from agil.dominio.texto import sin_tildes
 
 _PERMITIDO = re.compile(r"\bcuatro digitos\b|\bmil (?:gracias|disculpas)\b", re.IGNORECASE)
 
@@ -38,11 +38,6 @@ _REGLAS = [
 ]
 
 
-def _sin_tildes(texto: str) -> str:
-    """Quita tildes para que "millón", "millon" y su forma NFD coincidan con las listas."""
-    return "".join(c for c in unicodedata.normalize("NFKD", texto) if not unicodedata.combining(c))
-
-
 def validar_salida(
     texto: str, placeholders_permitidos: set[str], max_caracteres: int
 ) -> Validacion:
@@ -56,7 +51,7 @@ def validar_salida(
     if desconocidos:
         nombres = ", ".join(f"{{{{{p}}}}}" for p in sorted(desconocidos))
         return Validacion(ok=False, motivo=f"Placeholder no disponible: {nombres}. No lo uses.")
-    normalizado = re.sub(r"\s+", " ", _sin_tildes(PATRON.sub(" ", texto)))
+    normalizado = re.sub(r"\s+", " ", sin_tildes(PATRON.sub(" ", texto)))
     resto = _PERMITIDO.sub(" ", normalizado)
     if "{" in resto or "}" in resto:
         return Validacion(ok=False, motivo="Placeholder mal formado: usa {{nombre}}.")
