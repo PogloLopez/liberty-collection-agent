@@ -6,7 +6,7 @@
 - `release/<X.Y.Z>`: sale de `develop`, solo ajustes de versión/docs, se mergea a `main` (con tag) y de vuelta a `develop`.
 - `hotfix/<nombre>`: sale de `main`, se mergea a `main` (tag patch) y a `develop`.
 
-Commits: Conventional Commits en español (`feat:`, `fix:`, `test:`, `docs:`, `chore:`, `refactor:`). Un commit = un cambio coherente.
+Commits: Conventional Commits en español (`feat:`, `fix:`, `test:`, `docs:`, `chore:`, `refactor:`). Commits atómicos: uno por responsabilidad (un módulo con su test, una dependencia, una decisión), nunca un hito entero; cada commit pasa los tests por sí solo.
 
 Antes de cada commit: correr `revisor` y `tester` sobre el diff en staging (`git diff --cached`), no sobre todo el repo.
 

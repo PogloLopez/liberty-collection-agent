@@ -43,6 +43,8 @@ Colombia), a Santiago Quiroz.
   (la key de Groq va en `.env`, ignorado por git).
 - Trabajar en worktrees (`git worktree add`), para no cambiar la copia que Pablo está probando.
 - Como máximo 2 subagentes a la vez.
+- Checkpoint al cerrar cada hito: qué se hizo (con la lista de commits), qué sigue, decisiones relevantes y un
+  diagrama del estado en texto, dentro del mensaje (no en un widget aparte).
 - Preguntas de decisión: de opción múltiple, con una recomendada y su trade-off. Sin sobreingeniería.
 - `cdk synth/diff/deploy/destroy` los ejecuta Pablo; los stacks se prueban en pytest con
   `aws_cdk.assertions` (sin CLI).
