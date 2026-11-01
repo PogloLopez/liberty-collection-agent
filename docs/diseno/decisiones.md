@@ -91,7 +91,9 @@ sigue por otros canales autorizados. Detección en dos capas: la Lambda router a
 ("STOP", "no me escriban") sin pasar por el LLM, y el agente usa la tool en los casos ambiguos.
 "Explícita" es lista blanca del mensaje entero: solo la frase, "más"/"nunca" y cortesía; con cualquier
 otro texto o una pregunta va al agente (Claude, 31-oct). Un falso negativo cuesta un turno; uno positivo
-pausaría WhatsApp a quien solo dijo "no me escriban hoy".
+pausaría WhatsApp a quien solo dijo "no me escriban hoy". En producción, las frases explícitas serían una
+tabla editable sin redesplegar: un agente propone frases nuevas, un humano las aprueba y una batería de
+casos las prueba antes de activarlas (Pablo, 1-nov).
 
 Excepción: si cartera ya revisó una solicitud previa y ratificó el contacto, el agente explica el motivo con
 `{{motivo_cartera}}` una vez y vuelve a la resolución, sin presionar. Riesgo (Claude): insistir por WhatsApp
@@ -228,6 +230,30 @@ los lee y la cobranza se mide por factura y ARPU.
 
 Trade-off: no distingue combos (dos `doble_play` distintos) ni clientes con varios servicios. En producción
 sería una tabla de servicios contratados (1 cliente → N servicios), con la factura y la mora por cuenta.
+
+### D28 Qué ve el LLM de una oferta
+**Metadatos y placeholders, sin cifras** (Pablo, 1-nov): `consultar_ofertas_elegibles` devuelve `oferta_id`,
+`nombre`, `tipo` y los nombres de los placeholders de esa oferta (p. ej. `{{numero_cuotas}}`,
+`{{monto_cuota}}`); nunca los valores ni `nota_interna`. El LLM redacta según el tipo de oferta y el código
+pone las cifras.
+
+Trade-off: el LLM no puede comparar ofertas por monto; eso lo hacen el perfil y el estratega.
+
+### D29 Plazos relativos
+**El validador bloquea plazos que suenan a compromiso** (Pablo, 1-nov): "pasado mañana", "la próxima
+semana", "el mes que viene", "fin de mes", "en unos días"… Permite "hoy", "mañana", "ayer", "esta
+semana" y "fin de semana", que usan los textos de referencia del mock.
+
+Trade-off: el LLM podría inventar un "páguelo esta semana"; bloquearlo rompería frases normales.
+
+### D30 Pagos recientes
+**No confirmar ni desmentir** (Pablo, 1-nov): los pagos llegan por lotes, así que ante cualquier mención de un
+pago reciente ("ya pagué", "¿lo ves?", "¿cuándo se refleja?"): si `consultar_saldo` muestra un pago en
+tránsito, el agente lo menciona con `{{monto_en_transito}}` y `{{plazo_aplicacion}}`; si no, no confirma ni
+desmiente y solo da `{{plazo_aplicacion}}`. El LLM detecta el caso; la regla va en el prompt, sin tool nueva.
+El valor ("1 a 3 días hábiles") lo pone el código desde `meta.json > parametros_reglas`; se añade en el
+hito 2.
+→ [[decisiones#D14 Tools de saldo]]
 
 ## Pendientes
 
