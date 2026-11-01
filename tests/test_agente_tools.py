@@ -74,7 +74,7 @@ def test_promesa_valida_la_ventana(repo, ahora):
     t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
     afuera = (repo.fecha_referencia + timedelta(days=9)).isoformat()
     assert "ventana" in t["registrar_promesa_pago"](fecha=afuera)
-    assert "AAAA-MM-DD" in t["registrar_promesa_pago"](fecha="el miércoles")
+    assert "No entendí" in t["registrar_promesa_pago"](fecha="cuando pueda")
     assert sesion.tarjeta is None
     dentro = (repo.fecha_referencia + timedelta(days=3)).isoformat()
     t["registrar_promesa_pago"](fecha=dentro)
@@ -251,3 +251,25 @@ def test_tarjeta_muestra_la_ultima_cuota_si_difiere(repo):
     o = next(o for o in repo.ofertas() if o.oferta_id == "OF-112")
     texto = texto_tarjeta_oferta(o, condiciones(repo, "CL-1140215", o))
     assert "6 cuotas: de $71.31 y la última de $71.34" in texto
+
+
+def test_promesa_con_el_dia_de_la_semana(repo, ahora):
+    sesion = _sesion("CL-1171492", Segmento.olvidadizo, Cola.basica)
+    t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
+    t["registrar_promesa_pago"](fecha="el miércoles")
+    assert sesion.tarjeta.fecha.isoformat() == "2026-11-11"
+
+
+@pytest.mark.parametrize("fecha", ["2026-02-30", "...", ""])
+def test_promesa_con_fecha_ilegible_no_crea_tarjeta(repo, ahora, fecha):
+    sesion = _sesion("CL-1171492", Segmento.olvidadizo, Cola.basica)
+    t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
+    assert "No entendí" in t["registrar_promesa_pago"](fecha=fecha)
+    assert sesion.tarjeta is None
+
+
+def test_promesa_con_dia_relativo_usa_la_fecha_de_referencia(repo, ahora):
+    sesion = _sesion("CL-1171492", Segmento.olvidadizo, Cola.basica)
+    t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
+    t["registrar_promesa_pago"](fecha="Mañana.")
+    assert sesion.tarjeta.fecha == repo.fecha_referencia + timedelta(days=1)

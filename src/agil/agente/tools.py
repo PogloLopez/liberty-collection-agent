@@ -3,7 +3,7 @@ tool los recibe del LLM. Las cifras vuelven junto al placeholder que el LLM debe
 
 import hashlib
 from collections.abc import Callable
-from datetime import date, datetime
+from datetime import datetime
 from enum import StrEnum
 
 from strands import tool
@@ -23,6 +23,7 @@ from agil.dominio.modelos import (
     SolicitudNoContacto,
 )
 from agil.dominio.reglas.calculos import estado_cuenta
+from agil.dominio.reglas.calendario import resolver_dia
 from agil.dominio.reglas.ofertas import condiciones, ofertas_elegibles, validar_fecha_promesa
 from agil.dominio.repositorio.interfaz import Repositorio
 
@@ -190,13 +191,12 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
         """Envía una tarjeta con botones para confirmar una promesa de pago.
 
         Args:
-            fecha: fecha acordada con el cliente, en formato AAAA-MM-DD.
+            fecha: el día que dijo el cliente ("el miércoles", "mañana") o AAAA-MM-DD.
             oferta_id: la oferta de la promesa, si la hay; si no, se promete el saldo.
         """
-        try:
-            dia = date.fromisoformat(fecha)
-        except ValueError:
-            return "Fecha inválida: usa AAAA-MM-DD."
+        dia = resolver_dia(fecha, repo.fecha_referencia)
+        if dia is None:
+            return "No entendí la fecha: usa el día de la semana, 'mañana' o AAAA-MM-DD."
         v = validar_fecha_promesa(repo, cid, sesion.segmento, dia)
         if not v.ok:
             return v.motivo

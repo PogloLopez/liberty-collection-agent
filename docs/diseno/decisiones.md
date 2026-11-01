@@ -269,9 +269,11 @@ FastAPI. Sin chat de consola: se prueba con un modelo guionado en pytest (offlin
 Groq. Trade-off: el guion no mide la calidad del LLM; eso queda para los evals.
 
 ### D32 Fecha de la promesa
-**El LLM propone, el código valida** (Pablo, 1-nov): `registrar_promesa_pago` recibe una fecha ISO acordada
-con el cliente, y la tool la rechaza con motivo si cae fuera de la ventana (mañana … hoy + la prórroga
-máxima de las ofertas elegibles). El monto lo pone siempre el código. Es la única excepción a "solo IDs" de
+**El LLM propone, el código valida** (Pablo, 1-nov): `registrar_promesa_pago` recibe el día acordado con
+el cliente, tal como lo dijo ("el miércoles", "mañana") o en ISO, y el código lo convierte en fecha: en el
+humo el LLM calculó mal los días de la semana (Claude, 1-nov). La tool la rechaza con motivo si cae
+fuera de la ventana (mañana … hoy + la prórroga máxima de las ofertas elegibles, o la fecha límite de la
+oferta elegida). El monto lo pone siempre el código. Es la única excepción a "solo IDs" de
 [[decisiones#D3 Negociación]]: una fecha acotada, nunca en el texto. Trade-off: el LLM puede proponer una
 fecha que el cliente no dijo; lo mitiga la confirmación con botones ([[decisiones#D22 Confirmación con botones]]).
 
