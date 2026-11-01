@@ -1,6 +1,6 @@
 # Infraestructura como código (IaC)
 
-Decisión abierta en [[decisiones#D12 Infraestructura como código]].
+Decidido: CDK en Python ([[decisiones#D12 Infraestructura como código]]). Qué se despliega y cuánto cuesta: [[despliegue_demo]].
 
 ## Qué es
 
@@ -32,12 +32,10 @@ Los comandos 2 a 5 los ejecuta Pablo: el hook bloquea `cdk` para Claude ([[indic
 CDK tiene constructs para AgentCore (runtime, memoria, gateway), además de DynamoDB, Lambda, Step Functions
 y el resto de servicios de [[integraciones]]. Hay que confirmar la versión exacta al implementar.
 
-## Alcance propuesto (simplificado)
+## Alcance
 
-Un solo stack con lo mínimo para correr el agente en la nube: tablas DynamoDB (estado y ofertas), runtime de
-AgentCore con su rol IAM, Guardrail de Bedrock y la Lambda router de entrada. WhatsApp, Step Functions y la
-plataforma quedan como diagrama ([[decisiones#D9 Alcance del prototipo]]).
+Un stack con todo lo de [[despliegue_demo]], salvo WhatsApp, que se reemplaza por un chat simulado. Se
+construye después de que el agente funcione en local.
 
-**Trade-off:** suma unas horas y una dependencia de desarrollo (`aws-cdk-lib`). A cambio, el despliegue se
-vuelve demostrable y defendible ("esta es la infraestructura, versionada"). Recomendación: hacerlo después de
-que el prototipo funcione en local.
+**Trade-off:** suma horas de trabajo y una dependencia de desarrollo (`aws-cdk-lib`). A cambio, el despliegue
+se puede demostrar y defender: "esta es la infraestructura, versionada".

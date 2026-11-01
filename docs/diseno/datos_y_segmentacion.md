@@ -38,7 +38,7 @@ segmentos nuevos (encaja con las recomendaciones de [[plataforma_de_gestion]]).
 | Score de churn y valor del cliente (antigüedad, ARPU, tipo de servicio) | Para clientes valiosos, retener importa más que cobrar |
 | Flags: reclamo abierto, cliente vulnerable, sin opt-in de WhatsApp, empresarial | **Excluyen** o desvían al humano (ver [[riesgos]]) |
 
-**Segmentos propuestos para discutir** (ver [[decisiones#D10 Catálogo de segmentos]]):
+**Segmentos (decididos, [[decisiones#D10 Catálogo de segmentos]])**; la cola de escalamiento de cada uno está en [[decisiones#D17 Colas de escalamiento]]:
 
 1. **Olvidadizo**: primera mora, 1-15 días, alta propensión. Recordatorio amable y link de pago; sin descuentos.
 2. **Dificultad temporal**: buen historial, mora reciente, monto medio o alto. Plan de pagos o cambio de

@@ -26,6 +26,9 @@ los humanos. Tres matices:
 3. **Aislamiento por cliente**: el `actor_id` sale de la sesión (el número de teléfono más la verificación
    que se decida en [[decisiones#D5 Verificación de identidad]]), nunca de lo que diga el modelo. Es un hook determinista de [[harness_del_agente]].
 
+**Historial en DynamoDB:** un ítem por mensaje (`PK = CLIENTE#id`, `SK = MSG#fecha`), nunca la conversación
+en un solo ítem, que chocaría con el límite de 400 KB. El agente no lo lee entero: usa la ventana de turnos.
+
 **Compactación:** resumir al cerrar cada conversación, no a mitad, y empezar la siguiente con el resumen.
 Mantiene el contexto corto sin perder hechos (relacionado con los chats largos de [[riesgos]]).
 
