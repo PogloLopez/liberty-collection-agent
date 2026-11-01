@@ -6,7 +6,7 @@ from datetime import UTC, date, datetime
 
 import pytest
 
-from agil.dominio.calendario import ZONA, en_horario_permitido, es_feriado
+from agil.dominio.reglas.calendario import ZONA, en_horario_permitido, es_feriado
 from agil.dominio.repositorio.memoria import DATOS_MOCK
 
 CONTACTOS = json.loads((DATOS_MOCK / "historial_contactos.json").read_text(encoding="utf-8"))

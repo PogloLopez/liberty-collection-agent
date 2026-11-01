@@ -1,6 +1,6 @@
 import pytest
 
-from agil.dominio.identidad import extraer_digitos, ultimos_cuatro, verificar
+from agil.dominio.harness.identidad import extraer_digitos, ultimos_cuatro, verificar
 from agil.dominio.repositorio.memoria import RepositorioMemoria
 
 

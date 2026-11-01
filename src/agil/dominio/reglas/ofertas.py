@@ -2,8 +2,8 @@
 
 from decimal import Decimal
 
-from agil.dominio.calculos import estado_cuenta, saldo_factura
 from agil.dominio.modelos import EstadoCuenta, Oferta, Segmento, Validacion
+from agil.dominio.reglas.calculos import estado_cuenta, saldo_factura
 from agil.dominio.repositorio.interfaz import Repositorio
 
 _CERO = Decimal("0.00")

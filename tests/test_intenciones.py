@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from agil.dominio.intenciones import Boton, pide_no_contacto
+from agil.dominio.harness.intenciones import Boton, pide_no_contacto
 from agil.dominio.repositorio.memoria import DATOS_MOCK
 
 

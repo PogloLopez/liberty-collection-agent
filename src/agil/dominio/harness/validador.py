@@ -2,9 +2,9 @@
 
 import re
 
+from agil.dominio.harness.placeholders import PATRON, placeholders_en
+from agil.dominio.harness.texto import sin_tildes
 from agil.dominio.modelos import Validacion
-from agil.dominio.placeholders import PATRON, placeholders_en
-from agil.dominio.texto import sin_tildes
 
 _PERMITIDO = re.compile(r"\bcuatro digitos\b|\bmil (?:gracias|disculpas)\b", re.IGNORECASE)
 

@@ -5,8 +5,8 @@ import json
 import pytest
 
 from agil.dominio.modelos import Cola, Segmento
+from agil.dominio.reglas.segmentacion import segmentar
 from agil.dominio.repositorio.memoria import DATOS_MOCK, RepositorioMemoria
-from agil.dominio.segmentacion import segmentar
 
 ORACULO = json.loads((DATOS_MOCK / "etiquetas_esperadas.json").read_text(encoding="utf-8"))
 REPO = RepositorioMemoria()

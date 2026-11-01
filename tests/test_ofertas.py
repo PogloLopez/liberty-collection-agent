@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 
 from agil.dominio.modelos import Cargo, Segmento
-from agil.dominio.ofertas import ofertas_elegibles, validar_oferta
+from agil.dominio.reglas.ofertas import ofertas_elegibles, validar_oferta
 from agil.dominio.repositorio.memoria import RepositorioMemoria
 
 S = Segmento
@@ -120,8 +120,8 @@ def test_nota_interna_no_se_serializa(repo):
 
 
 def test_base_factura_vencida_descuenta_pagos_aplicados(repo):
-    from agil.dominio.calculos import estado_cuenta, saldo_factura
-    from agil.dominio.ofertas import _monto_base
+    from agil.dominio.reglas.calculos import estado_cuenta, saldo_factura
+    from agil.dominio.reglas.ofertas import _monto_base
 
     oferta = next(o for o in repo.ofertas() if o.oferta_id == "OF-130")
     estado = estado_cuenta(repo, "CL-1193431")
@@ -135,8 +135,8 @@ def test_base_factura_vencida_descuenta_pagos_aplicados(repo):
     ("oferta_id", "aplica_a"), [("OF-130", "factura_vencida"), ("OF-101", "otro")]
 )
 def test_base_none_sin_facturas_o_aplica_a_desconocido(repo, oferta_id, aplica_a):
-    from agil.dominio.calculos import estado_cuenta
-    from agil.dominio.ofertas import _monto_base
+    from agil.dominio.reglas.calculos import estado_cuenta
+    from agil.dominio.reglas.ofertas import _monto_base
 
     oferta = next(o for o in repo.ofertas() if o.oferta_id == oferta_id)
     oferta = oferta.model_copy(update={"aplica_a": aplica_a})

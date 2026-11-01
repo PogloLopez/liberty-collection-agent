@@ -2,11 +2,11 @@
 
 from datetime import datetime
 
-from agil.dominio.calculos import estado_cuenta
-from agil.dominio.calendario import ZONA, en_horario_permitido
 from agil.dominio.modelos import Cliente, Elegibilidad, EstadoCuenta, MotivoNoElegible, Validacion
+from agil.dominio.reglas.calculos import estado_cuenta
+from agil.dominio.reglas.calendario import ZONA, en_horario_permitido
+from agil.dominio.reglas.segmentacion import exclusion
 from agil.dominio.repositorio.interfaz import Repositorio
-from agil.dominio.segmentacion import exclusion
 
 
 def _elegibilidad(cliente: Cliente, cuenta: EstadoCuenta) -> Elegibilidad:
