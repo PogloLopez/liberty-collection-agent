@@ -273,3 +273,18 @@ def test_promesa_con_dia_relativo_usa_la_fecha_de_referencia(repo, ahora):
     t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
     t["registrar_promesa_pago"](fecha="Mañana.")
     assert sesion.tarjeta.fecha == repo.fecha_referencia + timedelta(days=1)
+
+
+def test_promesa_con_plazo_en_dias(repo, ahora):
+    sesion = _sesion("CL-1171492", Segmento.olvidadizo, Cola.basica)
+    t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
+    t["registrar_promesa_pago"](fecha="dentro de 3 días")
+    assert sesion.tarjeta.fecha == repo.fecha_referencia + timedelta(days=3)
+
+
+def test_promesa_ilegible_pide_no_calcular_la_fecha(repo, ahora):
+    sesion = _sesion("CL-1171492", Segmento.olvidadizo, Cola.basica)
+    t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
+    msg = t["registrar_promesa_pago"](fecha="la próxima semana")
+    assert "No la calcules" in msg and "dentro de N días" in msg
+    assert sesion.tarjeta is None

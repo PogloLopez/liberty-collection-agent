@@ -191,12 +191,16 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
         """Envía una tarjeta con botones para confirmar una promesa de pago.
 
         Args:
-            fecha: el día que dijo el cliente ("el miércoles", "mañana") o AAAA-MM-DD.
+            fecha: el día tal como lo dijo el cliente ("el miércoles", "mañana", "el 15",
+                "dentro de 10 días"); nunca lo conviertas tú.
             oferta_id: la oferta de la promesa, si la hay; si no, se promete el saldo.
         """
         dia = resolver_dia(fecha, repo.fecha_referencia)
         if dia is None:
-            return "No entendí la fecha: usa el día de la semana, 'mañana' o AAAA-MM-DD."
+            return (
+                "No entendí la fecha. No la calcules tú: pide al cliente un día concreto (un día "
+                "de la semana, 'mañana', 'dentro de N días' o día y mes) y pásalo tal como lo diga."
+            )
         v = validar_fecha_promesa(repo, cid, sesion.segmento, dia)
         if not v.ok:
             return v.motivo

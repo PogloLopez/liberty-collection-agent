@@ -274,12 +274,15 @@ contactar, abuso, tope, fallo, handoff) viven en el código y en producción ser
 
 ### D32 Fecha de la promesa
 **El LLM propone, el código valida** (Pablo, 1-nov): `registrar_promesa_pago` recibe el día acordado con
-el cliente, tal como lo dijo ("el miércoles", "mañana") o en ISO, y el código lo convierte en fecha: en el
+el cliente, tal como lo dijo ("el miércoles", "mañana"; ISO solo se tolera, el LLM no la calcula), y el código lo convierte en fecha: en el
 humo el LLM calculó mal los días de la semana (Claude, 1-nov). La tool la rechaza con motivo si cae
 fuera de la ventana (mañana … hoy + la prórroga máxima de las ofertas elegibles, o la fecha límite de la
 oferta elegida). El monto lo pone siempre el código. Es la única excepción a "solo IDs" de
 [[decisiones#D3 Negociación]]: una fecha acotada, nunca en el texto. Trade-off: el LLM puede proponer una
 fecha que el cliente no dijo; lo mitiga la confirmación con botones ([[decisiones#D22 Confirmación con botones]]).
+Alcance (revisión de Pablo, decidido por Claude, 1-nov): todo cuenta desde hoy; entiende "dentro de N días" y
+días del mes ("el 15": el próximo que no haya pasado). "La próxima semana" o "N días después del vencimiento"
+no se convierten: la tool pide al agente un día concreto del cliente y le prohíbe calcularlo él.
 
 ### D33 Perfiles del prototipo
 **Cinco perfiles, tres detallados** (Pablo, 1-nov): olvidadizo, dificultad temporal y mora avanzada (los de

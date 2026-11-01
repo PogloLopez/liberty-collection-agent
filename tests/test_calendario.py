@@ -96,7 +96,7 @@ def test_anio_sin_calendario_falla():
         ("viernes", date(2026, 11, 13)),  # dicho un viernes: el de la otra semana
         ("EL  SÁBADO", date(2026, 11, 7)),
         ("2026-11-09", date(2026, 11, 9)),
-        ("el 15", None),
+        ("el 15", date(2026, 11, 15)),
         ("cuando pueda", None),
         ("el próximo martes.", date(2026, 11, 10)),
         ("este lunes?", date(2026, 11, 9)),
@@ -126,6 +126,7 @@ def test_resolver_dia_de_la_semana_es_el_proximo(nombre, hoy):
         ("el lunes", date(2026, 12, 31), date(2027, 1, 4)),
         ("jueves", date(2026, 12, 31), date(2027, 1, 7)),
         ("mañana", date(2028, 2, 28), date(2028, 2, 29)),
+        ("el 5", date(2026, 12, 20), date(2027, 1, 5)),
     ],
 )
 def test_resolver_dia_cruza_mes_y_anio(texto, hoy, esperado):
@@ -150,4 +151,29 @@ def test_resolver_dia_cruza_mes_y_anio(texto, hoy, esperado):
     ],
 )
 def test_resolver_dia_bordes(texto, esperado):
+    assert resolver_dia(texto, date(2026, 11, 6)) == esperado
+
+
+@pytest.mark.parametrize(
+    ("texto", "esperado"),
+    [
+        ("dentro de 10 días", date(2026, 11, 16)),
+        ("en 3 dias", date(2026, 11, 9)),
+        ("en cinco días", date(2026, 11, 11)),
+        ("dentro de un día", date(2026, 11, 7)),
+        ("en 0 días", None),
+        ("en muchos días", None),
+        ("el 15 de noviembre", date(2026, 11, 15)),
+        ("el día 20", date(2026, 11, 20)),
+        ("el 6", date(2026, 12, 6)),  # hoy es 6: el del mes siguiente
+        ("el 3 de noviembre", date(2027, 11, 3)),  # ya pasó este año
+        ("el 31", date(2026, 12, 31)),  # noviembre no tiene 31
+        ("31 de noviembre", None),
+        ("el 15 de brumario", None),
+        ("el lunes que viene", date(2026, 11, 9)),
+        ("la próxima semana", None),
+        ("10 días después de la fecha de pago", None),
+    ],
+)
+def test_resolver_dia_plazos_y_dias_del_mes(texto, esperado):
     assert resolver_dia(texto, date(2026, 11, 6)) == esperado
