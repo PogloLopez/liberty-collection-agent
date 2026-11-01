@@ -583,7 +583,7 @@
       {
         "rol": "agente",
         "hora": "2026-10-20T09:53:00-05:00",
-        "texto": "Gracias. En su factura de septiembre aparece un cargo de roaming de datos en Colombia por {{monto_cargo}}."
+        "texto": "Gracias. En su factura de {{periodo_factura}} aparece un cargo de roaming de datos en Colombia por {{monto_cargo}}."
       },
       {
         "rol": "cliente",
@@ -670,7 +670,7 @@
       {
         "rol": "agente",
         "hora": "2026-10-20T13:07:00-05:00",
-        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}}. Como siempre ha pagado a tiempo, tengo opciones: dividirlo en dos o tres cuotas, o mover su fecha de pago."
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}}. Como siempre ha pagado a tiempo, tengo opciones: dividirlo en {{numero_cuotas}} cuotas, o mover su fecha de pago."
       },
       {
         "rol": "cliente",
@@ -685,7 +685,7 @@
       {
         "rol": "agente",
         "hora": "2026-10-20T13:11:00-05:00",
-        "texto": "En tres cuotas serían {{monto_cuota}} cada una, junto con su factura de cada mes. La primera se paga al aceptar."
+        "texto": "En {{numero_cuotas}} cuotas serían {{monto_cuota}} cada una, junto con su factura de cada mes. La primera se paga al aceptar."
       },
       {
         "rol": "cliente",
@@ -904,7 +904,7 @@
       {
         "rol": "agente",
         "hora": "2026-10-23T17:47:00-05:00",
-        "texto": "Le entiendo. Un plan de pagos a seis meses lo tiene que aprobar un asesor de cartera; le paso su caso con lo que me contó para que lo contacten con una propuesta."
+        "texto": "Le entiendo. Un plan de {{numero_cuotas}} cuotas mensuales lo tiene que aprobar un asesor de cartera; le paso su caso con lo que me contó para que lo contacten con una propuesta."
       },
       {
         "rol": "cliente",
@@ -1024,7 +1024,7 @@
       {
         "rol": "agente",
         "hora": "2026-10-28T18:33:00-05:00",
-        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}} y suma dos facturas. La de septiembre incluye roaming de datos en Estados Unidos por {{monto_cargo}}, además de la cuota del equipo."
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}} y suma {{facturas_vencidas}} facturas. La de {{periodo_factura}} incluye roaming de datos en Estados Unidos por {{monto_cargo}}, además de la cuota del equipo."
       },
       {
         "rol": "cliente",
@@ -1049,7 +1049,7 @@
       {
         "rol": "agente",
         "hora": "2026-10-28T18:39:00-05:00",
-        "texto": "Registro su compromiso: {{monto_promesa}} el {{fecha_promesa}}. Para la factura de octubre le escribimos más adelante."
+        "texto": "Registro su compromiso: {{monto_promesa}} el {{fecha_promesa}}. Para la factura de {{periodo_factura_siguiente}} le escribimos más adelante."
       },
       {
         "rol": "cliente",

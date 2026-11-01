@@ -54,6 +54,7 @@ Extracto sintético de facturación y cobranza en `data/mock/` para el prototipo
 | `detalle` | `{concepto, monto}`: plan, cuota de equipo, roaming, prorrateos, recargos, créditos |
 | `subtotal`, `itbms`, `monto` | `monto = subtotal + itbms` |
 | `estado` | `pagada`, `vencida`, `parcial`, `en_disputa`, `pendiente` (aún no vence) |
+| `fecha_disputa` | Solo en facturas `en_disputa`: día en que se abrió el reclamo. Los contactos anteriores son válidos |
 
 **pagos**: `pago_id`, `factura_id`, `customer_id`, `fecha` (ISO con hora, -05:00), `monto`, `canal` (`app`,
 `banca_en_linea`, `billetera_movil`, `punto_de_pago`, `debito_automatico`), `estado` (`aplicado`, `en_transito`).
@@ -82,7 +83,8 @@ solo para mora avanzada.
 opt-in; `llamada` para empresas y vulnerables), `plantilla`, `segmento_campana`, `respondio`, `resultado`
 (`pagó`, `promesa`, `promesa_incumplida`, `sin_respuesta`, `escaló`). Máximo un contacto por día sumando todos los canales,
 en el horario de [[marco_regulatorio]]: lunes a viernes de 8:00 a 18:00 (las 18:00 ya quedan fuera), sábado de
-8:00 a 15:00, sin domingos ni feriados nacionales (ni el 2-nov). Nunca con la deuda ya cubierta ni al grupo
+8:00 a 15:00, sin domingos ni feriados nacionales (incluido el 20-dic, día de duelo nacional). El 2-nov también
+se excluye; el 4-nov (Día de la Bandera) se trata como hábil porque no está en el art. 46 del Código de Trabajo. Nunca con la deuda ya cubierta ni al grupo
 control en la campaña actual.
 
 **notas_memoria**: `nota_id`, `customer_id`, `fecha`, `origen` (`agente`, `asesor`, `sistema`),
@@ -92,8 +94,8 @@ control en la campaña actual.
 `segmento` (el de ese momento), `fecha`, `plantilla`, `resultado` (`pagó`, `abono`, `promesa`, `acuerdo`,
 `escaló`, `no_contactar`, `sin_acuerdo`), `cola_escalamiento` ([[decisiones#D17 Colas de escalamiento]]),
 `identidad_verificada`, `ofertas_presentadas`, `mensajes` (`rol`: `plantilla`, `cliente`, `agente`, `sistema`;
-`hora`; `texto`). El agente no escribe cifras, fechas ni horas: usa placeholders (`{{saldo_vencido}}`,
-`{{monto_cuota}}`, `{{fecha_promesa}}`, `{{fecha_vencimiento}}`, `{{dia_corte}}`, `{{plazo_aplicacion}}`,
+`hora`; `texto`). El agente no escribe cifras, fechas, horas, meses ni números en palabras (salvo "cuatro dígitos"): usa placeholders (`{{saldo_vencido}}`,
+`{{monto_cuota}}`, `{{numero_cuotas}}`, `{{periodo_factura}}`, `{{fecha_promesa}}`, `{{fecha_vencimiento}}`, `{{dia_corte}}`, `{{plazo_aplicacion}}`,
 `{{horario_atencion}}`…). El cliente sí escribe números. Los 4 dígitos de la cédula los valida el router de forma
 determinista y responde con `rol: sistema` ("Verificación correcta", "Los dígitos no coinciden"); nunca llegan al LLM.
 

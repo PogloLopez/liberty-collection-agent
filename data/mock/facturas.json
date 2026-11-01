@@ -5564,7 +5564,8 @@
     "subtotal": "193.39",
     "itbms": "13.54",
     "monto": "206.93",
-    "estado": "en_disputa"
+    "estado": "en_disputa",
+    "fecha_disputa": "2026-10-20"
   },
   {
     "factura_id": "F001-05142162",
