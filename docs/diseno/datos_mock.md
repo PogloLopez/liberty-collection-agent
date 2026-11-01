@@ -94,7 +94,7 @@ control en la campaña actual.
 `segmento` (el de ese momento), `fecha`, `plantilla`, `resultado` (`pagó`, `abono`, `promesa`, `acuerdo`,
 `escaló`, `no_contactar`, `sin_acuerdo`), `cola_escalamiento` ([[decisiones#D17 Colas de escalamiento]]),
 `identidad_verificada`, `ofertas_presentadas`, `mensajes` (`rol`: `plantilla`, `cliente`, `agente`, `sistema`;
-`hora`; `texto`). El agente no escribe cifras, fechas, horas, meses ni números en palabras (salvo "cuatro dígitos"): usa placeholders (`{{saldo_vencido}}`,
+`hora`; `texto`). El agente no escribe cifras, fechas, horas, plazos que suenan a compromiso ([[decisiones#D29 Plazos relativos]]), meses ni números en palabras (salvo "cuatro dígitos"): usa placeholders (`{{saldo_vencido}}`,
 `{{monto_cuota}}`, `{{numero_cuotas}}`, `{{periodo_factura}}`, `{{fecha_promesa}}`, `{{fecha_vencimiento}}`, `{{dia_corte}}`, `{{plazo_aplicacion}}`,
 `{{horario_atencion}}`…). El cliente sí escribe números. Los 4 dígitos de la cédula los valida el router de forma
 determinista y responde con `rol: sistema` ("Verificación correcta", "Los dígitos no coinciden"); nunca llegan al LLM.

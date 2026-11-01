@@ -15,8 +15,8 @@ verificación de cédula ([[decisiones#D5 Verificación de identidad]]).
 
 | Tool | Qué hace | Escribe |
 |---|---|---|
-| `consultar_saldo` 🔒 | Saldo, vencimientos, días de mora y pagos en tránsito ("ya pagué"). Cubre el requisito de la prueba ([[decisiones#D14 Tools de saldo]]) | No |
-| `consultar_ofertas_elegibles` 🔒 | IDs de ofertas preaprobadas para el segmento y el monto | No |
+| `consultar_saldo` 🔒 | Saldo, vencimientos, días de mora y pagos en tránsito ("ya pagué", [[decisiones#D30 Pagos recientes]]). Cubre el requisito de la prueba ([[decisiones#D14 Tools de saldo]]) | No |
+| `consultar_ofertas_elegibles` 🔒 | Ofertas preaprobadas para el segmento y el monto: ID, nombre, tipo y sus placeholders, sin cifras ([[decisiones#D28 Qué ve el LLM de una oferta]]) | No |
 | `aceptar_oferta` 🔒 | Acepta una oferta por ID; el motor de reglas valida | Sí |
 | `registrar_promesa_pago` 🔒 | Fecha y monto (de la oferta o del saldo) | Sí |
 | `generar_link_pago` 🔒 | Link por el saldo o la cuota acordada | Sí |
