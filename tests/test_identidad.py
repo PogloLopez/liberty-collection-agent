@@ -1,6 +1,6 @@
 import pytest
 
-from agil.dominio.harness.identidad import extraer_digitos, ultimos_cuatro, verificar
+from agil.dominio.harness.identidad import enmascarar, extraer_digitos, ultimos_cuatro, verificar
 from agil.dominio.repositorio.memoria import RepositorioMemoria
 
 
@@ -58,3 +58,15 @@ def test_verificar():
     assert not verificar(cliente, cliente.cedula)
     assert not verificar(cliente, "")
     assert not verificar(cliente, "２９０８")  # dígitos Unicode: False, sin excepción
+
+
+def test_enmascarar_sin_verificar_tapa_todo_digito():
+    assert enmascarar("cédula 8-765-1043 y tel 6123 4567", solo_cedula=False) == (
+        "cédula •-•••-•••• y tel •••• ••••"
+    )
+
+
+def test_enmascarar_verificado_solo_tapa_cedulas():
+    assert enmascarar("le pago 50 el 15; mi cédula 8-765-1043", solo_cedula=True) == (
+        "le pago 50 el 15; mi cédula •-•••-••••"
+    )
