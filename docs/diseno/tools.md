@@ -25,7 +25,9 @@ verificación de cédula ([[decisiones#D5 Verificación de identidad]]).
 | `derivar_solicitud_contacto` | El cliente pide no ser contactado: deriva al área de atención, cierra la conversación y pausa WhatsApp ([[decisiones#D13 No contactar]]) | Sí |
 | `escalar_a_humano` | Handoff a la cola que corresponda, con resumen y motivo ([[decisiones#D17 Colas de escalamiento]]) | Sí |
 
-Los montos nunca pasan por el texto del LLM: llegan por placeholders ([[decisiones#Base]], B4).
+Los montos nunca pasan por el texto del LLM: llegan por placeholders ([[decisiones#Base]], B4). Los esquemas
+no aceptan montos libres, solo IDs ([[decisiones#D3 Negociación]]). `aceptar_oferta` y `registrar_promesa_pago`
+se confirman con botones de WhatsApp que el código procesa sin LLM ([[decisiones#D22 Confirmación con botones]]).
 
 ### Ofertas
 

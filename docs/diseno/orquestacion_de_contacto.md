@@ -24,7 +24,7 @@ Primera mitad de "¿cómo funciona el agente?". Aquí no hay LLM; la parte agén
   horario, tope diario, grupo control ([[decisiones#D11 Grupo de control]]) y saldo actualizado (¿ya pagó?).
 - **Botón de pago en la plantilla**: quien solo quiere pagar lo hace sin conversar, con costo de LLM cero.
 - **AWS:** EventBridge Scheduler (triggers) + Step Functions (enviar, esperar, reintentar; la espera no cobra
-  cómputo). En la demo, un botón "Iniciar campaña" reemplaza al Scheduler ([[despliegue_demo]]).
+  cómputo). En la demo, el botón "Que sean las 9 AM" reemplaza al Scheduler ([[decisiones#D20 Formato de la demo]]).
 
 **Trade-off de los reintentos:** cada plantilla cuesta y cada mensaje extra sube el riesgo de bloqueo; por eso
 hay un máximo global por cliente.

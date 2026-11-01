@@ -47,4 +47,6 @@ Responde: ¿qué puede salir mal? Base legal en [[marco_regulatorio]]; capas de 
 | Disputa de factura ("no reconozco el cargo") | Cobrar algo disputado | Flag `disputa_factura` → se pausa el cobro y pasa a reclamos |
 | Proveedor del modelo caído o con throttling | Conversación colgada | Mensaje determinista de espera + reintento en cola; la orquestación no depende del LLM |
 | Costo desbocado | Tokens por turno × volumen | Topes de turnos y pasos, modelos pequeños, LLM solo en conversaciones activas |
+| Datos personales en logs y trazas | Privacidad (Ley 81); Guardrails enmascara para el modelo, no los logs | La aplicación enmascara antes de loguear; la cédula la verifica el código ([[decisiones#D24 Datos personales y costo de Guardrails]]) |
+| Mensajes del mismo cliente procesados en paralelo | Respuestas cruzadas o escrituras duplicadas | SQS FIFO por cliente ([[decisiones#D23 Entrada ordenada por cliente]]) |
 | Promesas que no se cumplen | Métrica inflada | Medir el cumplimiento, no solo la promesa ([[metricas]]) |

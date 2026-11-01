@@ -29,12 +29,14 @@ runtime. → [[harness_del_agente]]
 
 ### D3 Negociación
 **Ofertas por ID** de una tabla preaprobada, validadas por un motor de reglas (Pablo, 30-oct). Descartado:
-tool de negociación con prompt propio. Trade-off: lo que no está en la tabla va a un humano. → [[tools#Ofertas]]
+tool de negociación con prompt propio. Trade-off: lo que no está en la tabla va a un humano.
+Los esquemas de las tools no aceptan parámetros numéricos libres (`monto_descuento`), solo IDs cerrados
+(`oferta_id`): la inyección de prompts no tiene por dónde pedir un monto. → [[tools#Ofertas]]
 
 ### D4 Guardia de contenido
 **Bedrock Guardrails + validador determinista en línea**; juez LLM solo en auditoría por muestreo (Pablo,
-30-oct). Descartado: juez tipo JEV en cada turno (latencia y costo). Con Groq ([[decisiones#D7 Modelo para correr el prototipo]])
-solo corre el validador, y se declara en el README. → [[riesgos]]
+30-oct). Descartado: juez tipo JEV en cada turno (latencia y costo). En desarrollo local con Groq
+([[decisiones#D7 Modelo para correr el prototipo]]) solo corre el validador; la demo desplegada usa ambos. → [[riesgos]]
 
 ### D5 Verificación de identidad
 **Últimos 4 dígitos de la cédula, pedidos tarde** (Pablo, 30-oct): solo al empezar la negociación, al pedir
@@ -42,7 +44,8 @@ datos puntuales o al registrar un compromiso. Pedirla al inicio ahuyenta al clie
 plantilla no muestra montos, y un hook cancela las **tools sensibles** con motivo "verificación pendiente"
 ([[framework_strands]]): las marcadas 🔒 en [[tools]] (`consultar_saldo`, `consultar_ofertas_elegibles`, `aceptar_oferta`, `registrar_promesa_pago`, `generar_link_pago`,
 `guardar_nota` y `registrar_feedback_cliente`; un tercero no debe escribir en la cuenta). Sin verificar, el
-agente solo conversa en general y puede `escalar_a_humano` o `derivar_solicitud_contacto`. Riesgo residual
+agente solo conversa en general y puede `escalar_a_humano` o `derivar_solicitud_contacto`. Quién compara los
+dígitos: ver [[decisiones#D24 Datos personales y costo de Guardrails]]. Riesgo residual
 aceptado (Claude, 31-oct): la plantilla revela a quien tenga el número que existe un saldo pendiente. Descartados: confiar en el número (riesgo de terceros) y OTP por link (fricción).
 → [[marco_regulatorio]]
 
@@ -51,8 +54,8 @@ aceptado (Claude, 31-oct): la plantilla revela a quien tenga el número que exis
 propio sobre Converse y LangGraph. Trade-off: una dependencia joven, con la versión fijada.
 
 ### D7 Modelo para correr el prototipo
-**Groq** (free tier) en desarrollo y para el evaluador; **Bedrock** como destino, con uso muy limitado
-(Pablo, 30-oct). El cambio es una variable (`LLM_PROVIDER`) que elige el objeto modelo en la factory; tools,
+**Groq** (free tier) en desarrollo local; **Bedrock (Nova)** en la demo desplegada para el evaluador
+([[decisiones#D9 Alcance del prototipo]]) y en producción (Pablo, 30 y 31-oct). El cambio es una variable (`LLM_PROVIDER`) que elige el objeto modelo en la factory; tools,
 hooks y prompts no cambian. A declarar: sin Guardrails en Groq, modelos distintos (hay que correr los evals en
 ambos) y límites del free tier. La key de Groq va en `.env`, nunca en el repo.
 
@@ -64,7 +67,7 @@ a mano cuando haga falta.
 ### D9 Alcance del prototipo
 **Desplegado en AWS de verdad, encendido solo durante la evaluación** (Pablo, 31-oct). Incluye:
 - chat que simula WhatsApp (sin canal real);
-- botón "Iniciar campaña" que lanza Step Functions;
+- botón que lanza Step Functions ([[decisiones#D20 Formato de la demo]]);
 - agente en AgentCore;
 - consola mock de cartera.
 
@@ -135,3 +138,71 @@ corresponde a Desarrollo, fuera de Analítica Avanzada. → [[plataforma_de_gest
 ### D19 Ollama
 **No se usa** (Pablo, 31-oct): Groq en desarrollo y Bedrock en la nube. El PC de Pablo (40 GB de RAM, sin
 GPU compatible) podría correr un modelo de 3-4B en CPU, pero los modelos pequeños fallan más con 9 tools.
+
+### D20 Formato de la demo
+**Pantalla dividida y tres escenarios reales** (Pablo, 31-oct).
+- A un lado el chat que simula WhatsApp; al otro, el recorrido del pipeline paso a paso.
+- Botón **"Que sean las 9 AM"**: inicia Step Functions directamente, y la pantalla marca el paso del
+  Scheduler como simulado. Se descartó crear un schedule real porque dispara con 60 s de precisión.
+- Un escenario por segmento: olvidadizo, dificultad temporal y mora avanzada. Cambian la plantilla, el tono,
+  las ofertas y la estrategia.
+- No son guiones: ejecutan el pipeline real en AWS, salvo el Scheduler.
+- Al evaluador se le dice qué cliente es y qué papel asumir, pero puede salirse del papel (un olvidadizo que
+  negocia o se resiste). El estratega cambia de táctica, y las ofertas siguen acotadas por el perfil
+  ([[decisiones#D16 Turnos y estratega]]).
+
+→ [[despliegue_demo]]
+
+### D21 Tools en la demo
+**AgentCore Gateway + una Lambda por tool, reales** (Pablo, 31-oct). Plan B si falta tiempo: tools dentro del
+agente, con el mismo código y los mismos hooks. → [[despliegue_demo]]
+
+### D22 Confirmación con botones
+**Botones interactivos de WhatsApp para confirmar mutaciones** como aceptar una oferta o registrar una
+promesa (Pablo, 31-oct; idea del estudio con otro agente).
+- Dentro de la ventana de 24 h no necesitan plantilla.
+- El toque llega a la Lambda router como un ID fijo, y el código confirma sin reinterpretación del LLM.
+- En la demo, el chat dibuja los botones.
+
+→ [[tools]]
+
+### D23 Entrada ordenada por cliente
+**Solo en producción: SNS estándar → Lambda de ingesta → SQS FIFO (`MessageGroupId` = número de WhatsApp) →
+Lambda router** (Pablo, 31-oct).
+- **Por qué:** procesa en orden los mensajes de cada cliente y evita condiciones de carrera. AWS no documenta
+  qué pasa con dos invocaciones simultáneas a la misma sesión de AgentCore.
+- **Por qué la Lambda de ingesta:** End User Messaging Social no admite tópicos SNS FIFO.
+- **Ráfagas** ("hola", "tengo una consulta"): la Lambda router une los mensajes de un mismo cliente que llegan
+  en el mismo lote.
+- **Descartado:** `MaximumBatchingWindowInSeconds`, que no aplica a colas FIFO y en colas estándar no agrupa
+  por remitente.
+- **En la demo:** la API es síncrona y el chat bloquea el envío mientras el agente responde.
+
+→ [[integraciones]]
+
+### D24 Datos personales y costo de Guardrails
+**Propuesta de Claude (31-oct), pendiente de que Pablo la confirme:**
+- **Guardrails evalúa solo el mensaje nuevo** (`guardContent`). Si no, reevalúa todo el historial en cada
+  llamada al modelo: su costo por turno se multiplica por ~16 y pasa a ser ~9 veces el de los modelos.
+- **Los logs no quedan protegidos por Guardrails.** Enmascara datos personales para el modelo, pero el log de
+  invocación y sus trazas guardan el texto original. La aplicación enmascara antes de escribir en logs, OTEL,
+  Memory o DynamoDB.
+- **Los 4 dígitos de la cédula los verifica el código:** con la verificación pendiente, la Lambda router
+  intercepta la respuesta, y el número nunca llega al LLM.
+
+→ [[riesgos]]
+
+### D25 Documento de arquitectura
+**El mapa técnico es el documento** (Pablo, 31-oct): `docs/documento_arquitectura.html`, sin registro de
+decisiones ni pendientes, y con una sección corta de trade-offs. Este registro sigue siendo la fuente de
+verdad.
+
+## Pendientes
+
+- **V1:** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
+- **V2:** saber si el Proyecto de Ley 306 se sancionó. Mientras tanto se adopta como política interna.
+- **V3:** precios vigentes de Nova Lite y Micro. La tabla oficial no se pudo leer; las cifras usadas
+  vienen de un blog de AWS.
+- **P1:** perfiles de los segmentos: plantillas, prompts de tono y tarjetas de estrategia.
+- **P2:** que Pablo confirme [[decisiones#D24 Datos personales y costo de Guardrails]]. El resto de las notas y
+  el documento de arquitectura ya la asumen.

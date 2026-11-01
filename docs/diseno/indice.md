@@ -1,7 +1,8 @@
 # Proyecto Ágil: diseño del sistema
 
 Agentes de IA que gestionan por WhatsApp a clientes de LLA Panamá con facturas vencidas, para facilitar
-el pago o llegar a un acuerdo. Infraestructura 100% AWS; el prototipo corre en local.
+el pago o llegar a un acuerdo. Infraestructura 100% AWS. El prototipo se desarrolla en local y se despliega en AWS solo durante la evaluación
+([[despliegue_demo]]).
 
 Cada nota separa **Propuesta** (diseño de Pablo) y **Feedback** (observaciones de Claude, aún sin
 decidir). Lo decidido y lo pendiente vive solo en [[decisiones]]; las notas enlazan ahí en vez de repetirlo.
@@ -22,7 +23,9 @@ decidir). Lo decidido y lo pendiente vive solo en [[decisiones]]; las notas enla
 - [[framework_strands]]: cómo funciona el framework del agente y por qué se eligió.
 - [[infraestructura_como_codigo]]: qué es IaC y cómo se aplicaría aquí con CDK.
 - [[despliegue_demo]]: qué se despliega para la evaluación, cuándo se enciende y cuánto cuesta.
-- Mapa visual de bajo nivel (flujo + servicios): https://claude.ai/artifact/2M7xQgMLm1MioFVa9TBBmL
+- Documento de arquitectura para el evaluador: el mapa de bajo nivel (flujo + servicios) en
+  `docs/documento_arquitectura.html`, publicado en https://claude.ai/artifact/2M7xQgMLm1MioFVa9TBBmL
+  ([[decisiones#D25 Documento de arquitectura]]).
 - Claude no ejecuta nada contra AWS (hook `.claude/hooks/bloquear_aws_cli.py`); Pablo corre esos comandos.
 - Fuentes literales, para no perder detalle: [[brainstorming_inicial]] y [[audio_plataforma]].
 
