@@ -267,6 +267,10 @@ atiende cada mensaje (cédula, no contactar explícito, toques de botones, moder
 validador con un reintento y render de placeholders) y llama al agente; el hito 3 solo la envuelve en
 FastAPI. Sin chat de consola: se prueba con un modelo guionado en pytest (offline) y un script de humo contra
 Groq. Trade-off: el guion no mide la calidad del LLM; eso queda para los evals.
+Detalles (Claude, 1-nov): sin verificar, ningún dígito llega a un modelo y, verificado, ninguna cédula; tres
+intentos fallidos bloquean la verificación y el agente ofrece un asesor; el contexto del turno y la estrategia
+no se guarda en el historial; las ofertas llegan ordenadas de menos a más generosa; los textos fijos (no
+contactar, abuso, tope, fallo, handoff) viven en el código y en producción serían plantillas aprobadas por legal.
 
 ### D32 Fecha de la promesa
 **El LLM propone, el código valida** (Pablo, 1-nov): `registrar_promesa_pago` recibe el día acordado con
