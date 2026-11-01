@@ -2,13 +2,9 @@
 ni feriados."""
 
 from datetime import date, datetime, time, timedelta, timezone
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-try:
-    ZONA = ZoneInfo("America/Panama")
-except ZoneInfoNotFoundError:
-    # Windows sin tzdata. Panamá no tiene horario de verano: el offset fijo es equivalente.
-    ZONA = timezone(timedelta(hours=-5), "America/Panama")
+# Panamá no tiene horario de verano: el offset fijo evita depender de tzdata (falta en Windows).
+ZONA = timezone(timedelta(hours=-5), "America/Panama")
 
 # Art. 46 del Código de Trabajo + 20-dic (duelo nacional). El 2-nov no se contacta (datos_mock.md);
 # el 4-nov es hábil.
