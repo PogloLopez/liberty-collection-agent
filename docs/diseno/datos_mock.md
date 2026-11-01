@@ -36,7 +36,7 @@ Extracto sintético de facturación y cobranza en `data/mock/` para el prototipo
 | `telefono_whatsapp` | +507 6xxx-xxxx, ficticio |
 | `provincia`, `distrito`, `corregimiento` | Ubicación real de Panamá |
 | `fecha_alta` | Antigüedad |
-| `tipo_servicio`, `plan` | `movil_pospago`, `internet_hogar`, `tv`, `doble_play`, `triple_play`, `internet_dedicado`; nombres de plan inventados |
+| `tipo_servicio`, `plan` | `movil_pospago`, `internet_hogar`, `tv`, `doble_play`, `triple_play`, `internet_dedicado`; nombres de plan inventados ([[decisiones#D27 Servicios del cliente]]) |
 | `arpu_usd` | Promedio de cargos recurrentes con ITBMS de las 3 últimas facturas |
 | `fecha_corte` | Día de emisión |
 | `fecha_corte_anterior`, `fecha_cambio_corte` | Solo si cambió el ciclo |

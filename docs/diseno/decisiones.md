@@ -215,6 +215,13 @@ verdad.
 
 Trade-off: el adaptador DynamoDB solo se ejercita contra LocalStack, no en pytest.
 
+### D27 Servicios del cliente
+**Atributos del cliente** (Pablo, 1-nov): `tipo_servicio` y `plan` siguen en `clientes`; ninguna regla
+los lee y la cobranza se mide por factura y ARPU.
+
+Trade-off: no distingue combos (dos `doble_play` distintos) ni clientes con varios servicios. En producción
+sería una tabla de servicios contratados (1 cliente → N servicios), con la factura y la mora por cuenta.
+
 ## Pendientes
 
 - **V1:** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
