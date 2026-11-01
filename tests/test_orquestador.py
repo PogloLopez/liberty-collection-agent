@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 
 import pytest
 from conftest import ModeloGuionado
@@ -316,3 +317,35 @@ def test_abuso_no_cuenta_turno_y_llega_como_evento(repo, ahora):
     assert sesion.turno == 0 and agente.recibido == []
     orq.atender(sesion, "perdón")
     assert "strike 1 de 3" in agente.todo_lo_recibido()
+
+
+def test_tope_de_pasos_insistente_responde_el_texto_fijo(repo, ahora):
+    agente = ModeloGuionado(*[("consultar_saldo", {})] * 20)
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.verificada = True
+    r = orq.atender(sesion, "¿cuánto debo?")
+    assert r.mensajes == [TEXTOS["pasos"]] and not r.cerrada
+
+
+def test_verificacion_vencida_pide_de_nuevo_los_digitos(repo, ahora):
+    reloj = {"t": ahora()}
+    agente = ModeloGuionado("¿Me da los últimos cuatro dígitos de su cédula?", "Gracias.", "Hola.")
+    orq = _orq(repo, lambda: reloj["t"], agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "hola")
+    orq.atender(sesion, _digitos(repo))
+    assert sesion.verificada and sesion.verificada_en == reloj["t"]
+    reloj["t"] += timedelta(hours=12)
+    orq.atender(sesion, "sigo aquí")
+    assert not sesion.verificada
+    assert "La verificación venció" in agente.todo_lo_recibido()
+
+
+def test_tope_de_pasos_tras_un_cierre_usa_el_texto_del_cierre(repo, ahora):
+    escalar = ("escalar_a_humano", {"motivo": "pide_humano", "resumen": "x"})
+    agente = ModeloGuionado(escalar, *[("consultar_saldo", {})] * 20)
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    r = orq.atender(sesion, "quiero un asesor")
+    assert r.cerrada and r.mensajes == [TEXTOS["handoff"]]

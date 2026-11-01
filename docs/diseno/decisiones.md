@@ -271,6 +271,10 @@ Detalles (Claude, 1-nov): sin verificar, ningún dígito llega a un modelo y, ve
 intentos fallidos bloquean la verificación y el agente ofrece un asesor; el contexto del turno y la estrategia
 no se guarda en el historial; las ofertas llegan ordenadas de menos a más generosa; los textos fijos (no
 contactar, abuso, tope, fallo, handoff) viven en el código y en producción serían plantillas aprobadas por legal.
+Revisión de Pablo (1-nov): la verificación dura 12 horas o hasta el cierre; el contexto va después del texto
+del cliente para no cortar el caché por prefijo (Groq y el caché implícito de Nova en Bedrock comparan el
+prefijo exacto); el tope de pasos le dice al agente qué resumir y, si insiste en llamar tools, el código corta
+el bucle y responde un texto fijo.
 
 ### D32 Fecha de la promesa
 **El LLM propone, el código valida** (Pablo, 1-nov): `registrar_promesa_pago` recibe el día acordado con

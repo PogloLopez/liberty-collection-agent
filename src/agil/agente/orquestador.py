@@ -17,7 +17,7 @@ from strands.agent.conversation_manager import SlidingWindowConversationManager
 
 from agil.agente.auxiliares import clasificar_momento, es_abusivo, resumir, tarjeta_estrategia
 from agil.agente.config import Modelos
-from agil.agente.hooks import Controles
+from agil.agente.hooks import RESPUESTA_TOPE, Controles
 from agil.agente.perfiles import cargar_perfil, prompt_sistema
 from agil.agente.sesion import MAX_INTENTOS_CEDULA, MAX_STRIKES, Respuesta, Sesion
 from agil.agente.tools import crear_tools
@@ -50,6 +50,7 @@ TEXTOS = {
     "fallo": "Disculpe, tuve un inconveniente. Un asesor continuará la conversación con usted.",
     "handoff": "Un asesor continuará la conversación con usted. Gracias por su paciencia.",
     "sin_tarjeta": "Esa opción ya no está disponible.",
+    "pasos": RESPUESTA_TOPE,
 }
 _PIDE_CEDULA = re.compile(r"\bcedula\b|\bcuatro digitos\b", re.I)
 _tracer = trace.get_tracer("agil.orquestador")
@@ -131,6 +132,11 @@ class Orquestador:
             return self._boton(sesion, boton)
         if pide_no_contacto(texto):
             return self._no_contactar(sesion, texto)
+        if sesion.vencer_verificacion(self.ahora()):
+            sesion.eventos.append(
+                "[sistema] La verificación venció (12 horas): pide de nuevo los cuatro dígitos "
+                "antes de dar datos de la cuenta."
+            )
 
         # Ninguna cédula llega a un modelo; sin verificar, ningún dígito (D24). Solo cuenta como
         # intento si el agente la pidió ("1500" es ambiguo).
@@ -190,8 +196,12 @@ class Orquestador:
 
     def _invocar(self, sesion: Sesion, mensaje: str) -> str | None:
         """Respuesta validada del agente, o None si falla dos veces (D4, D15)."""
-        agente = self._agente(sesion)
+        agente, controles = self._agente(sesion)
         texto = str(agente(mensaje)).strip()
+        if controles.agotado:  # el modelo siguió pidiendo tools tras el tope (K1)
+            trace.get_current_span().add_event("tope_pasos", {"pasos": controles.pasos})
+            sesion.historial = list(agente.messages)
+            return None if sesion.cerrada else TEXTOS["pasos"]
         v = validar_salida(texto, set(sesion.valores), sesion.max_caracteres)
         trace.get_current_span().add_event("validador", {"ok": v.ok, "motivo": v.motivo or ""})
         if not v.ok and not sesion.cerrada:
@@ -207,14 +217,15 @@ class Orquestador:
         sesion.historial = list(agente.messages)
         return texto if v.ok else None
 
-    def _agente(self, sesion: Sesion) -> Agent:
+    def _agente(self, sesion: Sesion) -> tuple[Agent, Controles]:
         cliente = self.repo.cliente(sesion.customer_id)
         perfil = cargar_perfil(sesion.segmento)
-        return Agent(
+        controles = Controles(self.repo, sesion, self.ahora)
+        agente = Agent(
             model=self.modelos.agente,
             system_prompt=prompt_sistema(perfil, cliente, self.ahora()),
             tools=crear_tools(self.repo, sesion, self.ahora),
-            hooks=[Controles(self.repo, sesion)],
+            hooks=[controles],
             messages=sesion.historial,
             conversation_manager=SlidingWindowConversationManager(window_size=20),
             callback_handler=None,
@@ -223,6 +234,7 @@ class Orquestador:
                 "agil.segmento": sesion.segmento.value,
             },
         )
+        return agente, controles
 
     # --- Lo que resuelve el código ---
 
@@ -231,6 +243,7 @@ class Orquestador:
         cliente = self.repo.cliente(sesion.customer_id)
         if verificar(cliente, digitos):
             sesion.verificada = True
+            sesion.verificada_en = self.ahora()
             sesion.cedula_pedida = False
             evento = "[sistema] Verificación de cédula correcta."
             notas = self.repo.notas(sesion.customer_id)[-3:]

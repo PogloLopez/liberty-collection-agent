@@ -3,6 +3,9 @@
 Cada bloqueo explica el motivo: el modelo lo recibe como resultado de la tool y no repite la acción.
 """
 
+from collections.abc import Callable
+from datetime import datetime
+
 from strands.hooks import (
     AfterInvocationEvent,
     BeforeInvocationEvent,
@@ -17,6 +20,17 @@ from agil.dominio.reglas.ofertas import validar_oferta
 from agil.dominio.repositorio.interfaz import Repositorio
 
 MAX_PASOS = 6  # tools por turno
+INSISTENCIA = 2  # tools canceladas por el tope antes de cortar el bucle
+
+TOPE_DE_PASOS = (
+    "Límite de pasos del turno: no llames más tools. Responde ya al cliente: resume lo que sí se "
+    "completó en este turno y lo que quedó cancelado y, si falta algo, pídele que lo retome en su "
+    "siguiente mensaje."
+)
+# Si el modelo insiste tras el tope, el turno termina con este texto fijo (también en el historial).
+RESPUESTA_TOPE = (
+    "Avancé con una parte de su solicitud. Escríbame de nuevo y terminamos lo que falta."
+)
 
 VERIFICACION_PENDIENTE = (
     "Verificación pendiente: antes de esta tool pide al cliente los últimos cuatro dígitos de su "
@@ -28,11 +42,19 @@ VERIFICACION_BLOQUEADA = (
 
 
 class Controles(HookProvider):
-    def __init__(self, repo: Repositorio, sesion: Sesion, max_pasos: int = MAX_PASOS) -> None:
+    def __init__(
+        self,
+        repo: Repositorio,
+        sesion: Sesion,
+        ahora: Callable[[], datetime],
+        max_pasos: int = MAX_PASOS,
+    ) -> None:
         self.repo = repo
         self.sesion = sesion
+        self.ahora = ahora
         self.max_pasos = max_pasos
         self.pasos = 0
+        self.agotado = False  # el modelo insistió tras el tope: el orquestador usa su texto fijo
         self.bloque: dict | None = None
 
     def register_hooks(self, registry: HookRegistry, **kwargs) -> None:
@@ -41,14 +63,16 @@ class Controles(HookProvider):
         registry.add_callback(AfterInvocationEvent, self.quitar_contexto)
 
     def inyectar_contexto(self, event: BeforeInvocationEvent) -> None:
-        """Contador de turnos y tarjeta del estratega (D16), delante del mensaje del cliente."""
+        """Contador de turnos y tarjeta del estratega (D16), después del mensaje del cliente: así
+        el mensaje queda igual al quitarlo y el caché por prefijo del proveedor no se corta."""
         self.pasos = 0
+        self.agotado = False
         self.bloque = None
         if not self.sesion.contexto or not event.messages:
             return
         *previos, ultimo = event.messages
         self.bloque = {"text": "\n".join(self.sesion.contexto)}
-        event.messages = [*previos, {**ultimo, "content": [self.bloque, *ultimo["content"]]}]
+        event.messages = [*previos, {**ultimo, "content": [*ultimo["content"], self.bloque]}]
 
     def quitar_contexto(self, event: AfterInvocationEvent) -> None:
         """El contexto es efímero: no se acumula en el historial ni gasta tokens en otros turnos."""
@@ -59,8 +83,12 @@ class Controles(HookProvider):
         nombre = event.tool_use["name"]
         self.pasos += 1
         if self.pasos > self.max_pasos:
-            event.cancel_tool = "Límite de pasos del turno: responde ya al cliente."
+            event.cancel_tool = TOPE_DE_PASOS
+            if self.pasos > self.max_pasos + INSISTENCIA:
+                self.agotado = True
+                event.agent.cancel(message=RESPUESTA_TOPE)
             return
+        self.sesion.vencer_verificacion(self.ahora())
         if nombre in SENSIBLES and not self.sesion.verificada:
             bloqueada = self.sesion.intentos_cedula >= MAX_INTENTOS_CEDULA
             self.sesion.cedula_pedida = not bloqueada

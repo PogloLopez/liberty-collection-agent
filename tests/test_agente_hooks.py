@@ -1,11 +1,13 @@
 import json
+from datetime import timedelta
+from decimal import Decimal
 
 import pytest
 from conftest import ModeloGuionado
 from strands import Agent
 
 from agil.agente.hooks import VERIFICACION_PENDIENTE, Controles
-from agil.agente.sesion import Sesion
+from agil.agente.sesion import Sesion, Tarjeta
 from agil.agente.tools import SENSIBLES, crear_tools
 from agil.dominio.modelos import Cola, Segmento
 
@@ -26,7 +28,7 @@ def _agente(repo, sesion, ahora, modelo, max_pasos=6):
     return Agent(
         model=modelo,
         tools=crear_tools(repo, sesion, ahora),
-        hooks=[Controles(repo, sesion, max_pasos)],
+        hooks=[Controles(repo, sesion, ahora, max_pasos)],
         callback_handler=None,
     )
 
@@ -103,13 +105,13 @@ def test_tope_de_pasos_por_turno(repo, ahora):
     assert any("Límite de pasos" in r for r in _resultados_de_tools(modelo))
 
 
-def test_contexto_se_inyecta_antes_del_mensaje_del_cliente(repo, ahora):
+def test_contexto_se_inyecta_despues_del_mensaje_del_cliente(repo, ahora):
     sesion = _sesion(contexto=["[contexto] Turno 2 de 10."])
     modelo = ModeloGuionado("Hola.")
     _agente(repo, sesion, ahora, modelo)("Cliente: hola")
     _, mensajes = modelo.recibido[0]
     textos = [b["text"] for b in mensajes[-1]["content"]]
-    assert textos == ["[contexto] Turno 2 de 10.", "Cliente: hola"]
+    assert textos == ["Cliente: hola", "[contexto] Turno 2 de 10."]
 
 
 def test_contexto_no_queda_en_el_historial(repo, ahora):
@@ -166,3 +168,37 @@ def test_sin_contexto_el_mensaje_queda_igual(repo, ahora):
     _agente(repo, _sesion(), ahora, modelo)("Cliente: hola")
     _, mensajes = modelo.recibido[0]
     assert [b["text"] for b in mensajes[-1]["content"]] == ["Cliente: hola"]
+
+
+def test_insistir_tras_el_tope_corta_el_bucle(repo, ahora):
+    sesion = _sesion(verificada=True)
+    controles = Controles(repo, sesion, ahora, max_pasos=1)
+    modelo = ModeloGuionado(*[("consultar_saldo", {})] * 10, "Listo.")
+    agente = Agent(model=modelo, tools=crear_tools(repo, sesion, ahora), hooks=[controles])
+    agente("saldo")
+    assert controles.agotado
+    assert agente.messages[-1]["role"] == "assistant"  # historial válido para Bedrock Converse
+
+
+@pytest.mark.parametrize(("horas", "vigente"), [(11.9, True), (12, False)])
+def test_verificacion_dura_12_horas(repo, ahora, horas, vigente):
+    sesion = _sesion(
+        verificada=True,
+        verificada_en=ahora() - timedelta(hours=horas),
+        valores={"saldo_vencido": "$1.00"},
+        tarjeta=Tarjeta(tipo="promesa", texto="x", monto=Decimal("1")),
+    )
+    modelo = ModeloGuionado(("consultar_saldo", {}), "Ok.")
+    _agente(repo, sesion, ahora, modelo)("¿cuánto debo?")
+    assert sesion.verificada is vigente
+    assert ("saldo_vencido" in sesion.valores) is vigente  # al vencer se descartan las cifras
+    assert (sesion.tarjeta is not None) is vigente  # y la tarjeta pendiente
+    assert any(VERIFICACION_PENDIENTE in r for r in _resultados_de_tools(modelo)) is not vigente
+
+
+def test_aceptar_oferta_de_otro_segmento_se_cancela(repo, ahora):
+    sesion = _sesion(verificada=True)  # mora avanzada; OF-102 es de olvidadizo
+    modelo = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-102"}), "Ok.")
+    _agente(repo, sesion, ahora, modelo)("quiero esa")
+    assert any("segmento" in r for r in _resultados_de_tools(modelo))
+    assert sesion.tarjeta is None and "OF-102" not in sesion.condiciones
