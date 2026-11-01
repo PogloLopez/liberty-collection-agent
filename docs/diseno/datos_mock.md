@@ -109,7 +109,7 @@ Variables, calculadas a la fecha de referencia:
 
 - **Días de mora**: desde el vencimiento de la factura `vencida` o `parcial` más antigua.
 - **Saldo vencido**: monto menos pagos aplicados de esas facturas. Las facturas `en_disputa` no cuentan.
-- **Moras en 12 meses**: facturas que vencieron en los últimos 365 días y se pagaron tarde o siguen sin pagar.
+- **Moras en 12 meses**: facturas que vencieron en los últimos 365 días y se pagaron tarde o siguen sin pagar; las facturas en disputa no cuentan.
 - **Score vigente**: calculado hace 7 días o menos. Si falta o está vencido se usa el valor conservador
   (propensión 0.30, churn 0.00, atraso 1.00), que nunca habilita beneficios.
 
