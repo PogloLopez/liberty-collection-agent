@@ -97,6 +97,7 @@ Excepción: si cartera ya revisó una solicitud previa y ratificó el contacto, 
 `{{motivo_cartera}}` una vez y vuelve a la resolución, sin presionar. Riesgo (Claude): insistir por WhatsApp
 contra la voluntad del cliente puede costar la calidad del número ante Meta y choca con "el cliente decide el
 canal" del Proyecto 306. Por eso la ratificación debería preferir otros canales. → [[marco_regulatorio]]
+El evento queda en el historial del agente ([[decisiones#D22 Confirmación con botones]]).
 
 ### D14 Tools de saldo
 **`consultar_saldo` fusiona estado de cuenta y pagos en tránsito** (Pablo, 31-oct). Una tool menos, y cubre
@@ -166,6 +167,11 @@ promesa (Pablo, 31-oct; idea del estudio con otro agente).
 - Dentro de la ventana de 24 h no necesitan plantilla.
 - El toque llega a la Lambda router como un ID fijo, y el código confirma sin reinterpretación del LLM.
 - En la demo, el chat dibuja los botones.
+- **El LLM se entera** (Pablo, 1-nov): la tarjeta enviada y el toque del cliente entran al historial del
+  agente como eventos resumidos y sin montos ("tarjeta: oferta OF-110", "el cliente confirmó"), para que
+  siga la conversación con naturalidad. Igual con todo lo que el router resuelve sin LLM: la verificación
+  (el resultado, nunca los dígitos) y el no contactar (cierra la conversación: el evento llega al resumen de
+  cierre y a la siguiente). El código decide; el LLM solo queda informado.
 
 → [[tools]]
 
@@ -191,7 +197,7 @@ Lambda router** (Pablo, 31-oct).
   invocación y sus trazas guardan el texto original. La aplicación enmascara antes de escribir en logs, OTEL,
   Memory o DynamoDB.
 - **Los 4 dígitos de la cédula los verifica el código:** con la verificación pendiente, la Lambda router
-  intercepta la respuesta, y el número nunca llega al LLM.
+  intercepta la respuesta, y el número nunca llega al LLM; solo el resultado ([[decisiones#D22 Confirmación con botones]]).
 
 → [[riesgos]]
 
@@ -212,7 +218,7 @@ verdad.
   emula AgentCore ni Nova. La app local sí habla con LocalStack por `localhost`.
 - **Contratos:** pydantic v2 (montos en `Decimal`).
 - **Código:** en `src/agil/`, y el dominio en `src/agil/dominio/`: `repositorio/`, `reglas/`
-  (deterministas) y `harness/` ([[harness_del_agente]]); `modelos.py` en la raíz (Claude, 1-nov).
+  (deterministas) y `harness/` ([[harness_del_agente]]); `modelos.py` en la raíz de `dominio/` (Claude, 1-nov).
 
 Trade-off: el adaptador DynamoDB solo se ejercita contra LocalStack, no en pytest.
 
