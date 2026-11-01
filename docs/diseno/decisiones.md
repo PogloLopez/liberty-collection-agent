@@ -57,7 +57,7 @@ propio sobre Converse y LangGraph. Trade-off: una dependencia joven, con la vers
 **Groq** (free tier) en desarrollo local; **Bedrock (Nova)** en la demo desplegada para el evaluador
 ([[decisiones#D9 Alcance del prototipo]]) y en producción (Pablo, 30 y 31-oct). El cambio es una variable (`LLM_PROVIDER`) que elige el objeto modelo en la factory; tools,
 hooks y prompts no cambian. A declarar: sin Guardrails en Groq, modelos distintos (hay que correr los evals en
-ambos) y límites del free tier. La key de Groq va en `.env`, nunca en el repo.
+ambos) y límites del free tier. La key de Groq va en `.env`, nunca en el repo. Stack local en [[decisiones#D26 Stack de desarrollo]].
 
 ### D8 Repositorio
 **Repo nuevo: `liberty-collection-agent`** (Pablo, 30 y 31-oct), privado en GitHub. El anterior
@@ -89,6 +89,9 @@ consentimiento), así que el agente no da de baja la obligación. `derivar_solic
 solicitud para el área de atención, cierra la conversación y pausa WhatsApp para ese cliente; la cobranza
 sigue por otros canales autorizados. Detección en dos capas: la Lambda router atrapa las frases explícitas
 ("STOP", "no me escriban") sin pasar por el LLM, y el agente usa la tool en los casos ambiguos.
+"Explícita" es lista blanca del mensaje entero: solo la frase, "más"/"nunca" y cortesía; con cualquier
+otro texto o una pregunta va al agente (Claude, 31-oct). Un falso negativo cuesta un turno; uno positivo
+pausaría WhatsApp a quien solo dijo "no me escriban hoy".
 
 Excepción: si cartera ya revisó una solicitud previa y ratificó el contacto, el agente explica el motivo con
 `{{motivo_cartera}}` una vez y vuelve a la resolución, sin presionar. Riesgo (Claude): insistir por WhatsApp
@@ -196,6 +199,21 @@ Lambda router** (Pablo, 31-oct).
 **El mapa técnico es el documento** (Pablo, 31-oct): `docs/documento_arquitectura.html`, sin registro de
 decisiones ni pendientes, y con una sección corta de trade-offs. Este registro sigue siendo la fuente de
 verdad.
+
+### D26 Stack de desarrollo
+**Acordado con Pablo (31-oct):**
+- **API:** FastAPI + Mangum: la misma app corre con uvicorn en local y como Lambda router.
+- **Frontend:** HTML + JS sin build; FastAPI lo sirve en local y en la nube va a S3.
+- **Modelo local:** Strands con su proveedor OpenAI apuntando a la API compatible de Groq, sin LiteLLM.
+- **Datos:** un repositorio con la misma interfaz en memoria (pytest, offline) y en DynamoDB (LocalStack en
+  local, real en la nube).
+- **LocalStack** (token en `.env`; plan Hobby, no comercial: Pablo confirma que aplica) solo para DynamoDB y
+  S3 en local, y para un ensayo opcional del stack sin AgentCore antes del deploy, que ejecuta Pablo; no
+  emula AgentCore ni Nova. La app local sí habla con LocalStack por `localhost`.
+- **Contratos:** pydantic v2 (montos en `Decimal`).
+- **Código:** en `src/agil/`, y el dominio en `src/agil/dominio/`.
+
+Trade-off: el adaptador DynamoDB solo se ejercita contra LocalStack, no en pytest.
 
 ## Pendientes
 

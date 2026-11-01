@@ -69,7 +69,7 @@ Solo los aplicados cambian el estado de la factura; los en tránsito los muestra
 |---|---|
 | `oferta_id`, `nombre`, `tipo` | `pago_total_link`, `plan_cuotas`, `cambio_fecha_corte`, `descuento_retencion`, `liquidacion` |
 | `segmentos_elegibles` | Dónde puede ofrecerse |
-| `aplica_a` | Sobre qué monto actúa |
+| `aplica_a` | Base del rango: `saldo_vencido`; `factura_vencida` (saldo pendiente de la más antigua); `cargo_mensual` (ARPU); `cargo_reconexion` (cargos cuyo concepto dice "reconexión"); `cuenta` sin rango |
 | `parametros` | `porcentaje_descuento` (string), `numero_cuotas`, `dias_prorroga` (int); `null` si no aplica |
 | `monto_min`, `monto_max` | Rango de saldo en que es válida |
 | `vigencia_desde`, `vigencia_hasta` | OF-132 ya venció: el motor debe rechazarla |
@@ -83,7 +83,7 @@ solo para mora avanzada.
 opt-in; `llamada` para empresas y vulnerables), `plantilla`, `segmento_campana`, `respondio`, `resultado`
 (`pagó`, `promesa`, `promesa_incumplida`, `sin_respuesta`, `escaló`). Máximo un contacto por día sumando todos los canales,
 en el horario de [[marco_regulatorio]]: lunes a viernes de 8:00 a 18:00 (las 18:00 ya quedan fuera), sábado de
-8:00 a 15:00, sin domingos ni feriados nacionales (incluido el 20-dic, día de duelo nacional). El 2-nov también
+8:00 a 15:00, sin domingos ni feriados nacionales (incluido el 20-dic, día de duelo nacional); el feriado que cae en domingo se descansa el lunes. El 2-nov también
 se excluye; el 4-nov (Día de la Bandera) se trata como hábil porque no está en el art. 46 del Código de Trabajo. Nunca con la deuda ya cubierta ni al grupo
 control en la campaña actual.
 
@@ -109,7 +109,7 @@ Variables, calculadas a la fecha de referencia:
 
 - **Días de mora**: desde el vencimiento de la factura `vencida` o `parcial` más antigua.
 - **Saldo vencido**: monto menos pagos aplicados de esas facturas. Las facturas `en_disputa` no cuentan.
-- **Moras en 12 meses**: facturas que vencieron en los últimos 365 días y se pagaron tarde o siguen sin pagar.
+- **Moras en 12 meses**: facturas que vencieron en los últimos 365 días y se pagaron tarde o siguen sin pagar; las facturas en disputa no cuentan.
 - **Score vigente**: calculado hace 7 días o menos. Si falta o está vencido se usa el valor conservador
   (propensión 0.30, churn 0.00, atraso 1.00), que nunca habilita beneficios.
 
