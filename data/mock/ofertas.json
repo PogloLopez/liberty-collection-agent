@@ -1,0 +1,310 @@
+[
+  {
+    "oferta_id": "OF-101",
+    "nombre": "Pago total con link",
+    "tipo": "pago_total_link",
+    "segmentos_elegibles": [
+      "olvidadizo",
+      "dificultad_temporal",
+      "reincidente",
+      "valioso_churn",
+      "mora_avanzada"
+    ],
+    "aplica_a": "saldo_vencido",
+    "parametros": {
+      "porcentaje_descuento": null,
+      "numero_cuotas": null,
+      "dias_prorroga": null
+    },
+    "monto_min": "0.01",
+    "monto_max": "5000.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": false,
+    "nota_interna": "Siempre disponible. Es la oferta base de todos los segmentos."
+  },
+  {
+    "oferta_id": "OF-102",
+    "nombre": "Pago total con prórroga de 5 días",
+    "tipo": "pago_total_link",
+    "segmentos_elegibles": [
+      "olvidadizo",
+      "dificultad_temporal"
+    ],
+    "aplica_a": "saldo_vencido",
+    "parametros": {
+      "porcentaje_descuento": null,
+      "numero_cuotas": null,
+      "dias_prorroga": 5
+    },
+    "monto_min": "0.01",
+    "monto_max": "300.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": false,
+    "nota_interna": "Promesa con fecha corta; sin descuento."
+  },
+  {
+    "oferta_id": "OF-103",
+    "nombre": "Pago total con prórroga de 3 días",
+    "tipo": "pago_total_link",
+    "segmentos_elegibles": [
+      "reincidente"
+    ],
+    "aplica_a": "saldo_vencido",
+    "parametros": {
+      "porcentaje_descuento": null,
+      "numero_cuotas": null,
+      "dias_prorroga": 3
+    },
+    "monto_min": "0.01",
+    "monto_max": "400.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": false,
+    "nota_interna": "Reincidente: fecha corta y sin descuento inicial."
+  },
+  {
+    "oferta_id": "OF-110",
+    "nombre": "Plan de 2 cuotas sin recargo",
+    "tipo": "plan_cuotas",
+    "segmentos_elegibles": [
+      "dificultad_temporal",
+      "reincidente"
+    ],
+    "aplica_a": "saldo_vencido",
+    "parametros": {
+      "porcentaje_descuento": null,
+      "numero_cuotas": 2,
+      "dias_prorroga": null
+    },
+    "monto_min": "40.00",
+    "monto_max": "400.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": false,
+    "nota_interna": ""
+  },
+  {
+    "oferta_id": "OF-111",
+    "nombre": "Plan de 3 cuotas sin recargo",
+    "tipo": "plan_cuotas",
+    "segmentos_elegibles": [
+      "dificultad_temporal",
+      "valioso_churn"
+    ],
+    "aplica_a": "saldo_vencido",
+    "parametros": {
+      "porcentaje_descuento": null,
+      "numero_cuotas": 3,
+      "dias_prorroga": null
+    },
+    "monto_min": "80.00",
+    "monto_max": "600.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": false,
+    "nota_interna": ""
+  },
+  {
+    "oferta_id": "OF-112",
+    "nombre": "Plan de 6 cuotas",
+    "tipo": "plan_cuotas",
+    "segmentos_elegibles": [
+      "mora_avanzada"
+    ],
+    "aplica_a": "saldo_vencido",
+    "parametros": {
+      "porcentaje_descuento": null,
+      "numero_cuotas": 6,
+      "dias_prorroga": null
+    },
+    "monto_min": "200.00",
+    "monto_max": "2500.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": true,
+    "nota_interna": "Lo aprueba cartera especializada."
+  },
+  {
+    "oferta_id": "OF-113",
+    "nombre": "Plan de 4 cuotas con primera cuota al aceptar",
+    "tipo": "plan_cuotas",
+    "segmentos_elegibles": [
+      "reincidente"
+    ],
+    "aplica_a": "saldo_vencido",
+    "parametros": {
+      "porcentaje_descuento": null,
+      "numero_cuotas": 4,
+      "dias_prorroga": null
+    },
+    "monto_min": "120.00",
+    "monto_max": "400.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": true,
+    "nota_interna": "Solo si no hay promesas incumplidas abiertas."
+  },
+  {
+    "oferta_id": "OF-120",
+    "nombre": "Cambio de fecha de corte",
+    "tipo": "cambio_fecha_corte",
+    "segmentos_elegibles": [
+      "dificultad_temporal",
+      "valioso_churn"
+    ],
+    "aplica_a": "cuenta",
+    "parametros": {
+      "porcentaje_descuento": null,
+      "numero_cuotas": null,
+      "dias_prorroga": null
+    },
+    "monto_min": "0.01",
+    "monto_max": "5000.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": false,
+    "nota_interna": "Corte permitido: 1, 5, 10, 15, 20 o 25. Primer mes con cobro proporcional."
+  },
+  {
+    "oferta_id": "OF-130",
+    "nombre": "Bonificación de retención 10%",
+    "tipo": "descuento_retencion",
+    "segmentos_elegibles": [
+      "valioso_churn"
+    ],
+    "aplica_a": "factura_vencida",
+    "parametros": {
+      "porcentaje_descuento": "10.00",
+      "numero_cuotas": null,
+      "dias_prorroga": null
+    },
+    "monto_min": "50.00",
+    "monto_max": "400.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": false,
+    "nota_interna": "Se acredita en la factura siguiente al pago."
+  },
+  {
+    "oferta_id": "OF-131",
+    "nombre": "Descuento de retención 15% por 3 meses",
+    "tipo": "descuento_retencion",
+    "segmentos_elegibles": [
+      "valioso_churn"
+    ],
+    "aplica_a": "cargo_mensual",
+    "parametros": {
+      "porcentaje_descuento": "15.00",
+      "numero_cuotas": null,
+      "dias_prorroga": null
+    },
+    "monto_min": "50.00",
+    "monto_max": "600.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": true,
+    "nota_interna": ""
+  },
+  {
+    "oferta_id": "OF-132",
+    "nombre": "Descuento de retención 20% (campaña septiembre)",
+    "tipo": "descuento_retencion",
+    "segmentos_elegibles": [
+      "valioso_churn"
+    ],
+    "aplica_a": "factura_vencida",
+    "parametros": {
+      "porcentaje_descuento": "20.00",
+      "numero_cuotas": null,
+      "dias_prorroga": null
+    },
+    "monto_min": "50.00",
+    "monto_max": "400.00",
+    "vigencia_desde": "2026-09-01",
+    "vigencia_hasta": "2026-10-31",
+    "requiere_aprobacion_humana": false,
+    "nota_interna": "Vencida a la fecha de referencia: el motor debe rechazarla."
+  },
+  {
+    "oferta_id": "OF-133",
+    "nombre": "Exoneración del cargo por reconexión",
+    "tipo": "descuento_retencion",
+    "segmentos_elegibles": [
+      "valioso_churn"
+    ],
+    "aplica_a": "cargo_reconexion",
+    "parametros": {
+      "porcentaje_descuento": "100.00",
+      "numero_cuotas": null,
+      "dias_prorroga": null
+    },
+    "monto_min": "10.00",
+    "monto_max": "600.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": false,
+    "nota_interna": ""
+  },
+  {
+    "oferta_id": "OF-140",
+    "nombre": "Liquidación con 20% de descuento, pago único",
+    "tipo": "liquidacion",
+    "segmentos_elegibles": [
+      "mora_avanzada"
+    ],
+    "aplica_a": "saldo_vencido",
+    "parametros": {
+      "porcentaje_descuento": "20.00",
+      "numero_cuotas": null,
+      "dias_prorroga": null
+    },
+    "monto_min": "150.00",
+    "monto_max": "1500.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": false,
+    "nota_interna": ""
+  },
+  {
+    "oferta_id": "OF-141",
+    "nombre": "Liquidación con 35% de descuento, pago único",
+    "tipo": "liquidacion",
+    "segmentos_elegibles": [
+      "mora_avanzada"
+    ],
+    "aplica_a": "saldo_vencido",
+    "parametros": {
+      "porcentaje_descuento": "35.00",
+      "numero_cuotas": null,
+      "dias_prorroga": null
+    },
+    "monto_min": "300.00",
+    "monto_max": "3000.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": true,
+    "nota_interna": ""
+  },
+  {
+    "oferta_id": "OF-142",
+    "nombre": "Liquidación con 25% de descuento en 2 cuotas",
+    "tipo": "liquidacion",
+    "segmentos_elegibles": [
+      "mora_avanzada"
+    ],
+    "aplica_a": "saldo_vencido",
+    "parametros": {
+      "porcentaje_descuento": "25.00",
+      "numero_cuotas": 2,
+      "dias_prorroga": null
+    },
+    "monto_min": "200.00",
+    "monto_max": "2000.00",
+    "vigencia_desde": "2026-07-01",
+    "vigencia_hasta": "2026-12-31",
+    "requiere_aprobacion_humana": false,
+    "nota_interna": ""
+  }
+]

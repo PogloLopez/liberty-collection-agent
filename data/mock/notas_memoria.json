@@ -1,0 +1,273 @@
+[
+  {
+    "nota_id": "NT-40212",
+    "customer_id": "CL-1084058",
+    "fecha": "2025-03-11T19:28:00-05:00",
+    "origen": "asesor",
+    "conversacion_id": null,
+    "texto": "Titular con discapacidad visual; pide que lo atiendan por llamada, no por mensajes.",
+    "flags": [
+      "cliente_vulnerable"
+    ]
+  },
+  {
+    "nota_id": "NT-40217",
+    "customer_id": "CL-1181514",
+    "fecha": "2026-05-20T17:09:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2605-59400",
+    "texto": "Se le pasó la fecha, pagó por la app en el momento. Cliente tranquilo.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40225",
+    "customer_id": "CL-1080054",
+    "fecha": "2026-07-01T10:25:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2607-35401",
+    "texto": "Estaba de viaje. Aceptó la bonificación de retención (OF-130) y pagó en el momento.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40231",
+    "customer_id": "CL-1145774",
+    "fecha": "2026-07-14T12:30:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2607-48102",
+    "texto": "Cobra quincena el 15 y el 30; con corte el 5 la factura le vence el 26 y nunca le cuadra. Se solicitó cambio de corte al 20 (OF-120). Paga mañana 15.",
+    "flags": [
+      "fecha_pago_desfasada"
+    ]
+  },
+  {
+    "nota_id": "NT-40240",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-07-17T16:30:00-05:00",
+    "origen": "agente",
+    "conversacion_id": null,
+    "texto": "Prometió pagar el viernes 24 cuando le paguen. Contesta rápido pero esquiva comprometerse con fecha.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40249",
+    "customer_id": "CL-1220088",
+    "fecha": "2026-07-27T11:15:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2607-41303",
+    "texto": "Se equivocó con los dígitos la primera vez (no contó el 8 de la E-8). Pagó con billetera móvil al momento.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40258",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-07-31T11:51:00-05:00",
+    "origen": "sistema",
+    "conversacion_id": null,
+    "texto": "Pagó una semana después de lo prometido.",
+    "flags": [
+      "promesa_incumplida"
+    ]
+  },
+  {
+    "nota_id": "NT-40265",
+    "customer_id": "CL-1140215",
+    "fecha": "2026-08-14T10:52:00-05:00",
+    "origen": "agente",
+    "conversacion_id": null,
+    "texto": "Lo despidieron en julio; ahora trabaja por su cuenta haciendo fletes. Promete abonar a fin de mes.",
+    "flags": [
+      "dificultad_economica"
+    ]
+  },
+  {
+    "nota_id": "NT-40272",
+    "customer_id": "CL-1140215",
+    "fecha": "2026-09-03T13:44:00-05:00",
+    "origen": "agente",
+    "conversacion_id": null,
+    "texto": "No abonó lo de fin de mes. Dice que la cosa está floja, que paga apenas pueda.",
+    "flags": [
+      "promesa_incumplida"
+    ]
+  },
+  {
+    "nota_id": "NT-40278",
+    "customer_id": "CL-1126269",
+    "fecha": "2026-09-18T09:24:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2609-92704",
+    "texto": "Trabaja limpiando casas por día, ingresos irregulares. Abonó en punto de pago lo que tenía. Pide que no la presionen.",
+    "flags": [
+      "dificultad_economica"
+    ]
+  },
+  {
+    "nota_id": "NT-40281",
+    "customer_id": "CL-1201205",
+    "fecha": "2026-10-14T11:20:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2610-11405",
+    "texto": "Molesta por la cantidad de mensajes; pidió que no le escriban más por WhatsApp. Dice que sabe que debe y que pagará cuando pueda. Derivado a atención, WhatsApp pausado.",
+    "flags": [
+      "solicita_no_contacto"
+    ]
+  },
+  {
+    "nota_id": "NT-40291",
+    "customer_id": "CL-1019515",
+    "fecha": "2026-10-16T15:35:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2610-59206",
+    "texto": "Escribe la hija: la titular, adulta mayor, está hospitalizada hace 3 semanas. No se dieron datos de la cuenta. Escalado a especializada.",
+    "flags": [
+      "cliente_vulnerable"
+    ]
+  },
+  {
+    "nota_id": "NT-40299",
+    "customer_id": "CL-1100708",
+    "fecha": "2026-10-19T13:30:00-05:00",
+    "origen": "asesor",
+    "conversacion_id": null,
+    "texto": "Llamó molesto por caídas del internet en Betania desde septiembre. Dice que la competencia le ofreció fibra más barata. Se agendó visita técnica.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40305",
+    "customer_id": "CL-1131469",
+    "fecha": "2026-10-19T19:16:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2610-88507",
+    "texto": "Muy molesto: el internet se cae todas las noches desde septiembre. Rechazó el descuento, quiere que le arreglen el servicio. Amenaza con irse a la competencia. Escalado a negociación.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40308",
+    "customer_id": "CL-1161090",
+    "fecha": "2026-10-20T09:59:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2610-13708",
+    "texto": "No reconoce el roaming en Colombia de la factura de septiembre; dice que no ha salido del país en todo el año. Reclamo abierto, no enviar recordatorios por esa factura.",
+    "flags": [
+      "disputa_factura"
+    ]
+  },
+  {
+    "nota_id": "NT-40316",
+    "customer_id": "CL-1152549",
+    "fecha": "2026-10-20T13:16:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2610-49409",
+    "texto": "Le bajaron las horas en el call center y está cobrando la mitad. Le interesa el plan de 3 cuotas pero quiere ver cómo le queda la quincena. Siempre había pagado puntual.",
+    "flags": [
+      "dificultad_economica"
+    ]
+  },
+  {
+    "nota_id": "NT-40327",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-10-21T15:27:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2610-18410",
+    "texto": "Respondió manejando; dio los dígitos 40 min después. Promete pagar todo el sábado 24.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40334",
+    "customer_id": "CL-1193431",
+    "fecha": "2026-10-22T08:54:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2610-47611",
+    "texto": "Abonó una parte por la app el 21. El resto lo paga el viernes 30 cuando le paguen.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40341",
+    "customer_id": "CL-1140215",
+    "fecha": "2026-10-23T17:50:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2610-96512",
+    "texto": "La liquidación en un pago no le alcanza; pide algo mensual. Necesita el internet para trabajar. Escalado a especializada para plan a 6 meses (OF-112).",
+    "flags": [
+      "dificultad_economica"
+    ]
+  },
+  {
+    "nota_id": "NT-40343",
+    "customer_id": "CL-1187267",
+    "fecha": "2026-10-26T16:07:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2610-52113",
+    "texto": "Pidió una persona desde el primer mensaje; no quiso seguir con el agente. Escalado a negociación.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40353",
+    "customer_id": "CL-1191572",
+    "fecha": "2026-10-27T16:05:00-05:00",
+    "origen": "sistema",
+    "conversacion_id": null,
+    "texto": "No pagó el 24. Segundo incumplimiento del año.",
+    "flags": [
+      "promesa_incumplida"
+    ]
+  },
+  {
+    "nota_id": "NT-40357",
+    "customer_id": "CL-1262023",
+    "fecha": "2026-10-28T18:40:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2610-92914",
+    "texto": "No sabía que el roaming del viaje a Orlando salía tan caro. Promete pagar la factura de septiembre el viernes 30 y la de octubre a fin de mes.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40369",
+    "customer_id": "CL-1226407",
+    "fecha": "2026-10-31T10:39:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2610-99415",
+    "texto": "La persona que responde dice que el número no es del titular (lo tiene hace unos dos meses). No se dio ningún dato de la cuenta. Escalado a básica para actualizar el contacto.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40376",
+    "customer_id": "CL-1193431",
+    "fecha": "2026-10-31T11:21:00-05:00",
+    "origen": "sistema",
+    "conversacion_id": null,
+    "texto": "No pagó el resto el 30 como había quedado. Sin respuesta al recordatorio.",
+    "flags": [
+      "promesa_incumplida"
+    ]
+  },
+  {
+    "nota_id": "NT-40380",
+    "customer_id": "CL-1262023",
+    "fecha": "2026-10-31T17:46:00-05:00",
+    "origen": "sistema",
+    "conversacion_id": null,
+    "texto": "No pagó la factura de septiembre el 30.",
+    "flags": [
+      "promesa_incumplida"
+    ]
+  },
+  {
+    "nota_id": "NT-40386",
+    "customer_id": "CL-1113646",
+    "fecha": "2026-11-01T09:10:00-05:00",
+    "origen": "sistema",
+    "conversacion_id": null,
+    "texto": "Débito automático rechazado: tarjeta vencida. El cliente no ha actualizado el medio de pago.",
+    "flags": []
+  },
+  {
+    "nota_id": "NT-40396",
+    "customer_id": "CL-1210081",
+    "fecha": "2026-11-04T10:30:00-05:00",
+    "origen": "agente",
+    "conversacion_id": "CV-2611-18016",
+    "texto": "Dice que no le llegó la factura al correo y por eso no pagó. Se compromete a pagar el viernes 6; no tenía la tarjeta a mano. Dio mal los dígitos la primera vez (puso solo 3).",
+    "flags": []
+  }
+]

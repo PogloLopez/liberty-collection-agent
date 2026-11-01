@@ -1,0 +1,38 @@
+{
+  "fecha_referencia": "2026-11-06",
+  "moneda": "USD",
+  "zona_horaria": "America/Panama",
+  "descripcion": "Extracto sintético de facturación y cobranza de clientes residenciales y empresariales con facturas vencidas (LLA Panamá, prototipo). Datos ficticios: nombres, cédulas y teléfonos no corresponden a personas reales. Los días de mora se calculan contra fecha_referencia.",
+  "impuesto": {
+    "nombre": "ITBMS",
+    "tasa": "0.07"
+  },
+  "parametros_reglas": {
+    "dias_mora_olvidadizo_max": 15,
+    "dias_mora_avanzada_min": 61,
+    "saldo_monto_alto_usd": "400.00",
+    "moras_reincidente_min": 3,
+    "propension_olvidadizo_min": "0.60",
+    "riesgo_atraso_olvidadizo_max": "0.50",
+    "arpu_valioso_min_usd": "70.00",
+    "antiguedad_valioso_min_meses": 24,
+    "riesgo_churn_valioso_min": "0.60",
+    "score_vigencia_dias": 7,
+    "score_fallback": {
+      "propension_pago": "0.300",
+      "riesgo_churn": "0.000",
+      "riesgo_atraso": "1.000"
+    }
+  },
+  "conteos": {
+    "clientes": 65,
+    "facturas": 772,
+    "pagos": 657,
+    "scores_ml": 63,
+    "ofertas": 15,
+    "historial_contactos": 338,
+    "notas_memoria": 27,
+    "conversaciones_ejemplo": 18,
+    "etiquetas_esperadas": 65
+  }
+}
