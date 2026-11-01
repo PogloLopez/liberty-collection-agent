@@ -5,8 +5,8 @@ Umbrales desde meta.json."""
 from decimal import Decimal
 
 from agil.dominio.calculos import variables
-from agil.dominio.datos import Repositorio
 from agil.dominio.modelos import Cliente, Cola, EstadoScore, Segmentacion, Segmento
+from agil.dominio.repositorio.interfaz import Repositorio
 
 _COLAS = {
     Segmento.mora_avanzada: Cola.especializada,

@@ -4,8 +4,8 @@ from datetime import datetime
 
 from agil.dominio.calculos import estado_cuenta
 from agil.dominio.calendario import ZONA, en_horario_permitido
-from agil.dominio.datos import Repositorio
 from agil.dominio.modelos import Cliente, Elegibilidad, EstadoCuenta, MotivoNoElegible, Validacion
+from agil.dominio.repositorio.interfaz import Repositorio
 from agil.dominio.segmentacion import exclusion
 
 

@@ -2,9 +2,9 @@ from decimal import Decimal
 
 import pytest
 
-from agil.dominio.datos import RepositorioMemoria
 from agil.dominio.modelos import Cargo, Segmento
 from agil.dominio.ofertas import ofertas_elegibles, validar_oferta
+from agil.dominio.repositorio.memoria import RepositorioMemoria
 
 S = Segmento
 
