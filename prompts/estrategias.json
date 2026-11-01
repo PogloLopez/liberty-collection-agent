@@ -9,5 +9,6 @@
   "evasion": "Retoma con una pregunta cerrada y amable sobre cómo prefiere resolver.",
   "enojo": "Baja el tono: reconoce la molestia sin justificarte, en una frase, y ofrece ayuda concreta o un asesor.",
   "disputa": "No discutas la factura: escala a un asesor con motivo disputa.",
-  "pide_humano": "Si ya intentaste ayudar una vez, escala con motivo pide_humano; si no, ofrece resolverlo tú en una frase."
+  "pide_humano": "Si ya intentaste ayudar una vez, escala con motivo pide_humano; si no, ofrece resolverlo tú en una frase.",
+  "conforme": "El cliente ya resolvió: agradece y despídete en una frase. No vuelvas a enviar el link ni ofrezcas nada más."
 }

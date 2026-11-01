@@ -46,6 +46,11 @@ def test_cada_momento_tiene_tarjeta_menos_otro():
     assert tarjeta_estrategia(Momento.otro) is None
 
 
+def test_prompt_del_estratega_lista_todo_el_catalogo():
+    lista = re.findall(r"^- (\w+)", (PROMPTS / "estratega.md").read_text(encoding="utf-8"), re.M)
+    assert lista == [m.value for m in Momento]
+
+
 def test_tarjetas_pasan_el_validador():
     """Si el agente copiara una tarjeta, no traería cifras."""
     for texto in json.loads((PROMPTS / "estrategias.json").read_text(encoding="utf-8")).values():
@@ -58,6 +63,8 @@ def test_tarjetas_pasan_el_validador():
         ("pago_reciente", Momento.pago_reciente),
         ("  Enojo.", Momento.enojo),
         ("Etiqueta: duda", Momento.duda),
+        ("Conforme.", Momento.conforme),
+        ("otro, conforme", Momento.conforme),
         ("evasión", Momento.evasion),
         ("no sé", None),
         ("", None),

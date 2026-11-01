@@ -32,6 +32,7 @@ class Momento(StrEnum):
     enojo = "enojo"
     disputa = "disputa"
     pide_humano = "pide_humano"
+    conforme = "conforme"
     otro = "otro"
 
 

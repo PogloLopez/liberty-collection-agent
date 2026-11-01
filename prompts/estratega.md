@@ -12,4 +12,5 @@ con UNA sola etiqueta de esta lista, sin explicación:
 - enojo
 - disputa: dice que la factura está mal
 - pide_humano
+- conforme: agradece o se despide después de recibir el link o registrar la promesa, sin pedir nada más
 - otro
