@@ -239,6 +239,8 @@ proponer primero la oferta más baja y subir solo ante insistencia clara del cli
 escribiendo placeholders y el validador bloquea cualquier cifra ([[decisiones#Base]], B4).
 Placeholders con prefijo de oferta (`{{of_104.monto_cuota}}`) para que el código no ponga la cifra de otra
 oferta (Claude, 1-nov). Igual con `consultar_saldo`: cifras visibles, texto con placeholders.
+El descuento se calcula sobre lo que queda por pagar tras los pagos en tránsito, y las cuotas suman
+exacto: la última absorbe los centavos del redondeo (Claude, 1-nov).
 
 Trade-off: el LLM conoce el techo de la negociación; si el prompt falla, puede ofrecer el máximo de entrada
 (siempre dentro de la tabla).

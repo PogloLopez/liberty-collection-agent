@@ -225,6 +225,26 @@ class EstadoCuenta(Modelo):
     saldo_tras_transito: Monto  # nunca negativo
 
 
+class CondicionesOferta(Modelo):
+    """Cifras de una oferta para un cliente: el LLM las lee y escribe sus placeholders (D28)."""
+
+    oferta_id: str
+    monto_base: Monto
+    monto_a_pagar: Monto
+    porcentaje_descuento: Monto | None = None
+    monto_descuento: Monto | None = None
+    numero_cuotas: int | None = None
+    monto_cuota: Monto | None = None
+    monto_ultima_cuota: Monto | None = None  # absorbe los centavos del redondeo
+    dias_prorroga: int | None = None
+    fecha_limite: date | None = None
+
+    @property
+    def primer_pago(self) -> Decimal:
+        """Lo que cobra el link o compromete la promesa: la primera cuota o el total."""
+        return self.monto_cuota or self.monto_a_pagar
+
+
 class Validacion(Modelo):
     """Resultado de una regla determinista; `motivo` explica al LLM por qué se bloqueó."""
 

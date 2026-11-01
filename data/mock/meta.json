@@ -18,6 +18,7 @@
     "antiguedad_valioso_min_meses": 24,
     "riesgo_churn_valioso_min": "0.60",
     "score_vigencia_dias": 7,
+    "plazo_aplicacion_pago": "1 a 3 días hábiles",
     "score_fallback": {
       "propension_pago": "0.300",
       "riesgo_churn": "0.000",
