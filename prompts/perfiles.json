@@ -1,0 +1,10 @@
+{
+  "max_caracteres": 400,
+  "segmentos": {
+    "olvidadizo": {"max_turnos": 8},
+    "dificultad_temporal": {"max_turnos": 12},
+    "mora_avanzada": {"max_turnos": 10},
+    "reincidente": {"max_turnos": 10},
+    "valioso_churn": {"max_turnos": 12}
+  }
+}
