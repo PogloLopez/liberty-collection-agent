@@ -656,3 +656,89 @@ def test_la_tarjeta_sigue_si_su_monto_no_cambio(repo, ahora):
     assert sesion.valores["saldo_tras_transito"] != saldo and sesion.tarjeta == tarjeta
     recibido = agente.todo_lo_recibido()
     assert "La cuenta del cliente cambió" in recibido and "Se anuló la tarjeta" not in recibido
+
+
+def test_la_respuesta_trae_los_pasos_del_turno(repo, ahora):
+    agente = ModeloGuionado(("registrar_promesa_pago", {"fecha": "mañana"}))
+    orq, sesion = _verificada(repo, ahora, agente)
+    r = orq.atender(sesion, "le pago mañana")
+    nombres = [p for p, _ in r.pasos]
+    assert nombres == ["Contador", "Tool registrar_promesa_pago", "Tarjeta con botones"]
+    r2 = orq.atender(sesion, boton=Boton.confirmar)
+    assert [p for p, _ in r2.pasos] == ["Botón", "Registro"]
+    assert sesion.pasos == [] and "pasos" not in sesion.model_dump()
+
+
+def test_los_pasos_muestran_la_tool_bloqueada_y_el_validador(repo, ahora):
+    agente = ModeloGuionado(("consultar_saldo", {}), "Su saldo es $76.40.", "Necesito sus dígitos.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    pasos = dict(orq.atender(sesion, "¿cuánto debo?").pasos)
+    assert pasos["Tool consultar_saldo"].startswith("bloqueada")
+    assert pasos["Validador"].startswith("rechazada") and pasos["Reintento"] == "aprobado"
+
+
+def _sin_cedula(repo, pasos):
+    assert all(_digitos(repo) not in f"{n} {d}" for n, d in pasos)
+
+
+def test_pasos_de_verificacion_correcta_y_fallida(repo, ahora):
+    orq = _orq(repo, ahora, ModeloGuionado("Gracias.", "Gracias."), moderador=ModeloGuionado("0"))
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.cedula_pedida = True
+    malos = "0000" if _digitos(repo) != "0000" else "1111"
+    fallida = dict(orq.atender(sesion, malos).pasos)
+    assert fallida["Verificación de cédula"] == "fallida (intento 1 de 3)"
+    pasos = orq.atender(sesion, f"es {_digitos(repo)}").pasos
+    nombres = [n for n, _ in pasos]
+    assert nombres[:3] == ["Datos enmascarados", "Moderación", "Verificación de cédula"]
+    assert dict(pasos)["Verificación de cédula"] == "correcta"
+    _sin_cedula(repo, pasos)
+
+
+def test_pasos_de_moderacion_abusiva_y_cierre_por_strikes(repo, ahora):
+    orq = _orq(repo, ahora, ModeloGuionado(), moderador=ModeloGuionado("1", "1", "1"))
+    sesion = orq.iniciar(CID, "CV-1")
+    assert orq.atender(sesion, "insulto").pasos == [
+        ("Moderación", "abusivo"),
+        ("Respuesta fija", "mensaje abusivo: strike 1 de 3"),
+    ]
+    orq.atender(sesion, "insulto")
+    assert orq.atender(sesion, "insulto").pasos[-1] == ("Cierre", "abuso; texto fijo")
+    assert orq.atender(sesion, "hola").pasos == [("Sesión cerrada", "no se procesa el mensaje")]
+
+
+def test_pasos_de_no_contactar_y_tope(repo, ahora):
+    orq = _orq(repo, ahora, ModeloGuionado())
+    sesion = orq.iniciar(CID, "CV-1")
+    pasos = orq.atender(sesion, "No me escriban más").pasos
+    assert [n for n, _ in pasos] == ["No contactar", "Cierre"]
+    sesion = orq.iniciar(CID_DIFICULTAD, "CV-2")
+    sesion.turno = sesion.max_turnos
+    assert orq.atender(sesion, "hola").pasos == [("Cierre", "tope; texto fijo")]
+
+
+def test_pasos_del_reintento_por_confirmacion_en_texto(repo, ahora):
+    agente = ModeloGuionado("¿Procedo con el registro?", "Son 50 dólares.")
+    orq, sesion = _verificada(repo, ahora, agente)
+    pasos = dict(orq.atender(sesion, "sí").pasos)
+    assert pasos["Confirmación en texto"] == "se le pide usar la tarjeta"
+    assert pasos["Reintento"] == "rechazado: se envía la original"
+
+
+def test_pasos_de_la_verificacion_vencida_dentro_del_hook(repo, ahora):
+    t0 = ahora()
+    llamadas = []
+
+    def reloj():  # vence entre el inicio del turno y la primera tool
+        llamadas.append(1)
+        return t0 if len(llamadas) == 1 else t0 + timedelta(hours=12)
+
+    agente = ModeloGuionado(("consultar_saldo", {}), "¿Me da sus cuatro dígitos?")
+    orq = _orq(repo, reloj, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    llamadas.clear()
+    sesion.verificada, sesion.verificada_en = True, t0
+    nombres = [n for n, _ in orq.atender(sesion, "¿cuánto debo?").pasos]
+    i = nombres.index("Verificación vencida")
+    assert nombres[i + 1] == "Tool consultar_saldo" and not sesion.verificada

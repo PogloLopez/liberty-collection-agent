@@ -52,6 +52,11 @@ class Sesion(BaseModel):
     transcripcion: list[tuple[str, str]] = Field(default_factory=list)  # ya enmascarada
     escrituras: set[str] = Field(default_factory=set)  # IDs ya escritos: tools idempotentes
     historial: list[dict[str, Any]] = Field(default_factory=list)  # mensajes del agente Strands
+    # Pasos del turno en curso para el panel del pipeline (D38); no se guardan con la sesión.
+    pasos: list[tuple[str, str]] = Field(default_factory=list, exclude=True)
+
+    def paso(self, nombre: str, detalle: str = "") -> None:
+        self.pasos.append((nombre, detalle))
 
     def vencer_verificacion(self, ahora: datetime) -> bool:
         """Reinicia la verificación si pasaron 12 horas; True si venció en esta llamada.
@@ -78,3 +83,4 @@ class Respuesta(BaseModel):
     mensajes: list[str] = Field(default_factory=list)
     tarjeta: Tarjeta | None = None
     cerrada: bool = False
+    pasos: list[tuple[str, str]] = Field(default_factory=list)

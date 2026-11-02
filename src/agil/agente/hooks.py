@@ -87,6 +87,12 @@ class Controles(HookProvider):
             mensaje["content"] = [b for b in mensaje["content"] if b != self.bloque]
 
     def antes_de_tool(self, event: BeforeToolCallEvent) -> None:
+        self._revisar_tool(event)
+        bloqueo = event.cancel_tool
+        detalle = f"bloqueada: {bloqueo}" if isinstance(bloqueo, str) else "ejecutada"
+        self.sesion.paso(f"Tool {event.tool_use['name']}", detalle)
+
+    def _revisar_tool(self, event: BeforeToolCallEvent) -> None:
         nombre = event.tool_use["name"]
         self.pasos += 1
         if self.pasos > self.max_pasos:
@@ -95,7 +101,8 @@ class Controles(HookProvider):
                 self.agotado = True
                 event.agent.cancel(message=RESPUESTA_TOPE)
             return
-        self.sesion.vencer_verificacion(self.ahora())
+        if self.sesion.vencer_verificacion(self.ahora()):
+            self.sesion.paso("Verificación vencida", "pasaron 12 horas: se pide de nuevo")
         if nombre in SENSIBLES and not self.sesion.verificada:
             bloqueada = self.sesion.intentos_cedula >= MAX_INTENTOS_CEDULA
             self.sesion.cedula_pedida = not bloqueada

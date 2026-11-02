@@ -142,7 +142,9 @@ class Orquestador:
         """Un span por mensaje, sin el texto del cliente: resultado y pasos como atributos."""
         with _tracer.start_as_current_span("agil.turno") as span:
             span.set_attribute("session.id", sesion.conversacion_id)
+            sesion.pasos = []
             r = self._atender(sesion, texto, boton)
+            r.pasos, sesion.pasos = sesion.pasos, []
             span.set_attribute("agil.turno", sesion.turno)
             span.set_attribute("agil.tarjeta", r.tarjeta is not None)
             span.set_attribute("agil.cierre", sesion.motivo_cierre or "")
@@ -150,8 +152,10 @@ class Orquestador:
 
     def _atender(self, sesion: Sesion, texto: str, boton: Boton | None) -> Respuesta:
         if sesion.cerrada:
+            sesion.paso("Sesión cerrada", "no se procesa el mensaje")
             return Respuesta(cerrada=True)
         if sesion.vencer_verificacion(self.ahora()):  # también ante un botón: anula la tarjeta
+            sesion.paso("Verificación vencida", "pasaron 12 horas: se pide de nuevo")
             sesion.eventos.append(
                 "[sistema] La verificación venció (12 horas): pide de nuevo los cuatro dígitos "
                 "antes de dar datos de la cuenta."
@@ -163,6 +167,7 @@ class Orquestador:
             return self._no_contactar(sesion, texto)
         if sesion.tarjeta:  # T2: escribió en vez de tocar un botón; la tarjeta sigue vigente
             trace.get_current_span().add_event("tarjeta_pendiente")
+            sesion.paso("Tarjeta pendiente", "escribió sin tocar los botones")
             sesion.eventos.append(
                 "[sistema] El cliente escribió sin responder la tarjeta pendiente "
                 f"({sesion.tarjeta.descripcion})."
@@ -173,10 +178,15 @@ class Orquestador:
         digitos = None if sesion.verificada else extraer_digitos(texto)
         visible = enmascarar(texto, solo_cedula=sesion.verificada)
         sesion.transcripcion.append(("cliente", visible))
+        if visible != texto:
+            sesion.paso("Datos enmascarados", "ningún dígito de la cédula llega a un modelo")
 
-        if self.modelos.moderador and es_abusivo(self.modelos.moderador, visible):
-            trace.get_current_span().add_event("moderacion", {"abusivo": True})
-            return self._abuso(sesion)
+        if self.modelos.moderador:
+            abusivo = es_abusivo(self.modelos.moderador, visible)
+            sesion.paso("Moderación", "abusivo" if abusivo else "sin problemas")
+            if abusivo:
+                trace.get_current_span().add_event("moderacion", {"abusivo": True})
+                return self._abuso(sesion)
         if digitos and sesion.cedula_pedida:
             self._verificar(sesion, digitos)
         return self._turno_agente(sesion, f"Cliente: {visible}")
@@ -185,6 +195,7 @@ class Orquestador:
         sesion.turno += 1
         if sesion.turno > sesion.max_turnos:
             return self._cierre_fijo(sesion, "tope", TEXTOS["tope"])
+        sesion.paso("Contador", f"turno {sesion.turno} de {sesion.max_turnos}")
         sesion.contexto = self._contexto(sesion)
         mensaje = "\n".join([*sesion.eventos, linea_cliente])
         sesion.eventos = []
@@ -204,6 +215,7 @@ class Orquestador:
 
         tarjeta = sesion.tarjeta if sesion.tarjeta is not tarjeta_previa else None
         if texto == "" and tarjeta is not None:  # la tarjeta se basta sola (T1)
+            sesion.paso("Tarjeta con botones", f"{tarjeta.descripcion}; termina el turno")
             sesion.transcripcion.append(("agente", f"[tarjeta] {tarjeta.texto}"))
             return Respuesta(tarjeta=tarjeta)
         if _PIDE_CEDULA.search(sin_tildes(texto)) and not sesion.verificada:
@@ -211,6 +223,7 @@ class Orquestador:
         final = renderizar(a_whatsapp(texto), sesion.valores)
         sesion.transcripcion.append(("agente", texto))
         if sesion.cerrada:
+            sesion.paso("Cierre", sesion.motivo_cierre or "agente")
             self.cerrar(sesion, sesion.motivo_cierre or "agente")
         return Respuesta(mensajes=[final], tarjeta=tarjeta, cerrada=sesion.cerrada)
 
@@ -223,6 +236,7 @@ class Orquestador:
         if self.modelos.estratega:
             momento = clasificar_momento(self.modelos.estratega, sesion.transcripcion)
             tarjeta = momento and tarjeta_estrategia(momento)
+            sesion.paso("Estratega", momento.value if momento else "sin clasificar")
             if tarjeta:
                 lineas.append(f"[estrategia: {momento.value}] {tarjeta}")
         return lineas
@@ -241,13 +255,17 @@ class Orquestador:
             return self._fin_con_tarjeta(sesion)
         v = self._validar(texto, sesion)
         trace.get_current_span().add_event("validador", {"ok": v.ok, "motivo": v.motivo or ""})
+        sesion.paso("Validador", "aprobada" if v.ok else f"rechazada: {v.motivo}")
         if not v.ok and not sesion.cerrada:
             texto, v = self._corregir(agente, controles, sesion, f"{v.motivo} Reescríbela.")
+            sesion.paso("Reintento", "aprobado" if v.ok else f"rechazado: {v.motivo}")
         elif _pide_confirmacion(texto) and not sesion.cerrada:
             # Un aviso, no un bloqueo: si la corrección no sirve, se envía la respuesta original.
             trace.get_current_span().add_event("confirma_en_texto")
+            sesion.paso("Confirmación en texto", "se le pide usar la tarjeta")
             original, historial = texto, list(agente.messages)
             texto, v = self._corregir(agente, controles, sesion, _USA_LA_TARJETA)
+            sesion.paso("Reintento", "aprobado" if v.ok else "rechazado: se envía la original")
             if not v.ok:
                 texto, v = original, Validacion(ok=True)
                 agente.messages[:] = historial
@@ -370,6 +388,7 @@ class Orquestador:
         """El número nunca llega al LLM; solo el resultado (D24)."""
         cliente = self.repo.cliente(sesion.customer_id)
         if verificar(cliente, digitos):
+            sesion.paso("Verificación de cédula", "correcta")
             sesion.verificada = True
             sesion.verificada_en = self.ahora()
             sesion.cedula_pedida = False
@@ -381,6 +400,10 @@ class Orquestador:
                 )
         else:
             sesion.intentos_cedula += 1
+            sesion.paso(
+                "Verificación de cédula",
+                f"fallida (intento {sesion.intentos_cedula} de {MAX_INTENTOS_CEDULA})",
+            )
             evento = (
                 f"[sistema] Verificación fallida (intento {sesion.intentos_cedula} de "
                 f"{MAX_INTENTOS_CEDULA})."
@@ -394,8 +417,10 @@ class Orquestador:
         tarjeta = sesion.tarjeta
         sesion.tarjeta = None
         if tarjeta is None:
+            sesion.paso("Botón", f"{boton.name} sin tarjeta vigente")
             return Respuesta(mensajes=[TEXTOS["sin_tarjeta"]])
         que = tarjeta.descripcion
+        sesion.paso("Botón", f"{boton.name}: {que}")
         sesion.transcripcion.append(("cliente", f"[botón {boton.name}: {que}]"))
         if boton is Boton.cancelar:
             sesion.eventos.append(f"[sistema] El cliente canceló la tarjeta ({que}).")
@@ -403,6 +428,7 @@ class Orquestador:
         self._registrar(sesion, tarjeta)
         texto, url = self._confirmacion(sesion, tarjeta)
         trace.get_current_span().add_event("confirmacion_fija", {"tipo": tarjeta.tipo})
+        sesion.paso("Registro", f"{que} registrada; respuesta fija" + (" con link" if url else ""))
         enviado = "la confirmación y el link de pago" if url else "la confirmación"
         sesion.eventos.append(
             f"[sistema] El cliente confirmó la tarjeta ({que}): registrada. El sistema ya le envió "
@@ -470,6 +496,7 @@ class Orquestador:
 
     def _no_contactar(self, sesion: Sesion, texto: str) -> Respuesta:
         """Frase explícita (D13): se deriva y pausa sin LLM; el evento llega al resumen."""
+        sesion.paso("No contactar", "frase explícita: solicitud registrada y WhatsApp pausado")
         self.repo.guardar_solicitud_no_contacto(
             SolicitudNoContacto(
                 solicitud_id=f"NC-{sesion.conversacion_id}",
@@ -487,6 +514,7 @@ class Orquestador:
 
     def _abuso(self, sesion: Sesion) -> Respuesta:
         sesion.strikes += 1
+        sesion.paso("Respuesta fija", f"mensaje abusivo: strike {sesion.strikes} de {MAX_STRIKES}")
         if sesion.strikes >= MAX_STRIKES:
             return self._cierre_fijo(sesion, "abuso", TEXTOS["abuso_cierre"])
         sesion.eventos.append(
@@ -509,6 +537,7 @@ class Orquestador:
         )
 
     def _cierre_fijo(self, sesion: Sesion, motivo: str, texto: str) -> Respuesta:
+        sesion.paso("Cierre", f"{motivo}; texto fijo")
         sesion.transcripcion.append(("agente", texto))
         self.cerrar(sesion, motivo)
         return Respuesta(mensajes=[texto], cerrada=True)
