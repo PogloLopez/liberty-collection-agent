@@ -1,5 +1,6 @@
 import json
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 import pytest
 from conftest import ModeloGuionado
@@ -14,6 +15,7 @@ from agil.dominio.modelos import Pago
 from agil.dominio.reglas.calculos import estado_cuenta
 
 CID = "CL-1171492"  # olvidadizo, con prórroga de 5 días
+CID_DIFICULTAD = "CL-1173697"  # dificultad_temporal: elegible a OF-110 y OF-120
 
 
 def _orq(repo, ahora, agente, estratega=None, moderador=None):
@@ -101,8 +103,14 @@ def test_tarjeta_y_boton_confirmar_registra(repo, ahora):
     assert r1.mensajes == [] and len(agente.recibido) == 1  # T1: la tarjeta cierra el turno
     assert repo.promesas == []
     r2 = orq.atender(sesion, boton=Boton.confirmar)
-    assert r2.mensajes == ["Listo, quedó registrada para el miércoles 11 de noviembre."]
+    url = repo.links[-1].url
+    assert r2.mensajes == [
+        "Listo, Itzel. Quedó registrada su promesa de pago de $76.40 para el miércoles 11 de "
+        f"noviembre. Ese día puede pagar con este link: {url}. ¿Le ayudo con algo más?"
+    ]
     assert len(repo.promesas) == 1 and str(repo.promesas[0].monto) == "76.40"
+    assert len(agente.recibido) == 1 and sesion.turno == 1  # Confirmar no llama al LLM
+    orq.atender(sesion, "gracias")
     assert "confirmó la tarjeta" in agente.todo_lo_recibido()
     assert orq.atender(sesion, boton=Boton.confirmar).mensajes == [TEXTOS["sin_tarjeta"]]
     assert len(repo.promesas) == 1
@@ -253,10 +261,11 @@ def test_sesion_serializable_y_reanudable(repo, ahora):
     reanudada = Sesion.model_validate(guardada)
     assert reanudada.tarjeta == sesion.tarjeta and reanudada.historial
 
-    agente2 = ModeloGuionado("Listo, quedó para el {{fecha_promesa}}.")
-    r = _orq(repo, ahora, agente2).atender(reanudada, boton=Boton.confirmar)
-    assert r.mensajes == ["Listo, quedó para el miércoles 11 de noviembre."]
-    assert len(repo.promesas) == 1
+    agente2 = ModeloGuionado("De nada.")
+    orq2 = _orq(repo, ahora, agente2)
+    r = orq2.atender(reanudada, boton=Boton.confirmar)
+    assert "miércoles 11 de noviembre" in r.mensajes[0] and len(repo.promesas) == 1
+    orq2.atender(reanudada, "gracias")
     assert "le pago el miércoles" in agente2.todo_lo_recibido()  # el historial sigue
 
 
@@ -299,7 +308,7 @@ def test_eventos_se_vacian_tras_el_turno(repo, ahora):
     assert "plantilla de primer contacto" not in ultimo
 
 
-def test_tope_cuenta_tambien_los_botones(repo, ahora):
+def test_tope_cuenta_el_boton_cancelar(repo, ahora):
     agente = ModeloGuionado(
         ("registrar_promesa_pago", {"fecha": "2026-11-11"}), "Confirme con el botón."
     )
@@ -309,7 +318,7 @@ def test_tope_cuenta_tambien_los_botones(repo, ahora):
     sesion.turno = sesion.max_turnos - 1
     assert orq.atender(sesion, "le pago el miércoles").tarjeta
     llamadas = len(agente.recibido)
-    r = orq.atender(sesion, boton=Boton.confirmar)
+    r = orq.atender(sesion, boton=Boton.cancelar)
     assert r.mensajes == [TEXTOS["tope"]] and r.cerrada and sesion.motivo_cierre == "tope"
     assert len(agente.recibido) == llamadas
 
@@ -361,6 +370,95 @@ def _verificada(repo, ahora, agente):
     sesion = orq.iniciar(CID, "CV-1")
     sesion.verificada = True
     return orq, sesion
+
+
+def test_confirmar_promesa_reusa_el_link_ya_enviado(repo, ahora):
+    agente = ModeloGuionado(
+        ("generar_link_pago", {}),
+        "Pague aquí: {{link_pago}}",
+        ("registrar_promesa_pago", {"fecha": "mañana"}),
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "¿cómo pago?")
+    orq.atender(sesion, "mejor mañana")
+    r = orq.atender(sesion, boton=Boton.confirmar)
+    assert r.mensajes[0].endswith(
+        "Ese día puede pagar con el link que le envié. ¿Le ayudo con algo más?"
+    )
+    assert len(repo.links) == 1
+
+
+def test_confirmar_oferta_envia_el_link_sin_llamar_al_llm(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-102"}))
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "quiero la prórroga")
+    r = orq.atender(sesion, boton=Boton.confirmar)
+    assert r.mensajes == [
+        "Listo, Itzel. Quedó aceptada su oferta. Puede pagar $76.40, hasta el miércoles 11 de "
+        f"noviembre, con este link: {repo.links[-1].url}. ¿Le ayudo con algo más?"
+    ]
+    assert len(repo.aceptaciones) == 1 and len(agente.recibido) == 1
+
+
+def _oferta_confirmada(repo, ahora, oferta_id, monto=None):
+    """Cliente dificultad_temporal que acepta `oferta_id` y toca Confirmar; luego escribe."""
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": oferta_id}), "De nada.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID_DIFICULTAD, "CV-1")
+    sesion.verificada = True
+    orq.atender(sesion, "quiero esa")
+    if monto is not None:
+        sesion.tarjeta = sesion.tarjeta.model_copy(update={"monto": Decimal(monto)})
+    r = orq.atender(sesion, boton=Boton.confirmar)
+    return orq, sesion, agente, r
+
+
+def test_confirmar_cambio_de_corte_incluye_el_link_del_saldo(repo, ahora):
+    orq, sesion, agente, r = _oferta_confirmada(repo, ahora, "OF-120")
+    url = repo.links[-1].url
+    assert r.mensajes == [
+        "Listo, Rodrigo. Quedó aceptado el cambio de fecha de corte. Su saldo vencido sigue "
+        f"pendiente: puede pagar $23.49, con este link: {url}. ¿Le ayudo con algo más?"
+    ]
+    assert url not in sesion.transcripcion[-1][1] and "{{link_pago}}" in sesion.transcripcion[-1][1]
+    orq.atender(sesion, "gracias")
+    assert "la confirmación y el link de pago" in agente.todo_lo_recibido()
+
+
+def test_confirmar_plan_de_cuotas_cobra_la_primera_cuota(repo, ahora):
+    _, _, _, r = _oferta_confirmada(repo, ahora, "OF-110")
+    assert "Puede pagar la primera cuota, $11.74, con este link: " in r.mensajes[0]
+
+
+def test_confirmar_con_monto_cero_no_genera_link(repo, ahora):
+    orq, sesion, agente, r = _oferta_confirmada(repo, ahora, "OF-120", monto="0")
+    assert r.mensajes == [
+        "Listo, Rodrigo. Quedó aceptado el cambio de fecha de corte. ¿Le ayudo con algo más?"
+    ]
+    assert repo.links == [] and "link_pago" not in sesion.valores
+    orq.atender(sesion, "gracias")
+    recibido = agente.todo_lo_recibido()
+    assert (
+        "ya le envió la confirmación: no lo repitas" in recibido and "link de pago" not in recibido
+    )
+
+
+def test_confirmar_promesa_con_link_reusado_no_lo_anuncia(repo, ahora):
+    agente = ModeloGuionado(
+        ("generar_link_pago", {}),
+        "Pague aquí: {{link_pago}}",
+        ("registrar_promesa_pago", {"fecha": "mañana"}),
+        "De nada.",
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "¿cómo pago?")
+    orq.atender(sesion, "mejor mañana")
+    orq.atender(sesion, boton=Boton.confirmar)
+    assert "{{link_pago}}" not in sesion.transcripcion[-1][1]
+    orq.atender(sesion, "gracias")
+    recibido = agente.todo_lo_recibido()
+    assert "ya le envió la confirmación: no lo repitas" in recibido
+    assert "la confirmación y el link de pago" not in recibido
 
 
 def test_texto_con_tarjeta_pendiente_avisa_al_agente(repo, ahora):

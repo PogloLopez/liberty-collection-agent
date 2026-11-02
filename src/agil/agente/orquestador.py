@@ -16,12 +16,13 @@ from opentelemetry import trace
 from strands import Agent
 from strands.agent.conversation_manager import SlidingWindowConversationManager
 
+from agil.agente import formato
 from agil.agente.auxiliares import clasificar_momento, es_abusivo, resumir, tarjeta_estrategia
 from agil.agente.config import Modelos
 from agil.agente.hooks import RESPUESTA_TOPE, Controles
 from agil.agente.perfiles import cargar_perfil, prompt_sistema
 from agil.agente.sesion import MAX_INTENTOS_CEDULA, MAX_STRIKES, Respuesta, Sesion
-from agil.agente.tools import cifras_oferta, cifras_saldo, crear_tools, prefijo
+from agil.agente.tools import cifras_oferta, cifras_saldo, crear_tools, link_pago, prefijo
 from agil.dominio.harness.identidad import enmascarar, extraer_digitos, verificar
 from agil.dominio.harness.intenciones import Boton, pide_no_contacto
 from agil.dominio.harness.placeholders import renderizar
@@ -395,13 +396,51 @@ class Orquestador:
         if tarjeta is None:
             return Respuesta(mensajes=[TEXTOS["sin_tarjeta"]])
         que = tarjeta.descripcion
-        if boton is Boton.confirmar:
-            self._registrar(sesion, tarjeta)
-            sesion.eventos.append(f"[sistema] El cliente confirmó la tarjeta ({que}): registrada.")
-        else:
-            sesion.eventos.append(f"[sistema] El cliente canceló la tarjeta ({que}).")
         sesion.transcripcion.append(("cliente", f"[botón {boton.name}: {que}]"))
-        return self._turno_agente(sesion, f"Cliente: [tocó «{boton.name}»]")
+        if boton is Boton.cancelar:
+            sesion.eventos.append(f"[sistema] El cliente canceló la tarjeta ({que}).")
+            return self._turno_agente(sesion, f"Cliente: [tocó «{boton.name}»]")
+        self._registrar(sesion, tarjeta)
+        texto, url = self._confirmacion(sesion, tarjeta)
+        trace.get_current_span().add_event("confirmacion_fija", {"tipo": tarjeta.tipo})
+        enviado = "la confirmación y el link de pago" if url else "la confirmación"
+        sesion.eventos.append(
+            f"[sistema] El cliente confirmó la tarjeta ({que}): registrada. El sistema ya le envió "
+            f"{enviado}: no lo repitas."
+        )
+        # La transcripción alimenta el resumen de cierre: sin el link, que caduca.
+        sesion.transcripcion.append(
+            ("agente", texto.replace(url, "{{link_pago}}") if url else texto)
+        )
+        return Respuesta(mensajes=[texto])
+
+    def _confirmacion(self, sesion: Sesion, tarjeta) -> tuple[str, str | None]:
+        """Texto fijo tras Confirmar (D22): qué quedó registrado y, si falta pagar, el link."""
+        nombre = self.repo.cliente(sesion.customer_id).nombre.split()[0]
+        cierre = " ¿Le ayudo con algo más?"
+        url, nuevo = None, False
+        if tarjeta.monto > 0:
+            url, nuevo = link_pago(self.repo, sesion, tarjeta.monto, self.ahora)
+        dinero = formato.dinero(tarjeta.monto)
+        if tarjeta.tipo == "promesa":
+            link = f"este link: {url}." if nuevo else "el link que le envié."
+            return (
+                f"Listo, {nombre}. Quedó registrada su promesa de pago de {dinero} para el "
+                f"{formato.fecha(tarjeta.fecha)}. Ese día puede pagar con {link}{cierre}"
+            ), url if nuevo else None
+        c = sesion.oferta_aceptada
+        oferta = next(o for o in self.repo.ofertas() if o.oferta_id == tarjeta.oferta_id)
+        if oferta.tipo == "cambio_fecha_corte":
+            texto = f"Listo, {nombre}. Quedó aceptado el cambio de fecha de corte."
+            pago = f" Su saldo vencido sigue pendiente: puede pagar {dinero}"
+        else:
+            texto = f"Listo, {nombre}. Quedó aceptada su oferta."
+            pago = f" Puede pagar {'la primera cuota, ' if c.numero_cuotas else ''}{dinero}"
+            if c.fecha_limite:
+                pago += f", hasta el {formato.fecha(c.fecha_limite)}"
+        if url:
+            texto += f"{pago}, con este link: {url}."
+        return texto + cierre, url
 
     def _registrar(self, sesion: Sesion, tarjeta) -> None:
         sufijo = f"{sesion.conversacion_id}-{len(sesion.escrituras)}"

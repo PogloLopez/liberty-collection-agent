@@ -4,6 +4,7 @@ tool los recibe del LLM. Las cifras vuelven junto al placeholder que el LLM debe
 import hashlib
 from collections.abc import Callable
 from datetime import datetime
+from decimal import Decimal
 from enum import StrEnum
 
 from strands import tool
@@ -125,17 +126,40 @@ def _con_llaves(valores: dict[str, str]) -> dict[str, str]:
     return {f"{{{{{k}}}}}": v for k, v in valores.items()}
 
 
+def id_de(sesion: Sesion, prefijo_id: str, *partes: object) -> str:
+    """Determinista por conversación y argumentos: la misma escritura da el mismo ID."""
+    clave = "|".join(str(p) for p in (sesion.conversacion_id, prefijo_id, *partes))
+    return f"{prefijo_id}-{hashlib.sha1(clave.encode()).hexdigest()[:10]}"
+
+
+def link_pago(
+    repo: Repositorio, sesion: Sesion, monto: Decimal, ahora: Callable[[], datetime]
+) -> tuple[str, bool]:
+    """URL del link por `monto` y si es nuevo en la conversación (el mismo monto, el mismo link)."""
+    link_id = id_de(sesion, "LK", monto)
+    url = URL_PAGOS + link_id
+    nuevo = link_id not in sesion.escrituras
+    if nuevo:
+        repo.guardar_link(
+            LinkPago(
+                link_id=link_id,
+                customer_id=sesion.customer_id,
+                monto=monto,
+                url=url,
+                creado=ahora(),
+            )
+        )
+        sesion.escrituras.add(link_id)
+    sesion.valores.update({"link_pago": url, "monto_link": formato.dinero(monto)})
+    return url, nuevo
+
+
 def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]) -> list:
     cid = sesion.customer_id
 
-    def id_de(prefijo_id: str, *partes: object) -> str:
-        """Determinista por conversación y argumentos: la misma escritura da el mismo ID."""
-        clave = "|".join(str(p) for p in (sesion.conversacion_id, prefijo_id, *partes))
-        return f"{prefijo_id}-{hashlib.sha1(clave.encode()).hexdigest()[:10]}"
-
     def nuevo_id(prefijo_id: str, *partes: object) -> str | None:
         """None si ya se escribió (idempotencia). Se marca como escrito tras guardar."""
-        id_ = id_de(prefijo_id, *partes)
+        id_ = id_de(sesion, prefijo_id, *partes)
         return None if id_ in sesion.escrituras else id_
 
     def oferta(
@@ -240,15 +264,8 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
         monto = monto_a_cobrar()
         if monto <= 0:
             return {"error": "No hay saldo por cobrar (o un pago en tránsito lo cubre)."}
-        link_id = id_de("LK", monto)
-        url = URL_PAGOS + link_id
-        if link_id not in sesion.escrituras:
-            repo.guardar_link(
-                LinkPago(link_id=link_id, customer_id=cid, monto=monto, url=url, creado=ahora())
-            )
-            sesion.escrituras.add(link_id)
-        valores = {"link_pago": url, "monto_link": formato.dinero(monto)}
-        sesion.valores.update(valores)
+        link_pago(repo, sesion, monto, ahora)
+        valores = {k: sesion.valores[k] for k in ("link_pago", "monto_link")}
         return {"cifras": _con_llaves(valores), "instruccion": _ESCRIBE}
 
     @tool

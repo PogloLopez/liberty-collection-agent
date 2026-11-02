@@ -174,6 +174,10 @@ promesa (Pablo, 31-oct; idea del estudio con otro agente).
   siga la conversación con naturalidad. Igual con todo lo que el router resuelve sin LLM: la verificación
   (el resultado, nunca los dígitos) y el no contactar (cierra la conversación: el evento llega al resumen de
   cierre y a la siguiente). El código decide; el LLM solo queda informado.
+- **Confirmar no pasa por el LLM** (Pablo, 1-nov): el código responde con un texto fijo (qué quedó
+  registrado, el monto, la fecha y el link si falta pagar) y termina con "¿Le ayudo con algo más?". En el
+  humo, el agente reenviaba el link o pedía pagar hoy después de una promesa. Cancelar sí va al agente,
+  que propone otra opción. Trade-off: ese mensaje suena menos natural, pero el acuerdo ya está hecho.
 
 → [[tools]]
 
