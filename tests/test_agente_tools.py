@@ -368,7 +368,11 @@ def test_ofertas_dicen_cuantas_quedan_y_si_hay_descuento(repo, ahora):
     sesion.verificada = True
     t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
     r = t["consultar_ofertas_elegibles"]()
-    assert r["hay_descuento"] is False and r["opciones"] == 3  # OF-101, OF-110, OF-111 (+ OF-120)
+    assert r["hay_descuento"] is False and r["opciones"] == "{{opciones}}"
+    assert sesion.valores["opciones"] == "3 opciones"  # OF-101, OF-110, OF-111 (+ OF-120)
+    sesion.rechazadas = ["OF-110"]  # solo queda OF-111 (+ OF-120, que no cuenta)
+    t["consultar_ofertas_elegibles"]()
+    assert sesion.valores["opciones"] == "1 opción"
     mora = {x.tool_name: x for x in crear_tools(repo, _sesion(), ahora)}  # mora avanzada
     assert mora["consultar_ofertas_elegibles"]()["hay_descuento"] is True
 

@@ -631,6 +631,19 @@ def test_una_oferta_que_deja_de_aplicar_se_retira(repo, ahora):
     assert any("Ya no aplican: OF-102" in e for e in sesion.eventos)  # llega en el próximo turno
 
 
+def test_al_retirar_una_oferta_el_conteo_de_opciones_se_borra(repo, ahora):
+    agente = ModeloGuionado(
+        ("consultar_ofertas_elegibles", {}), ("aceptar_oferta", {"oferta_id": "OF-102"}), "Ok."
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "¿qué opciones tengo?")
+    assert "opciones" in sesion.valores
+    _pago_en_transito(repo, "76.40")
+    orq.atender(sesion, boton=Boton.confirmar)
+    assert any("Ya no aplican: OF-101, OF-102" in e for e in sesion.eventos)
+    assert "opciones" not in sesion.valores  # el conteo viejo ya no vale
+
+
 def test_sin_cambios_en_la_cuenta_no_hay_aviso(repo, ahora):
     agente = ModeloGuionado(("consultar_saldo", {}), "Su saldo es {{saldo_vencido}}.", "Ok.")
     orq, sesion = _verificada(repo, ahora, agente)

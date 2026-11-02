@@ -445,6 +445,7 @@ class Orquestador:
             return
         evento = "[sistema] La cuenta del cliente cambió (p. ej. se aplicó un pago): cifras al día."
         if retiradas:
+            sesion.valores.pop("opciones", None)  # el conteo ya no vale: que vuelva a consultar
             evento += f" Ya no aplican: {', '.join(retiradas)}."
         tarjeta = sesion.tarjeta
         if tarjeta and tarjeta.monto != self._monto_actual(sesion, tarjeta.oferta_id, e):

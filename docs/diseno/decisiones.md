@@ -436,6 +436,9 @@ la demo con las cifras actuales (Pablo, 2-nov).
    con `escalar_a_humano`. El detector exige el verbo junto a la persona ("quiero pagar en persona" no
    cuenta). Trade-off: dos falsos positivos cierran la conversación con un asesor; un falso negativo lo
    sigue resolviendo el agente con la tool.
+3. Cuántas opciones hay también es una cifra: va como `{{opciones}}`. En el humo final el modelo escribía
+   "dos" o `{{opciones}}` sin que existiera, el validador lo rechazaba tres veces y salía "¿me lo puede
+   repetir?".
 
 ## Pendientes
 

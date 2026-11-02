@@ -230,9 +230,11 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
         opciones = sum(
             o.tipo != "cambio_fecha_corte" and not o.requiere_aprobacion_humana for o in disponibles
         )
+        # También es una cifra: placeholder, con el sustantivo ya concordado (D45).
+        sesion.valores["opciones"] = f"{opciones} " + ("opción" if opciones == 1 else "opciones")
         instruccion = (
             _ESCRIBE + " Ofrece la primera; sube a la siguiente solo si la rechaza. Si pregunta si "
-            "hay más, dile cuántas opciones hay en total (opciones)."
+            "hay más, dile cuántas hay en total con {{opciones}} (ya incluye la palabra opción)."
         )
         if sesion.rechazadas and not opciones:
             instruccion = (
@@ -242,7 +244,7 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
         hay_descuento = any(o.parametros.porcentaje_descuento for o in disponibles)
         return {
             "ofertas": resultado,
-            "opciones": opciones,
+            "opciones": "{{opciones}}",
             "hay_descuento": hay_descuento,
             "instruccion": instruccion,
         }
