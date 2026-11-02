@@ -293,6 +293,10 @@ fecha que el cliente no dijo; lo mitiga la confirmación con botones ([[decision
 Alcance (revisión de Pablo, decidido por Claude, 1-nov): todo cuenta desde hoy; entiende "dentro de N días" y
 días del mes ("el 15": el próximo que no haya pasado). "La próxima semana" o "N días después del vencimiento"
 no se convierten: la tool pide al agente un día concreto del cliente y le prohíbe calcularlo él.
+Tope de mora (Pablo, 1-nov): la prórroga cuenta desde hoy, pero cada oferta tiene `dias_mora_max` y la mora
+al final de la prórroga no lo supera: días = mín(`dias_prorroga`, `dias_mora_max` − días de mora). Si no
+queda ningún día, la oferta no es elegible; la ventana de la promesa usa los mismos días. En el mock, OF-102
+tiene tope de 30 días y OF-103 de 15. Trade-off: la mayoría de reincidentes pierde la prórroga.
 
 ### D33 Perfiles del prototipo
 **Cinco perfiles, tres detallados** (Pablo, 1-nov): olvidadizo, dificultad temporal y mora avanzada (los de
@@ -332,6 +336,5 @@ alternativa obliga a correr los evals con ella.
   durante el desarrollo y Pablo los revisa antes de desplegar.
 - **P2:** qué es "la fecha de pago regular" en "N días después de la fecha de pago" (vencimiento de la
   factura más antigua o fecha de corte). Mientras tanto la tool pide un día concreto (D32).
-- **P3:** si los días de prórroga cuentan desde hoy (lo implementado) o desde el vencimiento original.
 
 Las ideas de [[feedback_estudio]] quedaron en D22, D23 y D24.

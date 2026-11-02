@@ -158,7 +158,7 @@ def test_escritura_fallida_se_puede_reintentar(tools, repo, monkeypatch):
 
 
 def test_promesa_con_oferta_en_su_fecha_limite(repo, ahora):
-    sesion = _sesion("CL-1152549", Segmento.dificultad_temporal, Cola.basica)
+    sesion = _sesion("CL-1173697", Segmento.dificultad_temporal, Cola.basica)
     t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
     tarde = (repo.fecha_referencia + timedelta(days=5)).isoformat()
     assert sesion.tarjeta is None
@@ -170,7 +170,7 @@ def test_promesa_con_oferta_en_su_fecha_limite(repo, ahora):
     ("oferta_id", "esperado"),
     [
         ("OF-101", "Pago total con link. Total a pagar: $427.89."),
-        ("OF-102", "Total a pagar: $427.89. Fecha límite: miércoles 11 de noviembre."),
+        ("OF-102", "Total a pagar: $76.40. Fecha límite: miércoles 11 de noviembre."),
         ("OF-112", "Plan de 6 cuotas. Paga 6 cuotas: de $71.31 y la última de $71.34."),
         ("OF-120", "Cambio de fecha de corte."),
         ("OF-130", "Descuento de $10.37. Total a pagar: $417.52."),
@@ -181,7 +181,8 @@ def test_promesa_con_oferta_en_su_fecha_limite(repo, ahora):
 )
 def test_texto_tarjeta_por_tipo_de_oferta(repo, oferta_id, esperado):
     oferta = next(o for o in repo.ofertas() if o.oferta_id == oferta_id)
-    texto = texto_tarjeta_oferta(oferta, condiciones(repo, "CL-1140215", oferta))
+    cid = "CL-1171492" if oferta_id == "OF-102" else "CL-1140215"  # 100 días: sin prórroga
+    texto = texto_tarjeta_oferta(oferta, condiciones(repo, cid, oferta))
     assert texto.startswith(f"{oferta.nombre}.") and texto.endswith(f"{esperado} {CONFIRMA_OFERTA}")
     if oferta.tipo == "cambio_fecha_corte":
         assert "$" not in texto
@@ -215,7 +216,7 @@ def _ventana_abierta(monkeypatch):
 
 def test_promesa_con_oferta_despues_de_su_fecha_limite(repo, ahora, monkeypatch):
     _ventana_abierta(monkeypatch)
-    sesion = _sesion("CL-1152549", Segmento.dificultad_temporal, Cola.basica)
+    sesion = _sesion("CL-1173697", Segmento.dificultad_temporal, Cola.basica)
     t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
     tarde = (repo.fecha_referencia + timedelta(days=6)).isoformat()
     assert "fecha límite" in t["registrar_promesa_pago"](fecha=tarde, oferta_id="OF-102")

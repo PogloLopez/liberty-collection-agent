@@ -7,6 +7,7 @@ from agil.dominio.modelos import Cargo, Pago, Segmento
 from agil.dominio.reglas.calculos import estado_cuenta
 from agil.dominio.reglas.ofertas import (
     condiciones,
+    dias_prorroga,
     ofertas_elegibles,
     validar_fecha_promesa,
     validar_oferta,
@@ -29,8 +30,9 @@ def _ids(repo, customer_id, segmento):
     ("customer_id", "segmento", "esperadas"),
     [
         ("CL-1171492", S.olvidadizo, ["OF-101", "OF-102"]),
-        ("CL-1152549", S.dificultad_temporal, ["OF-101", "OF-102", "OF-110", "OF-111", "OF-120"]),
-        ("CL-1191572", S.reincidente, ["OF-101", "OF-103", "OF-110"]),
+        # 41 y 22 días de mora: superan el tope de la prórroga de OF-102 (30) y OF-103 (15).
+        ("CL-1152549", S.dificultad_temporal, ["OF-101", "OF-110", "OF-111", "OF-120"]),
+        ("CL-1191572", S.reincidente, ["OF-101", "OF-110"]),
         ("CL-1100708", S.valioso_churn, ["OF-101", "OF-111", "OF-120", "OF-130", "OF-131"]),
         ("CL-1140215", S.mora_avanzada, ["OF-101", "OF-112", "OF-140", "OF-141", "OF-142"]),
     ],
@@ -306,6 +308,56 @@ def test_ventana_usa_la_prorroga_maxima_de_las_elegibles():
     hoy = repo.fecha_referencia
     assert validar_fecha_promesa(repo, "CL-1171492", S.olvidadizo, hoy + timedelta(days=10)).ok
     assert not validar_fecha_promesa(repo, "CL-1171492", S.olvidadizo, hoy + timedelta(days=11)).ok
+
+
+def _repo_con_tope(tope):
+    repo = RepositorioMemoria()
+    of102 = _oferta(repo, "OF-102")
+    par = of102.parametros.model_copy(update={"dias_mora_max": tope})
+    repo._ofertas = [of102.model_copy(update={"parametros": par})]
+    return repo
+
+
+@pytest.mark.parametrize(("tope", "dias"), [(30, 5), (15, 3)])
+def test_la_prorroga_se_recorta_al_tope_de_mora(tope, dias):
+    # CL-1171492 lleva 12 días de mora; la prórroga cuenta desde hoy hasta el tope.
+    repo = _repo_con_tope(tope)
+    hoy = repo.fecha_referencia
+    c = condiciones(repo, "CL-1171492", repo._ofertas[0])
+    assert c.dias_prorroga == dias and c.fecha_limite == hoy + timedelta(days=dias)
+    assert validar_fecha_promesa(repo, "CL-1171492", S.olvidadizo, hoy + timedelta(days=dias)).ok
+    fuera = hoy + timedelta(days=dias + 1)
+    assert not validar_fecha_promesa(repo, "CL-1171492", S.olvidadizo, fuera).ok
+
+
+def test_sin_dias_de_prorroga_la_oferta_no_es_elegible():
+    repo = _repo_con_tope(12)
+    assert _ids(repo, "CL-1171492", S.olvidadizo) == []
+    assert "supera la mora" in validar_oferta(repo, "CL-1171492", S.olvidadizo, "OF-102").motivo
+
+
+@pytest.mark.parametrize(("tope", "dias"), [(30, 5), (3, 3), (0, 0)])
+def test_prorroga_sin_mora_solo_la_recorta_el_tope(repo, tope, dias):
+    oferta = _oferta(repo, "OF-102")
+    oferta = oferta.model_copy(
+        update={"parametros": oferta.parametros.model_copy(update={"dias_mora_max": tope})}
+    )
+    estado = estado_cuenta(repo, "CL-1171492").model_copy(update={"dias_mora": 0})
+    assert dias_prorroga(oferta, estado) == dias
+
+
+def test_tope_de_mora_sin_prorroga_da_cero_y_no_rechaza(repo):
+    of101 = _oferta(repo, "OF-101")
+    assert not of101.parametros.dias_prorroga
+    par = of101.parametros.model_copy(update={"dias_mora_max": 1})
+    of101 = of101.model_copy(update={"parametros": par})
+    estado = estado_cuenta(repo, "CL-1171492")  # 12 días de mora, por encima del tope
+    assert dias_prorroga(of101, estado) == 0
+    otro = RepositorioMemoria()
+    otro._ofertas = [of101]
+    assert _ids(otro, "CL-1171492", S.olvidadizo) == ["OF-101"]
+    c = condiciones(otro, "CL-1171492", of101)
+    assert c.dias_prorroga is None and c.fecha_limite is None
 
 
 def test_promesa_en_el_pasado_se_rechaza(repo):

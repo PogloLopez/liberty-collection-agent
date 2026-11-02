@@ -25,7 +25,7 @@
   },
   {
     "oferta_id": "OF-102",
-    "nombre": "Pago total con prórroga de 5 días",
+    "nombre": "Pago total con prórroga",
     "tipo": "pago_total_link",
     "segmentos_elegibles": [
       "olvidadizo",
@@ -35,7 +35,8 @@
     "parametros": {
       "porcentaje_descuento": null,
       "numero_cuotas": null,
-      "dias_prorroga": 5
+      "dias_prorroga": 5,
+      "dias_mora_max": 30
     },
     "monto_min": "0.01",
     "monto_max": "300.00",
@@ -46,7 +47,7 @@
   },
   {
     "oferta_id": "OF-103",
-    "nombre": "Pago total con prórroga de 3 días",
+    "nombre": "Pago total con prórroga corta",
     "tipo": "pago_total_link",
     "segmentos_elegibles": [
       "reincidente"
@@ -55,7 +56,8 @@
     "parametros": {
       "porcentaje_descuento": null,
       "numero_cuotas": null,
-      "dias_prorroga": 3
+      "dias_prorroga": 3,
+      "dias_mora_max": 15
     },
     "monto_min": "0.01",
     "monto_max": "400.00",
