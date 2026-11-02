@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict, YamlConfigSettingsSource
 from strands.models import Model
 from strands.models.openai import OpenAIModel
-from strands.types.exceptions import ContextWindowOverflowException
+from strands.types.exceptions import ContextWindowOverflowException, ModelThrottledException
 
 from agil.dominio.repositorio.memoria import RAIZ
 
@@ -42,6 +42,7 @@ class Configuracion(BaseSettings):
 
     llm_provider: Literal["groq", "bedrock"] = "groq"
     groq_api_key: SecretStr | None = None
+    modo_demo: bool = False  # sin el tope de un contacto por día (D38)
     dev: Entorno
     prod: Entorno
 
@@ -113,8 +114,13 @@ class ConRespaldo(Model):
             model_id = m.get_config().get("model_id")
             try:
                 eventos = [e async for e in m.stream(messages, tool_specs, system_prompt, **kwargs)]
+            except ModelThrottledException as e:
+                if "per day" not in str(e):  # por minuto: Strands espera y reintenta (D41)
+                    trace.get_current_span().add_event("cuota", {"modelo": model_id})
+                    raise
+                error, motivo = e, "cuota_diaria"  # esperar no sirve: siguiente modelo (D42)
             except ContextWindowOverflowException:
-                raise
+                raise  # Strands recorta y reintenta
             except Exception as e:
                 error, motivo = e, type(e).__name__
             else:
@@ -128,7 +134,15 @@ class ConRespaldo(Model):
         raise error
 
 
+# Razonamiento corto en gpt-oss; en qwen, fuera del texto: por defecto va en `content` (D42).
+_RAZONAMIENTO = {
+    "openai/gpt-oss": {"reasoning_effort": "low"},
+    "qwen/": {"reasoning_format": "hidden"},
+}
+
+
 def _groq(cfg: Configuracion, entorno: Entorno, model_id: str, max_tokens: int) -> OpenAIModel:
+    extra = next((p for pre, p in _RAZONAMIENTO.items() if model_id.startswith(pre)), {})
     return OpenAIModel(
         client_args={
             "api_key": cfg.groq_api_key.get_secret_value(),
@@ -136,7 +150,7 @@ def _groq(cfg: Configuracion, entorno: Entorno, model_id: str, max_tokens: int) 
             "timeout": entorno.timeout_s,
         },
         model_id=model_id,
-        params={"max_completion_tokens": max_tokens, "reasoning_effort": "low"},
+        params={"max_completion_tokens": max_tokens} | extra,
     )
 
 

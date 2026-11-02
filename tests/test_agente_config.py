@@ -5,7 +5,7 @@ import asyncio
 import pytest
 from conftest import ModeloGuionado
 from pydantic import ValidationError
-from strands.types.exceptions import ContextWindowOverflowException
+from strands.types.exceptions import ContextWindowOverflowException, ModelThrottledException
 
 from agil.agente import config
 
@@ -60,7 +60,7 @@ def test_crear_modelos_desde_el_yaml_sin_llamar(env, monkeypatch):
     assert isinstance(m.agente, config.ConRespaldo)
     assert [x.get_config()["model_id"] for x in m.agente.modelos] == [
         "openai/gpt-oss-120b",
-        "openai/gpt-oss-20b",
+        "qwen/qwen3.8-27b",
     ]
     assert m.estratega.get_config()["model_id"] == "openai/gpt-oss-20b"  # uno solo: sin envoltorio
     assert m.moderador.get_config()["model_id"] == "openai/gpt-oss-safeguard-20b"
@@ -98,10 +98,18 @@ def test_respaldo_relanza_el_ultimo_error_si_fallan_todos():
         _texto(config.ConRespaldo([ModeloGuionado(""), _Falla()]))
 
 
-def test_respaldo_no_cambia_de_modelo_si_se_excede_la_ventana():
+@pytest.mark.parametrize(
+    "error",
+    [
+        ContextWindowOverflowException,
+        ModelThrottledException("429"),
+        ModelThrottledException("429 Rate limit reached on tokens per minute (TPM)"),
+    ],
+)
+def test_respaldo_no_cambia_de_modelo_si_se_excede_la_ventana_o_la_cuota(error):
     siguiente = ModeloGuionado("Hola.")
-    with pytest.raises(ContextWindowOverflowException):
-        _texto(config.ConRespaldo([_Falla(ContextWindowOverflowException), siguiente]))
+    with pytest.raises(type(error) if isinstance(error, Exception) else error):
+        _texto(config.ConRespaldo([_Falla(error), siguiente]))
     assert siguiente.recibido == []
 
 
@@ -148,3 +156,31 @@ def test_respaldo_propaga_la_config_a_todos_y_lee_la_del_primero():
     respaldo.update_config(max_tokens=7)
     assert a.cfg["max_tokens"] == b.cfg["max_tokens"] == 7
     assert respaldo.get_config()["model_id"] == "a"
+
+
+@pytest.mark.parametrize("valor", [True, False])
+def test_modo_demo_lo_pisa_el_entorno(env, monkeypatch, valor):
+    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    monkeypatch.setenv("MODO_DEMO", str(valor).lower())
+    assert _cfg(env).modo_demo is valor
+
+
+def test_cuota_diaria_pasa_al_siguiente_modelo():
+    diaria = ModelThrottledException("429 Rate limit reached on tokens per day (TPD)")
+    siguiente = ModeloGuionado("Hola.")
+    assert _texto(config.ConRespaldo([_Falla(diaria), siguiente])) == "Hola."
+
+
+def test_razonamiento_por_familia_de_modelo(env, monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    m = config.crear_modelos(_cfg(env)).agente.modelos
+    assert m[0].get_config()["params"]["reasoning_effort"] == "low"
+    qwen = m[1].get_config()["params"]
+    assert qwen["reasoning_format"] == "hidden" and "reasoning_effort" not in qwen
+
+
+def test_modelo_sin_familia_conocida_no_recibe_razonamiento(env, monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    cfg = _cfg(env)
+    params = config._groq(cfg, cfg.entorno, "llama-3.3-70b-versatile", 64).get_config()["params"]
+    assert params == {"max_completion_tokens": 64}

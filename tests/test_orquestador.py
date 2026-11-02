@@ -1,3 +1,4 @@
+import itertools
 import json
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -138,12 +139,28 @@ def test_validador_reintenta_una_vez_y_limpia_el_historial(repo, ahora):
     assert "$76.40" not in historial and "no se envió" not in historial
 
 
-def test_dos_salidas_invalidas_van_a_humano(repo, ahora):
-    orq = _orq(repo, ahora, ModeloGuionado("Son $76.40.", "Son 76 dólares."))
+def test_tres_intentos_por_turno_y_tres_turnos_fallidos_van_a_humano(repo, ahora):
+    malas = ["Son $76.40.", "Son 76 dólares.", "Son setenta y seis."] * 3
+    agente = ModeloGuionado(*malas)
+    orq = _orq(repo, ahora, agente)
     sesion = orq.iniciar(CID, "CV-1")
+    for turno in (1, 2):
+        r = orq.atender(sesion, "cuánto debo")
+        assert r.mensajes == [TEXTOS["respuesta_segura"]] and not r.cerrada
+        assert len(agente.recibido) == 3 * turno and sesion.fallos_seguidos == turno
+        assert "$76.40" not in str(sesion.historial)  # lo rechazado no queda
     r = orq.atender(sesion, "cuánto debo")
     assert r.mensajes == [TEXTOS["fallo"]] and r.cerrada
     assert repo.handoffs[0].motivo == "fallo_agente"
+
+
+def test_un_turno_bueno_reinicia_los_fallos(repo, ahora):
+    agente = ModeloGuionado("Son $1.", "Son $2.", "Son $3.", "Hola.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "uno")
+    assert sesion.fallos_seguidos == 1
+    assert orq.atender(sesion, "dos").mensajes == ["Hola."] and sesion.fallos_seguidos == 0
 
 
 def test_tope_de_turnos_cierra_el_codigo(repo, ahora):
@@ -169,8 +186,18 @@ def test_estratega_inyecta_su_tarjeta(repo, ahora):
     agente = ModeloGuionado()
     orq = _orq(repo, ahora, agente, estratega=ModeloGuionado("pago_reciente"))
     sesion = orq.iniciar(CID, "CV-1")
+    sesion.verificada = True
     orq.atender(sesion, "ya pagué")
-    assert "[estrategia: pago_reciente]" in agente.todo_lo_recibido()
+    assert "[estrategia sugerida: pago_reciente] Si encaja" in agente.todo_lo_recibido()
+
+
+def test_sin_verificar_no_hay_estratega(repo, ahora):
+    agente, estratega = ModeloGuionado(), ModeloGuionado("evasion")
+    orq = _orq(repo, ahora, agente, estratega=estratega)
+    sesion = orq.iniciar(CID, "CV-1")
+    r = orq.atender(sesion, "hola")
+    assert estratega.recibido == [] and dict(r.pasos)["Estratega"] == "omitido: sin verificar"
+    assert "[estrategia:" not in agente.todo_lo_recibido()
 
 
 def test_tres_strikes_cierran_sin_humano(repo, ahora):
@@ -189,7 +216,7 @@ def test_cierre_por_tool_deja_resumen(repo, ahora):
         ("escalar_a_humano", {"motivo": "pide_humano", "resumen": "Pide asesor."}),
         "Un asesor le escribirá.",
     )
-    estratega = ModeloGuionado("pide_humano", '{"texto": "Pidió un asesor.", "flags": []}')
+    estratega = ModeloGuionado('{"texto": "Pidió un asesor.", "flags": []}')  # sin verificar
     orq = _orq(repo, ahora, agente, estratega=estratega)
     sesion = orq.iniciar(CID, "CV-1")
     r = orq.atender(sesion, "quiero hablar con una persona")
@@ -236,14 +263,14 @@ class ModeloRoto(ModeloGuionado):
 
 def test_cedula_no_llega_al_estratega_ni_al_resumen(repo, ahora):
     agente = ModeloGuionado("¿Me confirma los últimos cuatro dígitos de su cédula?", "Gracias.")
-    estratega = ModeloGuionado("duda", "duda", '{"texto": "Verificó.", "flags": []}')
+    estratega = ModeloGuionado('{"texto": "Verificó.", "flags": []}')
     orq = _orq(repo, ahora, agente, estratega=estratega)
     sesion = orq.iniciar(CID, "CV-1")
     orq.atender(sesion, "hola")
     orq.atender(sesion, _digitos(repo))
     assert sesion.verificada
     orq.cerrar(sesion, "fin")
-    assert len(estratega.recibido) == 3  # dos estrategias y el resumen
+    assert len(estratega.recibido) == 1  # solo el resumen: tras verificar no hay estrategia (D41)
     assert _digitos(repo) not in estratega.todo_lo_recibido()
     assert _digitos(repo) not in str(sesion.transcripcion)
 
@@ -279,9 +306,11 @@ def test_boton_sin_tarjeta_no_llama_al_agente_ni_cuenta_turno(repo, ahora):
     assert repo.promesas == [] and repo.aceptaciones == []
 
 
-def test_excepcion_del_modelo_va_a_humano(repo, ahora):
+def test_excepcion_del_modelo_va_a_humano_al_tercer_turno(repo, ahora):
     orq = _orq(repo, ahora, ModeloRoto())
     sesion = orq.iniciar(CID, "CV-1")
+    for _ in range(2):
+        assert orq.atender(sesion, "hola").mensajes == [TEXTOS["respuesta_segura"]]
     r = orq.atender(sesion, "hola")
     assert r.mensajes == [TEXTOS["fallo"]] and r.cerrada
     assert sesion.motivo_cierre == "fallo"
@@ -602,6 +631,19 @@ def test_una_oferta_que_deja_de_aplicar_se_retira(repo, ahora):
     assert any("Ya no aplican: OF-102" in e for e in sesion.eventos)  # llega en el próximo turno
 
 
+def test_al_retirar_una_oferta_el_conteo_de_opciones_se_borra(repo, ahora):
+    agente = ModeloGuionado(
+        ("consultar_ofertas_elegibles", {}), ("aceptar_oferta", {"oferta_id": "OF-102"}), "Ok."
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "¿qué opciones tengo?")
+    assert "opciones" in sesion.valores
+    _pago_en_transito(repo, "76.40")
+    orq.atender(sesion, boton=Boton.confirmar)
+    assert any("Ya no aplican: OF-101, OF-102" in e for e in sesion.eventos)
+    assert "opciones" not in sesion.valores  # el conteo viejo ya no vale
+
+
 def test_sin_cambios_en_la_cuenta_no_hay_aviso(repo, ahora):
     agente = ModeloGuionado(("consultar_saldo", {}), "Su saldo es {{saldo_vencido}}.", "Ok.")
     orq, sesion = _verificada(repo, ahora, agente)
@@ -656,3 +698,450 @@ def test_la_tarjeta_sigue_si_su_monto_no_cambio(repo, ahora):
     assert sesion.valores["saldo_tras_transito"] != saldo and sesion.tarjeta == tarjeta
     recibido = agente.todo_lo_recibido()
     assert "La cuenta del cliente cambió" in recibido and "Se anuló la tarjeta" not in recibido
+
+
+def test_la_respuesta_trae_los_pasos_del_turno(repo, ahora):
+    agente = ModeloGuionado(("registrar_promesa_pago", {"fecha": "mañana"}))
+    orq, sesion = _verificada(repo, ahora, agente)
+    r = orq.atender(sesion, "le pago mañana")
+    nombres = [p for p, _ in r.pasos]
+    assert nombres == ["Contador", "Tool registrar_promesa_pago", "Tarjeta con botones"]
+    r2 = orq.atender(sesion, boton=Boton.confirmar)
+    assert [p for p, _ in r2.pasos] == ["Botón", "Registro"]
+    assert sesion.pasos == [] and "pasos" not in sesion.model_dump()
+
+
+def test_los_pasos_muestran_la_tool_bloqueada_y_el_validador(repo, ahora):
+    agente = ModeloGuionado(("consultar_saldo", {}), "Su saldo es $76.40.", "Necesito sus dígitos.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    pasos = dict(orq.atender(sesion, "¿cuánto debo?").pasos)
+    assert pasos["Tool consultar_saldo"].startswith("bloqueada")
+    assert pasos["Validador"].startswith("rechazada") and pasos["Reintento"] == "aprobado"
+
+
+def _sin_cedula(repo, pasos):
+    assert all(_digitos(repo) not in f"{n} {d}" for n, d in pasos)
+
+
+def test_pasos_de_verificacion_correcta_y_fallida(repo, ahora):
+    orq = _orq(repo, ahora, ModeloGuionado("Gracias.", "Gracias."), moderador=ModeloGuionado("0"))
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.cedula_pedida = True
+    malos = "0000" if _digitos(repo) != "0000" else "1111"
+    fallida = dict(orq.atender(sesion, malos).pasos)
+    assert fallida["Verificación de cédula"] == "fallida (intento 1 de 3); texto fijo"
+    pasos = orq.atender(sesion, f"es {_digitos(repo)}").pasos
+    nombres = [n for n, _ in pasos]
+    assert nombres[:3] == ["Datos enmascarados", "Moderación", "Verificación de cédula"]
+    assert dict(pasos)["Verificación de cédula"] == "correcta"
+    _sin_cedula(repo, pasos)
+
+
+def test_pasos_de_moderacion_abusiva_y_cierre_por_strikes(repo, ahora):
+    orq = _orq(repo, ahora, ModeloGuionado(), moderador=ModeloGuionado("1", "1", "1"))
+    sesion = orq.iniciar(CID, "CV-1")
+    assert orq.atender(sesion, "insulto").pasos == [
+        ("Moderación", "abusivo"),
+        ("Respuesta fija", "mensaje abusivo: strike 1 de 3"),
+    ]
+    orq.atender(sesion, "insulto")
+    assert orq.atender(sesion, "insulto").pasos[-1] == ("Cierre", "abuso; texto fijo")
+    assert orq.atender(sesion, "hola").pasos == [("Sesión cerrada", "no se procesa el mensaje")]
+
+
+def test_pasos_de_no_contactar_y_tope(repo, ahora):
+    orq = _orq(repo, ahora, ModeloGuionado())
+    sesion = orq.iniciar(CID, "CV-1")
+    pasos = orq.atender(sesion, "No me escriban más").pasos
+    assert [n for n, _ in pasos] == ["No contactar", "Cierre"]
+    sesion = orq.iniciar(CID_DIFICULTAD, "CV-2")
+    sesion.turno = sesion.max_turnos
+    assert orq.atender(sesion, "hola").pasos == [("Cierre", "tope; texto fijo")]
+
+
+def test_pasos_del_reintento_por_confirmacion_en_texto(repo, ahora):
+    agente = ModeloGuionado("¿Procedo con el registro?", "Son 50 dólares.")
+    orq, sesion = _verificada(repo, ahora, agente)
+    pasos = dict(orq.atender(sesion, "sí").pasos)
+    assert pasos["Confirmación en texto"] == "se le pide usar la tarjeta"
+    assert pasos["Reintento"] == "rechazado: se envía la original"
+
+
+def test_pasos_de_la_verificacion_vencida_dentro_del_hook(repo, ahora):
+    t0 = ahora()
+    llamadas = []
+
+    def reloj():  # vence entre el inicio del turno y la primera tool
+        llamadas.append(1)
+        return t0 if len(llamadas) == 1 else t0 + timedelta(hours=12)
+
+    agente = ModeloGuionado(("consultar_saldo", {}), "¿Me da sus cuatro dígitos?")
+    orq = _orq(repo, reloj, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    llamadas.clear()
+    sesion.verificada, sesion.verificada_en = True, t0
+    nombres = [n for n, _ in orq.atender(sesion, "¿cuánto debo?").pasos]
+    i = nombres.index("Verificación vencida")
+    assert nombres[i + 1] == "Tool consultar_saldo" and not sesion.verificada
+
+
+def test_cedula_con_guiones_cuenta_y_el_fallo_tiene_texto_fijo(repo, ahora):
+    agente = ModeloGuionado("Gracias.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.cedula_pedida = True
+    d = _digitos(repo)
+    malos = "0000" if d != "0000" else "1111"
+    for intento in (1, 2):
+        r = orq.atender(sesion, f"{malos[:2]}-{malos[2:]}")
+        assert r.mensajes == [TEXTOS["cedula_no_coincide"]] and not r.cerrada
+        assert sesion.intentos_cedula == intento and agente.recibido == []
+    r = orq.atender(sesion, f"{d[:2]}.{d[2:]}")
+    assert sesion.verificada and r.mensajes == ["Gracias."]
+
+
+def test_tercer_fallo_de_cedula_pasa_a_un_asesor(repo, ahora):
+    orq = _orq(repo, ahora, ModeloGuionado())
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.cedula_pedida = True
+    malos = "0000" if _digitos(repo) != "0000" else "1111"
+    for _ in range(3):
+        r = orq.atender(sesion, malos)
+    assert r.mensajes == [TEXTOS["cedula_bloqueada"]] and r.cerrada
+    assert [h.motivo for h in repo.handoffs] == ["verificacion_fallida"]
+
+
+def test_el_intento_de_cedula_solo_cuenta_justo_despues_de_pedirla(repo, ahora):
+    agente = ModeloGuionado("¿Me da los cuatro dígitos de su cédula?", "Entendido.", "Ok.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "hola")
+    assert sesion.cedula_pedida
+    orq.atender(sesion, "prefiero no darla")  # el agente no la pide otra vez
+    orq.atender(sesion, "15-02")
+    assert sesion.intentos_cedula == 0 and not sesion.verificada
+
+
+def test_fallo_de_cedula_no_gasta_turno_ni_llega_al_agente_y_se_reinicia_al_verificar(repo, ahora):
+    reloj = [ahora()]
+    agente = ModeloGuionado("Gracias.", "Listo.")
+    orq = _orq(repo, lambda: reloj[0], agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    d = _digitos(repo)
+    malos = "0000" if d != "0000" else "1111"
+    sesion.cedula_pedida = True
+    for _ in range(2):
+        orq.atender(sesion, malos)
+    assert sesion.turno == 0 and agente.recibido == []
+    orq.atender(sesion, d)
+    assert sesion.verificada and sesion.intentos_cedula == 0 and sesion.turno == 1
+    recibido = agente.todo_lo_recibido()
+    assert malos not in recibido and TEXTOS["cedula_no_coincide"] not in recibido
+    reloj[0] += timedelta(hours=12)  # vence: vuelve a tener tres intentos
+    orq.atender(sesion, "hola")
+    assert not sesion.verificada
+    sesion.cedula_pedida = True
+    r = orq.atender(sesion, malos)
+    assert r.mensajes == [TEXTOS["cedula_no_coincide"]] and not sesion.cerrada
+
+
+def test_los_acuerdos_vigentes_llegan_en_cada_turno(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-102"}), "Con gusto.", "Listo.")
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "quiero la prórroga")
+    orq.atender(sesion, boton=Boton.confirmar)
+    orq.atender(sesion, "gracias")
+    orq.atender(sesion, "otra cosa")
+    for _, mensajes in agente.recibido[-2:]:
+        assert "Ya registrado en esta conversación: oferta OF-102 aceptada" in str(mensajes)
+
+
+def test_vencida_la_verificacion_no_se_mandan_los_acuerdos(repo, ahora):
+    reloj = {"t": ahora()}
+    agente = ModeloGuionado(("registrar_promesa_pago", {"fecha": "mañana"}), "Ok.", "Ok.")
+    orq = _orq(repo, lambda: reloj["t"], agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.verificada, sesion.verificada_en = True, reloj["t"]
+    orq.atender(sesion, "le pago mañana")
+    orq.atender(sesion, boton=Boton.confirmar)
+    assert sesion.acuerdos == ["promesa de pago para el sábado 7 de noviembre"]
+    orq.atender(sesion, "gracias")
+    assert "promesa de pago para el sábado" in str(agente.recibido[-1][1])
+    reloj["t"] += timedelta(hours=12)
+    orq.atender(sesion, "hola de nuevo")
+    assert "Ya registrado" not in str(agente.recibido[-1][1])
+
+
+def test_los_acuerdos_sobreviven_a_serializar_la_sesion(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-102"}), "Con gusto.")
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "quiero la prórroga")
+    orq.atender(sesion, boton=Boton.confirmar)
+    reanudada = Sesion.model_validate(json.loads(sesion.model_dump_json()))
+    assert reanudada.acuerdos == ["oferta OF-102 aceptada"]
+
+
+def test_cuotas_de_una_oferta_consultada_pasan_sin_reintento(repo, ahora):
+    texto = "Puede pagar en 3 cuotas de {{of_111.monto_cuota}}."
+    agente = ModeloGuionado(("consultar_ofertas_elegibles", {}), texto, "Sin oferta.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar("CL-1107377", "CV-1")  # elegible a OF-111 (3 cuotas)
+    sesion.verificada = True
+    r = orq.atender(sesion, "¿puedo pagar por partes?")
+    assert sesion.condiciones["OF-111"].numero_cuotas == 3
+    assert len(r.mensajes) == 1 and "3 cuotas de $" in r.mensajes[0]
+    assert len(agente.recibido) == 2 and "no se envió" not in agente.todo_lo_recibido()
+
+
+def test_escalera_tras_cancelar_solo_quedan_las_mas_generosas(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-110"}),
+        ("consultar_ofertas_elegibles", {}),
+        ("aceptar_oferta", {"oferta_id": "OF-101"}),
+        "Le cuento las opciones.",
+    )
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar("CL-1152549", "CV-1")  # OF-101, OF-110 (2 cuotas), OF-111 (3), OF-120
+    sesion.verificada = True
+    orq.atender(sesion, "quiero cuotas")
+    orq.atender(sesion, boton=Boton.cancelar)
+    assert sesion.rechazadas == ["OF-110"]
+    resultados = str(agente.recibido[-1][1])
+    assert "OF-111" in resultados and "OF-120" in resultados
+    assert resultados.count("OF-101") == 1  # solo el intento del agente: la lista no la trae
+    assert "rechazó esta opción o una más generosa" in resultados  # el hook bloquea bajar
+
+
+def test_sin_escalones_el_agente_lo_dice_y_ofrece_asesor(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-111"}),
+        ("consultar_ofertas_elegibles", {}),
+        "No tengo otra opción.",
+    )
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar("CL-1152549", "CV-1")
+    sesion.verificada = True
+    orq.atender(sesion, "tres cuotas")
+    orq.atender(sesion, boton=Boton.cancelar)
+    assert "No quedan opciones más generosas" in str(agente.recibido[-1][1])
+
+
+def test_cancelar_el_pago_total_deja_la_prorroga(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-101"}),
+        ("aceptar_oferta", {"oferta_id": "OF-102"}),
+    )
+    orq, sesion = _verificada(repo, ahora, agente)  # olvidadizo: OF-101 y OF-102
+    orq.atender(sesion, "pago todo")
+    orq.atender(sesion, boton=Boton.cancelar)
+    assert sesion.tarjeta is not None and sesion.tarjeta.oferta_id == "OF-102"
+
+
+def test_la_promesa_no_usa_una_oferta_rechazada(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-102"}),
+        ("registrar_promesa_pago", {"fecha": "mañana", "oferta_id": "OF-102"}),
+        "Entiendo.",
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "la prórroga")
+    orq.atender(sesion, boton=Boton.cancelar)
+    assert sesion.tarjeta is None
+    assert "rechazó esta opción" in str(agente.recibido[-1][1])
+
+
+def test_la_promesa_con_la_oferta_ya_aceptada_no_se_bloquea(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-110"}),
+        ("registrar_promesa_pago", {"fecha": "mañana", "oferta_id": "OF-110"}),
+    )
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID_DIFICULTAD, "CV-1")
+    sesion.verificada = True
+    orq.atender(sesion, "dos cuotas")
+    orq.atender(sesion, boton=Boton.confirmar)
+    sesion.rechazadas = ["OF-120", "OF-111"]  # más generosa que la aceptada
+    orq.atender(sesion, "pago mañana")
+    assert sesion.tarjeta is not None and sesion.tarjeta.tipo != "oferta"
+    assert "rechazó esta opción" not in agente.todo_lo_recibido()
+
+
+def test_el_cambio_de_corte_sigue_tras_rechazar_todo(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-110"}),
+        ("consultar_ofertas_elegibles", {}),
+        ("aceptar_oferta", {"oferta_id": "OF-120"}),
+    )
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID_DIFICULTAD, "CV-1")  # OF-110 y OF-120
+    sesion.verificada = True
+    orq.atender(sesion, "cuotas")
+    orq.atender(sesion, boton=Boton.cancelar)
+    resultados = str(agente.recibido[-1][1])
+    assert "OF-120" in resultados and "No quedan opciones más generosas" in resultados
+    assert sesion.tarjeta is not None and sesion.tarjeta.oferta_id == "OF-120"
+
+
+def test_tres_mensajes_sin_sentido_cierran_sin_llm(repo, ahora):
+    agente = ModeloGuionado("Hola.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    assert orq.atender(sesion, "oipuhwegpubqwpiugbw").mensajes == [TEXTOS["sin_sentido"]]
+    assert orq.atender(sesion, "hola").mensajes == ["Hola."]  # un mensaje válido reinicia
+    orq.atender(sesion, "weoinphpiuwebnhw")
+    orq.atender(sesion, "oiuneiurbhgqeihgbqwegh")
+    r = orq.atender(sesion, "opnpi9uqwebggqg")
+    assert r.mensajes == [TEXTOS["sin_sentido_cierre"]] and r.cerrada
+    assert len(agente.recibido) == 1 and repo.handoffs == [] and sesion.turno == 1
+
+
+def test_cedula_con_ruido_sin_sentido_verifica(repo, ahora):
+    agente = ModeloGuionado("Gracias.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.cedula_pedida = True
+    r = orq.atender(sesion, f"{_digitos(repo)} oipuhwegpub")
+    assert sesion.verificada and sesion.sin_sentido == 0 and r.mensajes == ["Gracias."]
+
+
+def test_sin_sentido_con_tarjeta_pendiente_no_duplica_el_aviso(repo, ahora):
+    agente = ModeloGuionado(("registrar_promesa_pago", {"fecha": "mañana"}), "Elija en la tarjeta.")
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "le pago mañana")
+    for teclazo in ("oipuhwegpubqwpiugbw", "weoinphpiuwebnhw"):
+        assert orq.atender(sesion, teclazo).mensajes == [TEXTOS["sin_sentido"]]
+    orq.atender(sesion, "¿y si mejor el viernes?")
+    assert agente.todo_lo_recibido().count("sin responder la tarjeta pendiente") == 1
+
+
+def test_tras_un_turno_fallido_los_roles_siguen_alternandose(repo, ahora):
+    agente = ModeloGuionado("Son $1.", "Son $2.", "Son $3.", "Hola.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "uno")
+    roles = [m["role"] for m in sesion.historial]
+    assert all(a != b for a, b in itertools.pairwise(roles))
+    assert sesion.historial[-1]["content"] == [{"text": TEXTOS["respuesta_segura"]}]
+
+
+def test_una_excepcion_no_deja_historial_a_medias(repo, ahora):
+    orq = _orq(repo, ahora, ModeloRoto())
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "hola")
+    assert sesion.historial == []
+
+
+def test_tarjeta_en_el_ultimo_reintento_termina_el_turno_con_la_tarjeta(repo, ahora):
+    agente = ModeloGuionado(
+        "Son $1.", "Son $2.", ("registrar_promesa_pago", {"fecha": "mañana"}), "Son $3."
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    sesion.fallos_seguidos = 2
+    r = orq.atender(sesion, "le pago mañana")
+    assert r.mensajes == [] and r.tarjeta is not None and not r.cerrada
+    assert sesion.fallos_seguidos == 0 and len(agente.recibido) == 3
+    assert TEXTOS["respuesta_segura"] not in json.dumps(sesion.historial, ensure_ascii=False)
+
+
+def test_tool_que_cierra_durante_los_reintentos_usa_el_texto_del_cierre(repo, ahora):
+    agente = ModeloGuionado(
+        "Son $1.",
+        ("escalar_a_humano", {"motivo": "pide_humano", "resumen": "x"}),
+        "Son $2.",
+        "Son $3.",
+    )
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    r = orq.atender(sesion, "quiero un humano")
+    assert r.mensajes == [TEXTOS["handoff"]] and r.cerrada
+    assert len(agente.recibido) == 3  # sin un tercer intento tras el cierre
+    assert len(repo.handoffs) == 1 and repo.handoffs[0].motivo == "pide_humano"
+    assert sesion.fallos_seguidos == 0
+
+
+def test_tras_verificar_retoma_lo_pedido_sin_estratega(repo, ahora):
+    agente, estratega = (
+        ModeloGuionado("¿Me da los cuatro dígitos de su cédula?", "Ok."),
+        ModeloGuionado(),
+    )
+    orq = _orq(repo, ahora, agente, estratega=estratega)
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "quiero una prórroga")
+    r = orq.atender(sesion, _digitos(repo))
+    ultimo = str(agente.recibido[-1][1])
+    aviso, cliente = ultimo.index("relee lo que pidió el cliente"), ultimo.rindex("Cliente: ")
+    assert (
+        aviso < cliente and _digitos(repo) not in ultimo
+    )  # el aviso precede a los dígitos tapados
+    assert dict(r.pasos)["Estratega"].startswith("omitido: recién verificado")
+    assert estratega.recibido == []
+
+
+def test_pedido_junto_a_los_digitos_llega_sin_ellos_tras_el_aviso(repo, ahora):
+    agente = ModeloGuionado("¿Me da los cuatro dígitos de su cédula?", "Ok.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "hola")
+    orq.atender(sesion, f"{_digitos(repo)}, quiero la prórroga")
+    ultimo = str(agente.recibido[-1][1])
+    assert sesion.verificada and _digitos(repo) not in ultimo
+    assert ultimo.index("relee lo que pidió") < ultimo.rindex("Cliente: ")
+    assert "quiero la prórroga" in ultimo[ultimo.rindex("Cliente: ") :]
+
+
+def test_al_cancelar_el_aviso_dice_que_queda(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-110"}), "Entendido.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar("CL-1152549", "CV-1")
+    sesion.verificada = True
+    orq.atender(sesion, "cuotas")
+    orq.atender(sesion, boton=Boton.cancelar)
+    assert "Queda por ofrecer, en orden: OF-111. No vuelvas al link" in str(agente.recibido[-1][1])
+
+
+def test_cancelar_el_link_lista_la_prorroga_sin_el_cambio_de_corte(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-101"}), "Entendido.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.verificada = True
+    orq.atender(sesion, "quiero pagar")
+    orq.atender(sesion, boton=Boton.cancelar)
+    aviso = str(agente.recibido[-1][1])
+    assert "Queda por ofrecer, en orden: OF-102" in aviso and "OF-120" not in aviso
+
+
+def test_al_cancelar_sin_escalones_el_aviso_manda_a_asesor(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-111"}), "Entendido.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar("CL-1152549", "CV-1")
+    sesion.verificada = True
+    orq.atender(sesion, "cuotas")
+    orq.atender(sesion, boton=Boton.cancelar)
+    aviso = str(agente.recibido[-1][1])
+    assert "No quedan opciones más generosas: dilo y ofrece un asesor." in aviso
+    assert "Queda por ofrecer" not in aviso
+
+
+def test_primer_pedido_de_asesor_va_al_agente_y_el_segundo_pasa_a_humano(repo, ahora):
+    agente = ModeloGuionado("Con gusto le ayudo yo. ¿Qué necesita?")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    r1 = orq.atender(sesion, "Un asesor por favor")
+    assert not r1.cerrada and len(agente.recibido) == 1
+    assert "Un asesor por favor" in agente.todo_lo_recibido()
+    assert ("Pide un asesor", "pedido 1 de 2") in r1.pasos and repo.handoffs == []
+    r2 = orq.atender(sesion, "quiero hablar con una persona")
+    assert r2.mensajes == [TEXTOS["handoff"]] and r2.cerrada
+    assert sesion.cerrada and sesion.motivo_cierre == "handoff"
+    assert len(agente.recibido) == 1  # el segundo pedido no llama al modelo
+    assert [(h.handoff_id, h.motivo) for h in repo.handoffs] == [("HO-CV-1-humano", "pide_humano")]
+
+
+def test_pedido_de_asesor_abusivo_cuenta_como_strike_y_no_como_pedido(repo, ahora):
+    agente = ModeloGuionado()
+    orq = _orq(repo, ahora, agente, moderador=ModeloGuionado("1"))
+    sesion = orq.iniciar(CID, "CV-1")
+    r = orq.atender(sesion, "quiero un asesor, insulto")
+    assert r.mensajes == [TEXTOS["abuso"]] and sesion.strikes == 1
+    assert sesion.pedidos_humano == 0 and agente.recibido == [] and repo.handoffs == []

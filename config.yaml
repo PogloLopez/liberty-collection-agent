@@ -1,3 +1,6 @@
+# Demo: la campaña puede repetirse con el mismo cliente el mismo día (D38). En producción, false.
+modo_demo: true
+
 # Modelos por entorno (D7, D36). `LLM_PROVIDER` elige la sección por su `proveedor` (por defecto
 # groq). Cada rol lista modelos en orden: los siguientes son alternativas si el anterior falla.
 dev:
@@ -5,7 +8,7 @@ dev:
   url: https://api.groq.com/openai/v1
   timeout_s: 30
   agente:
-    modelos: [openai/gpt-oss-120b, openai/gpt-oss-20b]
+    modelos: [openai/gpt-oss-120b, qwen/qwen3.8-27b]  # D42: el 20b rompía las tools
     max_tokens: 1500
   estratega: # también escribe el resumen al cierre (D34)
     modelos: [openai/gpt-oss-20b]
