@@ -172,3 +172,11 @@ def test_dockerfiles_con_uv_fijo_y_lock_congelado(dockerfile):
     assert ":latest" not in texto
     assert "--frozen --no-default-groups" in texto
     assert "requirements_nube" not in texto
+
+
+def test_guia_documenta_el_error_de_codigo_faltante():
+    """El texto del `SystemExit` de `app.py` debe estar en la tabla de errores de la guía."""
+    app = (RAIZ / "infra" / "app.py").read_text(encoding="utf-8")
+    mensaje = re.search(r'SystemExit\("([^:"]+)', app).group(1)
+    guia = (RAIZ / "docs" / "despliegue" / "guia_despliegue.md").read_text(encoding="utf-8")
+    assert f"| `{mensaje}` |" in guia

@@ -492,13 +492,12 @@ con los pasos de la campaña; con el tráfico de una evaluación sobra.
 
 ## Pendientes
 
-- **V1 (asumido, D44):** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
-- **V2 (asumido, D44):** saber si el Proyecto de Ley 306 se sancionó. Mientras tanto se adopta como política interna.
-- **V3 (asumido, D44):** precios vigentes de Nova Lite y Micro. La tabla oficial no se pudo leer; las cifras usadas
-  vienen de un blog de AWS.
-- **P1:** perfiles de los segmentos: plantillas, prompts de tono y tarjetas de estrategia. Se redactan
-  durante el desarrollo y Pablo los revisa antes de desplegar.
 - **P2:** diagrama Mermaid del paso a paso de `orquestador.py` (bifurcaciones y procesos destino) en
-  `docs/diseno/`, enlazado desde el documento de arquitectura (pedido de Pablo, 1-nov).
+  `docs/diseno/`, enlazado desde el documento de arquitectura (pedido de Pablo, 1-nov). Se hace junto con
+  el README del proyecto.
+
+Cerrados (Pablo, 2-nov): V1 (precios de WhatsApp) y V3 (precios de Nova) no interesan para la demo; V2
+(Proyecto de Ley 306) se adopta como política interna sin seguir su estado; P1 (perfiles de los
+segmentos) quedó aprobado a lo largo del desarrollo (D40, D41, D47).
 
 Las ideas de [[feedback_estudio]] quedaron en D22, D23 y D24.

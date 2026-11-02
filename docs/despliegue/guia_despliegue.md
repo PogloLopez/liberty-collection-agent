@@ -107,9 +107,12 @@ aws sts get-caller-identity
 anterior y `<REGION>` por `prod.region` de `config.yaml` (hoy `us-east-1`).
 
 ```powershell
-cdk bootstrap aws://<ACCOUNT>/<REGION>
+cdk bootstrap aws://<ACCOUNT>/<REGION> -c codigo=relleno
 ```
 
+- Por qué `-c codigo=relleno`: dentro del repo, `cdk bootstrap` ejecuta `infra/app.py` aunque le pases la
+  cuenta y la región, y `app.py` se detiene si falta el código de acceso. Para el bootstrap el valor no
+  importa: solo pasa esa comprobación y no se guarda en ningún recurso.
 - Qué hace: crea el stack `CDKToolkit`, con lo que CDK necesita para desplegar: un bucket S3 donde sube los
   archivos del frontend, un repositorio ECR donde sube las dos imágenes (agente y Lambdas), roles IAM para
   desplegar y un parámetro de versión. Se hace una vez por cuenta y región.
@@ -214,6 +217,7 @@ Sube los archivos e invalida la caché de CloudFront: 2-5 minutos, sin tocar el 
 |---|---|---|
 | `Cannot connect to the Docker daemon` / `error during connect` | Docker Desktop no está abierto | Abrirlo, esperar a que diga "running" y repetir el deploy |
 | `This stack uses assets, so the toolkit stack must be deployed` | Falta el bootstrap | Paso 0.2 |
+| `Falta el código de acceso` | Faltó `-c codigo=...` en el comando | Repetirlo con `-c codigo=<CODIGO>` (paso 0.2 para el bootstrap) |
 | `Unable to resolve AWS account` / `ExpiredToken` | El CLI no tiene credenciales válidas | `aws sts get-caller-identity` y renovar credenciales |
 | `AccessDenied` durante el deploy | Tu usuario no puede crear algún recurso | Pegarme el mensaje: dice qué acción falta |
 | Stack en `ROLLBACK_COMPLETE` | Falló la creación y CloudFormation lo deshizo | Pegarme el evento que falló (pestaña Events); después de arreglar, `cdk destroy <stack>` y desplegar de nuevo |
