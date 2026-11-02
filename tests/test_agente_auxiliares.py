@@ -188,3 +188,7 @@ def test_moderacion_recibe_el_mensaje_y_su_politica():
     sistema, mensajes = modelo.recibido[0]
     assert "Responde solo con 1 o 0" in sistema
     assert "esta empresa es lo peor" in json.dumps(mensajes, ensure_ascii=False)
+
+
+def test_se_niega_a_pagar_tiene_tarjeta_sin_link():
+    assert "No respondas con el link" in tarjeta_estrategia(Momento.se_niega_a_pagar)

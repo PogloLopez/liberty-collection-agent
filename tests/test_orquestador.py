@@ -1069,3 +1069,26 @@ def test_al_cancelar_el_aviso_dice_que_queda(repo, ahora):
     orq.atender(sesion, "cuotas")
     orq.atender(sesion, boton=Boton.cancelar)
     assert "Queda por ofrecer, en orden: OF-111. No vuelvas al link" in str(agente.recibido[-1][1])
+
+
+def test_cancelar_el_link_lista_la_prorroga_sin_el_cambio_de_corte(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-101"}), "Entendido.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.verificada = True
+    orq.atender(sesion, "quiero pagar")
+    orq.atender(sesion, boton=Boton.cancelar)
+    aviso = str(agente.recibido[-1][1])
+    assert "Queda por ofrecer, en orden: OF-102" in aviso and "OF-120" not in aviso
+
+
+def test_al_cancelar_sin_escalones_el_aviso_manda_a_asesor(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-111"}), "Entendido.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar("CL-1152549", "CV-1")
+    sesion.verificada = True
+    orq.atender(sesion, "cuotas")
+    orq.atender(sesion, boton=Boton.cancelar)
+    aviso = str(agente.recibido[-1][1])
+    assert "No quedan opciones más generosas: dilo y ofrece un asesor." in aviso
+    assert "Queda por ofrecer" not in aviso

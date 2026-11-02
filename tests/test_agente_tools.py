@@ -372,3 +372,11 @@ def test_ofertas_dicen_cuantas_quedan_y_si_hay_descuento(repo, ahora):
     assert r["hay_descuento"] is False and r["opciones"] == 3  # OF-101, OF-110, OF-111 (+ OF-120)
     mora = {x.tool_name: x for x in crear_tools(repo, _sesion(), ahora)}  # mora avanzada
     assert mora["consultar_ofertas_elegibles"]()["hay_descuento"] is True
+
+
+def test_escalera_ordena_y_quita_lo_rechazado(repo):
+    sesion = _sesion("CL-1152549", Segmento.dificultad_temporal, Cola.basica)
+    ids = [o.oferta_id for o in tools_mod.escalera(repo, sesion)]
+    assert [i for i in ids if i != "OF-120"] == ["OF-101", "OF-110", "OF-111"] and "OF-120" in ids
+    sesion.rechazadas = ["OF-111"]
+    assert [o.oferta_id for o in tools_mod.escalera(repo, sesion)] == ["OF-120"]
