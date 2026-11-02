@@ -2,6 +2,7 @@
 llamar a la nube. Comprueban lo que encarece o rompe la demo si falta."""
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -103,6 +104,14 @@ def test_lambdas_arm64_y_campana_express(plantillas):
     )
 
 
+def test_sin_concurrencia_reservada(plantillas):
+    """D49: con la cuota de 10 de la cuenta, reservar haría fallar el deploy; la cuota es el
+    tope."""
+    for t in plantillas.values():
+        for f in t.find_resources("AWS::Lambda::Function").values():
+            assert "ReservedConcurrentExecutions" not in f["Properties"]
+
+
 def test_web_privada_detras_de_cloudfront(plantillas):
     t = plantillas["AgilWeb"]
     t.has_resource_properties(
@@ -137,3 +146,29 @@ def test_runtime_puede_invocar_cada_perfil_y_su_modelo(plantillas):
     for perfil in perfiles_nube():
         assert f"inference-profile/{perfil}" in politicas, perfil
         assert f"foundation-model/{perfil.split('.', 1)[1]}" in politicas, perfil
+
+
+RAIZ = Path(__file__).resolve().parents[1]
+
+
+def test_dockerignore_deja_pasar_el_lock_y_nunca_env():
+    """D48: uv necesita pyproject.toml y uv.lock en el contexto; .env no entra nunca."""
+    reglas = [
+        linea.strip()
+        for linea in (RAIZ / ".dockerignore").read_text(encoding="utf-8").splitlines()
+        if linea.strip() and not linea.startswith("#")
+    ]
+    assert reglas[0] == "*"
+    assert {"!pyproject.toml", "!uv.lock"} <= set(reglas)
+    assert not [r for r in reglas if r.startswith("!") and ".env" in r]
+    assert "data/mock/etiquetas_esperadas.json" in reglas
+
+
+@pytest.mark.parametrize("dockerfile", ["agente.Dockerfile", "lambda.Dockerfile"])
+def test_dockerfiles_con_uv_fijo_y_lock_congelado(dockerfile):
+    """D48: uv con versión fija e instalación desde uv.lock sin los grupos dev ni infra."""
+    texto = (RAIZ / "infra" / "docker" / dockerfile).read_text(encoding="utf-8")
+    assert re.search(r"ghcr\.io/astral-sh/uv:\d+\.\d+\.\d+ ", texto)
+    assert ":latest" not in texto
+    assert "--frozen --no-default-groups" in texto
+    assert "requirements_nube" not in texto

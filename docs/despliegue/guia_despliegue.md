@@ -78,6 +78,21 @@ docker buildx ls
   `linux/arm64` (Docker Desktop la trae por emulación).
 - Cobra: nada.
 
+**0.0b Probar las dos imágenes en local (opcional, recomendado).** Construye las mismas imágenes que
+construirá CDK, sin subir nada: si una falla aquí, falla gratis y rápido, no a mitad de un deploy.
+
+```powershell
+docker buildx build --platform linux/arm64 -f infra/docker/agente.Dockerfile -t agil-agente:prueba --load .
+docker buildx build --platform linux/arm64 -f infra/docker/lambda.Dockerfile -t agil-lambda:prueba --load .
+```
+
+- Qué hace: cada imagen tiene dos etapas. En la primera, `uv` instala las dependencias exactas de
+  `uv.lock` (sin las de desarrollo ni las de infraestructura); la segunda copia solo ese resultado y el
+  código, así la imagen final no carga `uv` ni archivos de la instalación.
+- Qué ver: ambas terminan sin `ERROR`. La primera vez tardan varios minutos (emulación arm64).
+- Cobra: nada; solo descarga imágenes base públicas.
+- Deshacer: `docker image rm agil-agente:prueba agil-lambda:prueba`.
+
 **0.1 Confirmar con qué cuenta y usuario está el CLI.**
 
 ```powershell

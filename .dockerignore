@@ -1,7 +1,8 @@
 # Solo entra lo que usan las imágenes; nunca .env ni .venv.
 *
 !infra/docker/
-!infra/requirements_nube.txt
+!pyproject.toml
+!uv.lock
 !config.yaml
 !prompts/
 !data/mock/
