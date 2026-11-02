@@ -848,3 +848,15 @@ def test_los_acuerdos_sobreviven_a_serializar_la_sesion(repo, ahora):
     orq.atender(sesion, boton=Boton.confirmar)
     reanudada = Sesion.model_validate(json.loads(sesion.model_dump_json()))
     assert reanudada.acuerdos == ["oferta OF-102 aceptada"]
+
+
+def test_cuotas_de_una_oferta_consultada_pasan_sin_reintento(repo, ahora):
+    texto = "Puede pagar en 3 cuotas de {{of_111.monto_cuota}}."
+    agente = ModeloGuionado(("consultar_ofertas_elegibles", {}), texto, "Sin oferta.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar("CL-1107377", "CV-1")  # elegible a OF-111 (3 cuotas)
+    sesion.verificada = True
+    r = orq.atender(sesion, "¿puedo pagar por partes?")
+    assert sesion.condiciones["OF-111"].numero_cuotas == 3
+    assert len(r.mensajes) == 1 and "3 cuotas de $" in r.mensajes[0]
+    assert len(agente.recibido) == 2 and "no se envió" not in agente.todo_lo_recibido()

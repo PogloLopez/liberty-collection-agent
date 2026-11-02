@@ -298,7 +298,13 @@ class Orquestador:
     def _validar(texto: str, sesion: Sesion) -> Validacion:
         if not texto:
             return Validacion(ok=False, motivo="La respuesta está vacía.")
-        return validar_salida(texto, set(sesion.valores), sesion.max_caracteres)
+        # Cuotas y días de las ofertas consultadas: "3 cuotas" sale si coincide con una (D40).
+        condiciones = sesion.condiciones.values()
+        numeros = {
+            "cuota": frozenset(c.numero_cuotas for c in condiciones),
+            "dia": frozenset(c.dias_prorroga for c in condiciones),
+        }
+        return validar_salida(texto, set(sesion.valores), sesion.max_caracteres, numeros)
 
     @staticmethod
     def _fin_con_tarjeta(sesion: Sesion) -> str | None:

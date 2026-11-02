@@ -71,7 +71,10 @@ def cifras_oferta(c: CondicionesOferta) -> dict[str, str]:
         "monto_descuento": c.monto_descuento and formato.dinero(c.monto_descuento),
         "numero_cuotas": c.numero_cuotas and str(c.numero_cuotas),
         "monto_cuota": c.monto_cuota and formato.dinero(c.monto_cuota),
-        "monto_ultima_cuota": c.monto_ultima_cuota and formato.dinero(c.monto_ultima_cuota),
+        # Si la última es igual a las demás no se entrega: "y la última de…" confunde (D40).
+        "monto_ultima_cuota": c.monto_ultima_cuota != c.monto_cuota
+        and c.monto_ultima_cuota
+        and formato.dinero(c.monto_ultima_cuota),
         "dias_prorroga": c.dias_prorroga and str(c.dias_prorroga),
         "fecha_limite": c.fecha_limite and formato.fecha(c.fecha_limite),
     }

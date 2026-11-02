@@ -330,3 +330,19 @@ def test_consultar_ofertas_calcula_la_cuenta_una_vez(repo, ahora, monkeypatch):
     t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
     assert len(t["consultar_ofertas_elegibles"]()["ofertas"]) > 1
     assert len(llamadas) == 1
+
+
+def test_sin_ultima_cuota_si_es_igual_a_las_demas():
+    from decimal import Decimal
+
+    from agil.dominio.modelos import CondicionesOferta
+
+    base = dict(
+        oferta_id="OF-111", monto_base=Decimal("9"), monto_a_pagar=Decimal("9"), numero_cuotas=3
+    )
+    iguales = CondicionesOferta(**base, monto_cuota=Decimal("3"), monto_ultima_cuota=Decimal("3"))
+    distintas = CondicionesOferta(
+        **base, monto_cuota=Decimal("2.99"), monto_ultima_cuota=Decimal("3.02")
+    )
+    assert "of_111.monto_ultima_cuota" not in cifras_oferta(iguales)
+    assert cifras_oferta(distintas)["of_111.monto_ultima_cuota"] == "$3.02"
