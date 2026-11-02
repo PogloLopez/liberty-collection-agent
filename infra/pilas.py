@@ -25,12 +25,50 @@ from aws_cdk import aws_s3_deployment as s3_deployment
 from aws_cdk import aws_stepfunctions as sfn
 from aws_cdk import aws_stepfunctions_tasks as tasks
 from constructs import Construct
+from pydantic_settings import BaseSettings, SettingsConfigDict, YamlConfigSettingsSource
 
 RAIZ = Path(__file__).resolve().parents[1]
 ESTATICOS = RAIZ / "src" / "agil" / "app" / "estaticos"
 NOMBRE_AGENTE = "agil_agente"
-# Perfiles de inferencia `us.` y los modelos a los que enrutan (config.yaml, prod).
-MODELOS = ["amazon.nova-lite-v1:0", "amazon.nova-micro-v1:0"]
+
+
+class _ConfigYaml(BaseSettings):
+    """Solo `prod` de config.yaml, sin `.env` ni variables: los stacks no los necesitan."""
+
+    model_config = SettingsConfigDict(yaml_file=RAIZ / "config.yaml", extra="ignore")
+    prod: dict
+
+    @classmethod
+    def settings_customise_sources(cls, settings_cls, **_):
+        return (YamlConfigSettingsSource(settings_cls),)
+
+
+def region_demo() -> str:
+    """La región sale de un solo lugar: `prod.region` en config.yaml (D47)."""
+    return _ConfigYaml().prod["region"]
+
+
+def perfiles_nube() -> list[str]:
+    """Los perfiles de inferencia de `prod` en config.yaml (agente y estratega), p. ej.
+    `us.amazon.nova-lite-v1:0`: el permiso de invocar sale de ahí, no de una copia."""
+    prod = _ConfigYaml().prod
+    return [m for rol in ("agente", "estratega") for m in prod[rol]["modelos"]]
+
+
+def _invocar_nova(stack: Stack) -> iam.PolicyStatement:
+    """Por perfil de inferencia: permiso sobre el perfil y sobre el modelo base (sin el prefijo
+    geográfico) en cada región a la que el perfil enruta."""
+    perfiles = perfiles_nube()
+    return iam.PolicyStatement(
+        actions=["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],
+        resources=[
+            *(f"arn:aws:bedrock:*::foundation-model/{p.split('.', 1)[1]}" for p in perfiles),
+            *(
+                f"arn:aws:bedrock:{stack.region}:{stack.account}:inference-profile/{p}"
+                for p in perfiles
+            ),
+        ],
+    )
 
 
 def _imagen(scope: Construct, id_: str, dockerfile: str) -> ecr_assets.DockerImageAsset:
@@ -41,20 +79,6 @@ def _imagen(scope: Construct, id_: str, dockerfile: str) -> ecr_assets.DockerIma
         directory=str(RAIZ),
         file=f"infra/docker/{dockerfile}",
         platform=ecr_assets.Platform.LINUX_ARM64,
-    )
-
-
-def _invocar_nova(stack: Stack) -> iam.PolicyStatement:
-    """Nova por perfil de inferencia: permiso sobre el perfil y sobre el modelo en cada región."""
-    return iam.PolicyStatement(
-        actions=["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],
-        resources=[
-            *(f"arn:aws:bedrock:*::foundation-model/{m}" for m in MODELOS),
-            *(
-                f"arn:aws:bedrock:{stack.region}:{stack.account}:inference-profile/us.{m}"
-                for m in MODELOS
-            ),
-        ],
     )
 
 

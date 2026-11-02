@@ -17,7 +17,9 @@ dev:
     modelos: [openai/gpt-oss-safeguard-20b]
     max_tokens: 300
 
-# Nube (D46): perfiles de inferencia `us.` desde us-east-1 (model card de Nova, verificado el 2-nov).
+# Nube (D46). `region` es el único lugar donde se define: la usan el agente, las Lambdas y los stacks
+# (infra/app.py) y la guía de despliegue (D47). Los ids `us.` son perfiles de inferencia de EE. UU.:
+# si se cambia a una región fuera de EE. UU., hay que cambiar también el prefijo (p. ej. `eu.`).
 # El guardrail lo crea el stack y llega por GUARDRAIL_ID y GUARDRAIL_VERSION.
 prod:
   proveedor: bedrock

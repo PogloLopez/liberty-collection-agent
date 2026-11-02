@@ -1,16 +1,22 @@
 """Stacks de la nube con `assertions` (D46): se sintetizan en memoria, sin construir imágenes ni
 llamar a la nube. Comprueban lo que encarece o rompe la demo si falta."""
 
+import json
 import sys
 from pathlib import Path
 
 import aws_cdk as cdk
 import pytest
+import yaml
 from aws_cdk.assertions import Match, Template
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "infra"))
 
-from pilas import NOMBRE_AGENTE, Agente, Api, Datos, Web
+from pilas import NOMBRE_AGENTE, Agente, Api, Datos, Web, perfiles_nube, region_demo
+
+PROD = yaml.safe_load(
+    (Path(__file__).resolve().parents[1] / "config.yaml").read_text(encoding="utf-8")
+)["prod"]
 
 
 @pytest.fixture(scope="module")
@@ -118,3 +124,16 @@ def test_web_privada_detras_de_cloudfront(plantillas):
             )
         },
     )
+
+
+def test_region_y_perfiles_salen_de_config_yaml():
+    """D47: un solo lugar para la región y los modelos de la nube."""
+    assert region_demo() == PROD["region"]
+    assert perfiles_nube() == PROD["agente"]["modelos"] + PROD["estratega"]["modelos"]
+
+
+def test_runtime_puede_invocar_cada_perfil_y_su_modelo(plantillas):
+    politicas = json.dumps(plantillas["AgilAgente"].find_resources("AWS::IAM::Policy"))
+    for perfil in perfiles_nube():
+        assert f"inference-profile/{perfil}" in politicas, perfil
+        assert f"foundation-model/{perfil.split('.', 1)[1]}" in politicas, perfil

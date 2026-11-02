@@ -10,13 +10,14 @@ import aws_cdk as cdk
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from pilas import Agente, Api, Datos, Web
+from pilas import Agente, Api, Datos, Web, region_demo
 
 app = cdk.App()
 codigo = app.node.try_get_context("codigo")
 if not codigo:
     raise SystemExit("Falta el código de acceso: agrega -c codigo=<código> al comando.")
-entorno = cdk.Environment(region="us-east-1")  # cuenta: la de las credenciales del CLI
+# Cuenta: la de las credenciales del CLI.
+entorno = cdk.Environment(region=region_demo())
 
 datos = Datos(app, "AgilDatos", env=entorno)
 agente = Agente(app, "AgilAgente", tabla=datos.tabla, env=entorno)

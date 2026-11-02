@@ -6,9 +6,10 @@ completa en el chat antes de reintentar.
 
 ## Antes de empezar: lo mínimo de AWS para entender esta guía
 
-**Cuenta y región.** Todo vive en una cuenta (12 dígitos) y en una región: aquí, `us-east-1` (Virginia). Un
-recurso creado en otra región no se ve en esta; si algo "no aparece" en la consola, revisa el selector de
-región arriba a la derecha.
+**Cuenta y región.** Todo vive en una cuenta (12 dígitos) y en una región. La región se define en un solo
+lugar: `prod.region` en `config.yaml` (hoy `us-east-1`, Virginia); los stacks la leen de ahí y en esta guía
+aparece como `<REGION>`. Un recurso creado en otra región no se ve en esta; si algo "no aparece" en la
+consola, revisa el selector de región arriba a la derecha.
 
 **IAM: quién puede hacer qué.** Tu usuario del CLI tiene permisos para desplegar. Los servicios también
 necesitan permisos: cada Lambda y el agente tienen un **rol** (una identidad que el servicio "se pone") con
@@ -57,7 +58,7 @@ navegador ──HTTPS──► CloudFront ──/api/*──► Lambda API (orqu
 imágenes). No hay nada que cobre por hora (sin VPC, NAT ni servidores encendidos). El costo estimado de
 toda la evaluación es ~USD 3 ([[despliegue_demo]]) y la alarma de USD 10 sigue activa.
 
-**Dónde mirar en la consola** (consola.aws.amazon.com, región `us-east-1`):
+**Dónde mirar en la consola** (consola.aws.amazon.com, en `<REGION>`):
 - CloudFormation → Stacks: el estado de cada stack (`CREATE_COMPLETE` es bien; `ROLLBACK_*` es un fallo:
   la pestaña **Events** dice qué recurso falló y por qué).
 - CloudWatch → Log groups: los errores de las Lambdas y del agente (paso 3).
@@ -87,16 +88,17 @@ aws sts get-caller-identity
 - Qué ver: un JSON con `Account` (12 dígitos), `UserId` y `Arn`. Anota `Account`.
 - Cobra: nada.
 
-**0.2 Bootstrap de CDK en us-east-1.** Reemplaza `<ACCOUNT>` por los 12 dígitos del paso anterior.
+**0.2 Bootstrap de CDK en la región de la demo.** Reemplaza `<ACCOUNT>` por los 12 dígitos del paso
+anterior y `<REGION>` por `prod.region` de `config.yaml` (hoy `us-east-1`).
 
 ```powershell
-cdk bootstrap aws://<ACCOUNT>/us-east-1
+cdk bootstrap aws://<ACCOUNT>/<REGION>
 ```
 
 - Qué hace: crea el stack `CDKToolkit`, con lo que CDK necesita para desplegar: un bucket S3 donde sube los
   archivos del frontend, un repositorio ECR donde sube las dos imágenes (agente y Lambdas), roles IAM para
   desplegar y un parámetro de versión. Se hace una vez por cuenta y región.
-- Qué ver: termina con `Environment aws://<ACCOUNT>/us-east-1 bootstrapped.` Tarda 1-3 minutos.
+- Qué ver: termina con `Environment aws://<ACCOUNT>/<REGION> bootstrapped.` Tarda 1-3 minutos.
 - Cobra: prácticamente nada mientras el bucket y el repositorio estén casi vacíos (centavos al mes).
 - Deshacer: después de destruir la demo, borrar el stack `CDKToolkit` desde la consola de CloudFormation
   (primero hay que vaciar su bucket). Se puede dejar: no cobra mientras no se use.
@@ -144,7 +146,7 @@ cdk deploy AgilAgente -c codigo=ProyectoAgil2026
 
 - Qué hace: Docker construye la imagen del agente para arm64 (la primera vez 5-15 minutos: en un PC x86 es
   emulación), la sube a ECR, crea el guardrail y su versión, el rol del agente y el Runtime.
-- Qué ver: `AgilAgente.RuntimeArn = arn:aws:bedrock-agentcore:us-east-1:...:runtime/agil_agente-...`.
+- Qué ver: `AgilAgente.RuntimeArn = arn:aws:bedrock-agentcore:<REGION>:...:runtime/agil_agente-...`.
 - Si falla: lo más probable es Docker (¿está abierto?) o un permiso; pégame la salida.
 
 ```powershell
@@ -153,7 +155,7 @@ cdk deploy AgilApi -c codigo=ProyectoAgil2026
 
 - Qué hace: construye la imagen de las Lambdas (otra vez arm64), crea las 3 Lambdas, la URL de la API y la
   máquina de estados de la campaña. ~5-10 minutos.
-- Qué ver: `AgilApi.UrlApi = https://....lambda-url.us-east-1.on.aws/`.
+- Qué ver: `AgilApi.UrlApi = https://....lambda-url.<REGION>.on.aws/`.
 
 ```powershell
 cdk deploy AgilWeb -c codigo=ProyectoAgil2026
