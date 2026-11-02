@@ -165,9 +165,11 @@ class Orquestador:
             sesion.pasos = []
             r = self._atender(sesion, texto, boton)
             r.pasos, sesion.pasos = sesion.pasos, []
+            r.pide_cedula = sesion.cedula_pedida and not sesion.verificada and not sesion.cerrada
             span.set_attribute("agil.turno", sesion.turno)
             span.set_attribute("agil.tarjeta", r.tarjeta is not None)
             span.set_attribute("agil.cierre", sesion.motivo_cierre or "")
+            span.set_attribute("agil.pide_cedula", r.pide_cedula)
             return r
 
     def _atender(self, sesion: Sesion, texto: str, boton: Boton | None) -> Respuesta:

@@ -44,8 +44,19 @@ button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid
 button:disabled { opacity: .5; cursor: default; }
 .primario { background: var(--acento); border-color: var(--acento); color: #fff; }
 .estado { color: var(--suave); font-size: 13px; }
-.paneles { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 16px; }
-@media (max-width: 820px) { .paneles { grid-template-columns: 1fr; } }
+.hoy { background: #ffd400; color: #111; font-weight: 700; padding: 8px 12px; border-radius: 8px;
+  border: 2px solid #111; }
+.hoy:empty { display: none; }
+.paneles { display: grid; grid-template-columns: 170px minmax(0, 420px) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 1000px) { .paneles { grid-template-columns: 1fr; } }
+.globo { align-self: end; margin-bottom: 90px; position: relative; background: var(--superficie);
+  border: 2px solid var(--texto); border-radius: 18px; padding: 12px 14px; font-size: 14px;
+  box-shadow: 3px 3px 0 var(--texto); }
+.globo::after { content: ""; position: absolute; right: -14px; bottom: 18px; border: 7px solid transparent;
+  border-left-color: var(--texto); }
+.globo b { font-size: 22px; letter-spacing: 3px; display: block; margin-top: 4px; }
+.globo.oculta { visibility: hidden; }
+@media (max-width: 1000px) { .globo { margin: 0; } .globo.oculta { display: none; } .globo::after { display: none; } }
 .telefono { display: flex; flex-direction: column; height: 70vh; min-height: 420px; border-radius: 16px;
   overflow: hidden; border: 1px solid var(--borde); background: var(--chat); }
 .cabecera-chat { padding: 10px 14px; background: #075e54; color: #fff; font-weight: 600; }

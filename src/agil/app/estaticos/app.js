@@ -2,6 +2,8 @@
 const $ = (sel) => document.querySelector(sel);
 let conversacion = null;
 let ocupado = false;
+let clientes = [];
+let clienteActivo = null; // el de la conversación abierta, no el del selector
 
 const api = async (ruta, cuerpo) => {
   const r = await fetch(`/api/${ruta}`, cuerpo === undefined ? {} : {
@@ -53,7 +55,20 @@ function tarjeta(t) {
   div.append(botones);
 }
 
+// Solo demo (D40): el globo muestra los cuatro dígitos cuando el agente los pide.
+function globo(visible) {
+  const c = clientes.find((x) => x.customer_id === clienteActivo);
+  const g = $("#globo");
+  if (visible && c?.cedula_demo) {
+    g.innerHTML = `Solo demo: la cédula de ${escapar(c.nombre.split(" ")[0])} termina en<b>${escapar(c.cedula_demo)}</b>`;
+    g.classList.remove("oculta");
+  } else {
+    g.classList.add("oculta");
+  }
+}
+
 function mostrar(r) {
+  globo(r.pide_cedula);
   r.mensajes.forEach((m) => burbuja("agente", m));
   if (r.tarjeta) {
     document.querySelectorAll(".botones button").forEach((x) => (x.disabled = true));
@@ -71,6 +86,7 @@ async function enviar(cuerpo, rotulo) {
   ocupado = true;
   habilitar(false);
   const ruta = cuerpo.boton ? "botones" : "mensajes";
+  globo(false);
   if (!cuerpo.boton) burbuja("cliente", cuerpo.texto);
   estado("El agente está escribiendo…");
   try {
@@ -117,6 +133,7 @@ async function campana() {
   $("#pasos").innerHTML = "";
   conversacion = null;
   habilitar(false);
+  globo(false);
   try {
     const datos = await api("campana", { customer_id: cid });
     grupo("Campaña saliente", datos.pasos);
@@ -125,6 +142,7 @@ async function campana() {
       return;
     }
     conversacion = datos.conversacion_id;
+    clienteActivo = cid;
     burbuja("plantilla", datos.plantilla, "Plantilla aprobada");
     habilitar(true);
   } catch (e) {
@@ -211,8 +229,10 @@ $("#formulario").onsubmit = (e) => {
 };
 $("#nueve").onclick = campana;
 
-api("clientes").then((lista) => {
-  $("#cliente").innerHTML = lista.map((c) =>
+api("demo").then((d) => {
+  clientes = d.clientes;
+  $("#hoy").textContent = `Hoy en la demo: ${d.hoy}`;
+  $("#cliente").innerHTML = clientes.map((c) =>
     `<option value="${escapar(c.customer_id)}">${escapar(c.nombre)} · ${escapar(c.segmento)}</option>`).join("");
 });
 modulos();

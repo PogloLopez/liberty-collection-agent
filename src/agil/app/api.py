@@ -12,10 +12,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from agil.agente import formato
 from agil.agente.config import Configuracion, Modelos, crear_modelos
 from agil.agente.orquestador import Orquestador
 from agil.agente.sesion import Respuesta, Sesion
 from agil.app.campana import que_sean_las_9
+from agil.dominio.harness.identidad import ultimos_cuatro
 from agil.dominio.harness.intenciones import Boton
 from agil.dominio.reglas.segmentacion import segmentar
 from agil.dominio.repositorio.memoria import RepositorioMemoria
@@ -55,17 +57,23 @@ def crear_app(
             raise HTTPException(404, "Conversación no encontrada")
         return sesiones[conversacion_id]
 
-    @app.get("/api/clientes")
-    def clientes() -> list[dict]:
-        """Los candidatos de demo con su segmento, para elegir a quién escribir."""
-        return [
-            {
-                "customer_id": cid,
-                "nombre": repo.cliente(cid).nombre,
-                "segmento": segmentar(repo, cid).segmento.value,
-            }
-            for cid in DEMO
-        ]
+    @app.get("/api/demo")
+    def demo() -> dict:
+        """La fecha del mundo del mock y los candidatos de demo (D40). En modo demo, los cuatro
+        dígitos de la cédula para que el evaluador pueda verificarse."""
+        hoy = repo.fecha_referencia
+        return {
+            "hoy": f"{formato.fecha(hoy)} de {hoy.year}",
+            "clientes": [
+                {
+                    "customer_id": cid,
+                    "nombre": repo.cliente(cid).nombre,
+                    "segmento": segmentar(repo, cid).segmento.value,
+                    "cedula_demo": ultimos_cuatro(repo.cliente(cid).cedula) if modo_demo else None,
+                }
+                for cid in DEMO
+            ],
+        }
 
     @app.post("/api/campana")
     def campana(c: Campana) -> dict:

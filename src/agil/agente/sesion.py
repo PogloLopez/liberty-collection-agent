@@ -90,3 +90,4 @@ class Respuesta(BaseModel):
     tarjeta: Tarjeta | None = None
     cerrada: bool = False
     pasos: list[tuple[str, str]] = Field(default_factory=list)
+    pide_cedula: bool = False  # el demo muestra el globo con los cuatro dígitos (D40)

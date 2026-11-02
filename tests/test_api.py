@@ -26,11 +26,12 @@ def _abrir(http) -> str:
 
 
 def test_lista_los_candidatos_de_demo_con_su_segmento(cliente):
-    lista = cliente().get("/api/clientes").json()
+    lista = cliente().get("/api/demo").json()["clientes"]
     assert {
         "customer_id": CID,
         "nombre": "Itzel Marisol Quintero Batista",
         "segmento": "olvidadizo",
+        "cedula_demo": None,  # fuera del modo demo no se muestra
     } in lista
     assert len({c["segmento"] for c in lista}) == 5
 
@@ -129,3 +130,42 @@ def test_sin_modelos_lee_modo_demo_de_la_config(repo, monkeypatch):
     monkeypatch.setattr(api, "crear_modelos", lambda cfg: Modelos(agente=ModeloGuionado()))
     http = TestClient(crear_app(repo))
     assert _abrir(http) != _abrir(http)
+
+
+def test_demo_trae_la_fecha_del_mock_y_en_modo_demo_la_cedula(cliente, repo):
+    d = cliente(modo_demo=True).get("/api/demo").json()
+    assert d["hoy"] == "viernes 6 de noviembre de 2026"
+    itzel = next(c for c in d["clientes"] if c["customer_id"] == CID)
+    assert itzel["cedula_demo"] == ultimos_cuatro(repo.cliente(CID).cedula)
+
+
+def test_la_respuesta_avisa_cuando_el_agente_pide_la_cedula(cliente):
+    http = cliente("Para ayudarle, ¿me indica los últimos cuatro dígitos de su cédula?", "Ok.")
+    cv = _abrir(http)
+    r = http.post(f"/api/conversaciones/{cv}/mensajes", json={"texto": "hola"}).json()
+    assert r["pide_cedula"]
+    r = http.post(f"/api/conversaciones/{cv}/mensajes", json={"texto": "no sé"}).json()
+    assert not r["pide_cedula"]
+
+
+def test_pide_cedula_sigue_tras_un_fallo_y_se_apaga_al_verificar(cliente, repo):
+    http = cliente("Para ayudarle, ¿me indica los últimos cuatro dígitos de su cédula?", "Gracias.")
+    cv = _abrir(http)
+    url = f"/api/conversaciones/{cv}/mensajes"
+    buenos = ultimos_cuatro(repo.cliente(CID).cedula)
+    assert http.post(url, json={"texto": "hola"}).json()["pide_cedula"]
+    malos = "0000" if buenos != "0000" else "1111"
+    assert http.post(url, json={"texto": malos}).json()["pide_cedula"]  # texto fijo, sigue pidiendo
+    assert not http.post(url, json={"texto": buenos}).json()["pide_cedula"]
+
+
+def test_pide_cedula_se_apaga_al_bloquear_por_tres_fallos(cliente, repo):
+    http = cliente("Para ayudarle, ¿me indica los últimos cuatro dígitos de su cédula?")
+    cv = _abrir(http)
+    url = f"/api/conversaciones/{cv}/mensajes"
+    malos = "0000" if ultimos_cuatro(repo.cliente(CID).cedula) != "0000" else "1111"
+    http.post(url, json={"texto": "hola"})
+    for _ in range(2):
+        assert http.post(url, json={"texto": malos}).json()["pide_cedula"]
+    r = http.post(url, json={"texto": malos}).json()
+    assert r["cerrada"] and not r["pide_cedula"]
