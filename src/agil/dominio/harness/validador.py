@@ -47,6 +47,37 @@ _REGLAS = [
 ]
 
 
+# Números de cuotas o días que se pueden escribir si coinciden con una oferta consultada (D40).
+_EN_PALABRAS = {
+    "dos": 2,
+    "tres": 3,
+    "cuatro": 4,
+    "cinco": 5,
+    "seis": 6,
+    "siete": 7,
+    "ocho": 8,
+    "nueve": 9,
+    "diez": 10,
+    "once": 11,
+    "doce": 12,
+    "quince": 15,
+    "veinte": 20,
+    "treinta": 30,
+}
+_PLAZO = re.compile(rf"\b([0-9]{{1,2}}|{'|'.join(_EN_PALABRAS)}) (cuota|dia)s?\b", re.I)
+
+
+def _quitar_plazos_conocidos(texto: str, numeros: dict[str, frozenset[int]]) -> str:
+    """`numeros` por unidad ("cuota", "dia"): "3 días" no pasa por haber una oferta de 3 cuotas."""
+
+    def conocido(m: re.Match) -> str:
+        n = m.group(1).lower()
+        valor = int(n) if n.isdigit() else _EN_PALABRAS[n]
+        return " " if valor in numeros.get(m.group(2).lower(), ()) else m.group(0)
+
+    return _PLAZO.sub(conocido, texto)
+
+
 _NEGRITA = re.compile(r"\*\*(.+?)\*\*")
 
 
@@ -56,7 +87,10 @@ def a_whatsapp(texto: str) -> str:
 
 
 def validar_salida(
-    texto: str, placeholders_permitidos: set[str], max_caracteres: int
+    texto: str,
+    placeholders_permitidos: set[str],
+    max_caracteres: int,
+    numeros: dict[str, frozenset[int]] | None = None,
 ) -> Validacion:
     """Bloquea cifras, %, montos, fechas, horas, plazos, meses o números en palabras fuera de
     placeholders (salvo "cuatro dígitos"), placeholders desconocidos, URLs literales y textos
@@ -70,7 +104,7 @@ def validar_salida(
         nombres = ", ".join(f"{{{{{p}}}}}" for p in sorted(desconocidos))
         return Validacion(ok=False, motivo=f"Placeholder no disponible: {nombres}. No lo uses.")
     normalizado = re.sub(r"\s+", " ", sin_tildes(PATRON.sub(" ", texto)))
-    resto = _PERMITIDO.sub(" ", normalizado)
+    resto = _quitar_plazos_conocidos(_PERMITIDO.sub(" ", normalizado), numeros or {})
     if "{" in resto or "}" in resto:
         return Validacion(ok=False, motivo="Placeholder mal formado: usa {{nombre}}.")
     for patron, que in _REGLAS:

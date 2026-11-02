@@ -10,6 +10,8 @@ from agil.dominio.modelos import Cola, CondicionesOferta, Segmento
 
 MAX_INTENTOS_CEDULA = 3
 MAX_STRIKES = 3
+MAX_FALLOS_SEGUIDOS = 3  # turnos sin respuesta válida antes de pasar a un asesor (D40)
+MAX_PEDIDOS_HUMANO = 2  # el primero lo intenta resolver el agente; el segundo va a un asesor (D45)
 VIGENCIA_VERIFICACION = timedelta(hours=12)  # o hasta el cierre (Pablo, 1-nov)
 
 
@@ -41,17 +43,29 @@ class Sesion(BaseModel):
     cedula_pedida: bool = False
     intentos_cedula: int = 0
     strikes: int = 0
+    sin_sentido: int = 0  # mensajes sin sentido seguidos (D40)
+    fallos_seguidos: int = 0  # turnos en que el agente no logró una respuesta válida (D40)
+    pedidos_humano: int = 0  # D45
     cerrada: bool = False
     motivo_cierre: str | None = None
     valores: dict[str, str] = Field(default_factory=dict)  # placeholder → cifra ya formateada
     condiciones: dict[str, CondicionesOferta] = Field(default_factory=dict)
     oferta_aceptada: CondicionesOferta | None = None
+    acuerdos: list[str] = Field(default_factory=list)  # lo confirmado con botones, sin cifras (D40)
+    # ofertas canceladas: la escalera sube (D40)
+    rechazadas: list[str] = Field(default_factory=list)
     tarjeta: Tarjeta | None = None
     eventos: list[str] = Field(default_factory=list)  # lo resuelto sin LLM, para el próximo turno
     contexto: list[str] = Field(default_factory=list)  # turno y estrategia; lo inyecta un hook
     transcripcion: list[tuple[str, str]] = Field(default_factory=list)  # ya enmascarada
     escrituras: set[str] = Field(default_factory=set)  # IDs ya escritos: tools idempotentes
     historial: list[dict[str, Any]] = Field(default_factory=list)  # mensajes del agente Strands
+    # Pasos del turno en curso para el panel del pipeline (D38); no se guardan con la sesión.
+    pasos: list[tuple[str, str]] = Field(default_factory=list, exclude=True)
+    recien_verificada: bool = Field(default=False, exclude=True)  # ese turno va sin estratega (D41)
+
+    def paso(self, nombre: str, detalle: str = "") -> None:
+        self.pasos.append((nombre, detalle))
 
     def vencer_verificacion(self, ahora: datetime) -> bool:
         """Reinicia la verificación si pasaron 12 horas; True si venció en esta llamada.
@@ -78,3 +92,5 @@ class Respuesta(BaseModel):
     mensajes: list[str] = Field(default_factory=list)
     tarjeta: Tarjeta | None = None
     cerrada: bool = False
+    pasos: list[tuple[str, str]] = Field(default_factory=list)
+    pide_cedula: bool = False  # el demo muestra el globo con los cuatro dígitos (D40)

@@ -40,6 +40,20 @@ def test_prompt_de_sistema_sin_datos_de_la_cuenta(repo, ahora):
     assert '"buenas tardes"' in texto
 
 
+@pytest.mark.parametrize("segmento", CONTACTABLES)
+def test_prompt_de_sistema_se_presenta_como_asistente_de_liberty(repo, ahora, segmento):
+    texto = prompt_sistema(cargar_perfil(segmento), repo.cliente("CL-1140215"), ahora())
+    assert "asistente virtual de Liberty" in texto  # D39
+
+
+def test_toda_plantilla_dice_que_escribe_liberty():
+    plantillas = json.loads((PROMPTS / "plantillas.json").read_text(encoding="utf-8"))
+    assert set(plantillas) == {s.value for s in CONTACTABLES}
+    for p in plantillas.values():
+        assert "le escribe Liberty" in p["texto"], p["id"]  # D39
+    assert len({p["id"] for p in plantillas.values()}) == len(plantillas)
+
+
 def test_cada_momento_tiene_tarjeta_menos_otro():
     tarjetas = json.loads((PROMPTS / "estrategias.json").read_text(encoding="utf-8"))
     assert set(tarjetas) == {m.value for m in Momento} - {"otro"}
@@ -174,3 +188,7 @@ def test_moderacion_recibe_el_mensaje_y_su_politica():
     sistema, mensajes = modelo.recibido[0]
     assert "Responde solo con 1 o 0" in sistema
     assert "esta empresa es lo peor" in json.dumps(mensajes, ensure_ascii=False)
+
+
+def test_se_niega_a_pagar_tiene_tarjeta_sin_link():
+    assert "No respondas con el link" in tarjeta_estrategia(Momento.se_niega_a_pagar)

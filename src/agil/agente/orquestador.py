@@ -1,9 +1,9 @@
 """Orquestador de turno (D31): lo que la Lambda router resuelve sin LLM, y luego el agente.
 
 Orden por mensaje: botones (D22) → no contactar explícito (D13) → enmascarar la cédula (D24) →
-moderación (D35) → verificación por código (D5) → contador y estratega (D16) → agente →
-validador con un reintento (D4, D15) → render de placeholders (B4). Lo resuelto sin LLM entra al
-agente como evento resumido en su siguiente turno (D22).
+moderación (D35) → verificación por código (D5) → pedido de asesor (D45) → contador y estratega
+(D16) → agente → validador con un reintento (D4, D15) → render de placeholders (B4). Lo resuelto
+sin LLM entra al agente como evento resumido en su siguiente turno (D22).
 """
 
 import logging
@@ -21,10 +21,24 @@ from agil.agente.auxiliares import clasificar_momento, es_abusivo, resumir, tarj
 from agil.agente.config import Modelos
 from agil.agente.hooks import RESPUESTA_TOPE, Controles
 from agil.agente.perfiles import cargar_perfil, prompt_sistema
-from agil.agente.sesion import MAX_INTENTOS_CEDULA, MAX_STRIKES, Respuesta, Sesion
-from agil.agente.tools import cifras_oferta, cifras_saldo, crear_tools, link_pago, prefijo
+from agil.agente.sesion import (
+    MAX_FALLOS_SEGUIDOS,
+    MAX_INTENTOS_CEDULA,
+    MAX_PEDIDOS_HUMANO,
+    MAX_STRIKES,
+    Respuesta,
+    Sesion,
+)
+from agil.agente.tools import (
+    cifras_oferta,
+    cifras_saldo,
+    crear_tools,
+    escalera,
+    link_pago,
+    prefijo,
+)
 from agil.dominio.harness.identidad import enmascarar, extraer_digitos, verificar
-from agil.dominio.harness.intenciones import Boton, pide_no_contacto
+from agil.dominio.harness.intenciones import Boton, pide_humano, pide_no_contacto, sin_sentido
 from agil.dominio.harness.placeholders import renderizar
 from agil.dominio.harness.texto import sin_tildes
 from agil.dominio.harness.validador import a_whatsapp, validar_salida
@@ -56,6 +70,19 @@ TEXTOS = {
     "fallo": "Disculpe, tuve un inconveniente. Un asesor continuará la conversación con usted.",
     "handoff": "Un asesor continuará la conversación con usted. Gracias por su paciencia.",
     "sin_tarjeta": "Esa opción ya no está disponible.",
+    "respuesta_segura": "Disculpe, ¿me lo puede repetir?",
+    "sin_sentido": "No entendí su mensaje. ¿Me lo escribe de nuevo?",
+    "sin_sentido_cierre": (
+        "Vamos a cerrar esta conversación por ahora. Si necesita ayuda, escríbanos."
+    ),
+    "cedula_no_coincide": (
+        "Esos dígitos no coinciden con los de la cuenta. Revíselos y escríbalos de nuevo: solo los "
+        "cuatro números, sin puntos ni guiones."
+    ),
+    "cedula_bloqueada": (
+        "Por seguridad no puedo darle datos de la cuenta por aquí. Un asesor le ayudará a validar "
+        "su identidad."
+    ),
     "pasos": RESPUESTA_TOPE,
 }
 _PIDE_CEDULA = re.compile(r"\bcedula\b|\bcuatro digitos\b", re.I)
@@ -71,6 +98,7 @@ _USA_LA_TARJETA = (
     "aceptar_oferta o registrar_promesa_pago: la tarjeta con botones es la confirmación. Si aún no "
     "eligió, propón la opción sin pedirle que confirme."
 )
+REINTENTOS = 2
 _tracer = trace.get_tracer("agil.orquestador")
 
 
@@ -142,16 +170,22 @@ class Orquestador:
         """Un span por mensaje, sin el texto del cliente: resultado y pasos como atributos."""
         with _tracer.start_as_current_span("agil.turno") as span:
             span.set_attribute("session.id", sesion.conversacion_id)
+            sesion.pasos = []
             r = self._atender(sesion, texto, boton)
+            r.pasos, sesion.pasos = sesion.pasos, []
+            r.pide_cedula = sesion.cedula_pedida and not sesion.verificada and not sesion.cerrada
             span.set_attribute("agil.turno", sesion.turno)
             span.set_attribute("agil.tarjeta", r.tarjeta is not None)
             span.set_attribute("agil.cierre", sesion.motivo_cierre or "")
+            span.set_attribute("agil.pide_cedula", r.pide_cedula)
             return r
 
     def _atender(self, sesion: Sesion, texto: str, boton: Boton | None) -> Respuesta:
         if sesion.cerrada:
+            sesion.paso("Sesión cerrada", "no se procesa el mensaje")
             return Respuesta(cerrada=True)
         if sesion.vencer_verificacion(self.ahora()):  # también ante un botón: anula la tarjeta
+            sesion.paso("Verificación vencida", "pasaron 12 horas: se pide de nuevo")
             sesion.eventos.append(
                 "[sistema] La verificación venció (12 horas): pide de nuevo los cuatro dígitos "
                 "antes de dar datos de la cuenta."
@@ -163,47 +197,82 @@ class Orquestador:
             return self._no_contactar(sesion, texto)
         if sesion.tarjeta:  # T2: escribió en vez de tocar un botón; la tarjeta sigue vigente
             trace.get_current_span().add_event("tarjeta_pendiente")
-            sesion.eventos.append(
+            sesion.paso("Tarjeta pendiente", "escribió sin tocar los botones")
+            aviso = (
                 "[sistema] El cliente escribió sin responder la tarjeta pendiente "
                 f"({sesion.tarjeta.descripcion})."
             )
+            if aviso not in sesion.eventos:
+                sesion.eventos.append(aviso)
 
         # Ninguna cédula llega a un modelo; sin verificar, ningún dígito (D24). Solo cuenta como
         # intento si el agente la pidió ("1500" es ambiguo).
-        digitos = None if sesion.verificada else extraer_digitos(texto)
+        digitos = None if sesion.verificada else extraer_digitos(texto, sesion.cedula_pedida)
         visible = enmascarar(texto, solo_cedula=sesion.verificada)
         sesion.transcripcion.append(("cliente", visible))
+        if visible != texto:
+            sesion.paso("Datos enmascarados", "ningún dígito de la cédula llega a un modelo")
 
-        if self.modelos.moderador and es_abusivo(self.modelos.moderador, visible):
-            trace.get_current_span().add_event("moderacion", {"abusivo": True})
-            return self._abuso(sesion)
-        if digitos and sesion.cedula_pedida:
-            self._verificar(sesion, digitos)
+        if not digitos and sin_sentido(visible):  # antes de cualquier modelo (D40)
+            return self._sin_sentido(sesion)
+        sesion.sin_sentido = 0
+        if self.modelos.moderador:
+            abusivo = es_abusivo(self.modelos.moderador, visible)
+            sesion.paso("Moderación", "abusivo" if abusivo else "sin problemas")
+            if abusivo:
+                trace.get_current_span().add_event("moderacion", {"abusivo": True})
+                return self._abuso(sesion)
+        if digitos and sesion.cedula_pedida and (fallo := self._verificar(sesion, digitos)):
+            return fallo
+        if pide_humano(visible) and (r := self._pide_humano(sesion)):  # tras la moderación (D45)
+            return r
         return self._turno_agente(sesion, f"Cliente: {visible}")
 
     def _turno_agente(self, sesion: Sesion, linea_cliente: str) -> Respuesta:
         sesion.turno += 1
         if sesion.turno > sesion.max_turnos:
             return self._cierre_fijo(sesion, "tope", TEXTOS["tope"])
+        # Un intento de cédula solo cuenta en el mensaje que sigue a la petición: "15-02" dos turnos
+        # después es una fecha. El turno vuelve a encenderlo si la pide de nuevo.
+        sesion.cedula_pedida = False
+        sesion.paso("Contador", f"turno {sesion.turno} de {sesion.max_turnos}")
         sesion.contexto = self._contexto(sesion)
         mensaje = "\n".join([*sesion.eventos, linea_cliente])
         sesion.eventos = []
         tarjeta_previa = sesion.tarjeta
+        n = len(sesion.historial)
         try:
             texto = self._invocar(sesion, mensaje)
         except Exception:
             log.exception("Fallo del agente")
+            del sesion.historial[n:]  # sin un toolUse a medias que rompa los turnos siguientes
             texto = None
         if texto is None:
             sesion.tarjeta = None
             if sesion.cerrada:  # una tool ya cerró (handoff o no contacto): solo falló el texto
                 motivo = sesion.motivo_cierre
                 return self._cierre_fijo(sesion, motivo, TEXTOS.get(motivo, TEXTOS["handoff"]))
-            self._handoff_fallo(sesion)  # fallo nuestro: humano (D15)
-            return self._cierre_fijo(sesion, "fallo", TEXTOS["fallo"])
+            # Fallo nuestro (D15): texto seguro; tres turnos fallidos seguidos van al asesor (D40).
+            sesion.fallos_seguidos += 1
+            if sesion.fallos_seguidos >= MAX_FALLOS_SEGUIDOS:
+                self._handoff(
+                    sesion,
+                    "fallo",
+                    "fallo_agente",
+                    "El agente no pudo generar una respuesta válida.",
+                )
+                return self._cierre_fijo(sesion, "fallo", TEXTOS["fallo"])
+            sesion.paso(
+                "Respuesta segura",
+                f"texto fijo (turno fallido {sesion.fallos_seguidos} de {MAX_FALLOS_SEGUIDOS})",
+            )
+            sesion.transcripcion.append(("agente", TEXTOS["respuesta_segura"]))
+            return Respuesta(mensajes=[TEXTOS["respuesta_segura"]])
+        sesion.fallos_seguidos = 0
 
         tarjeta = sesion.tarjeta if sesion.tarjeta is not tarjeta_previa else None
         if texto == "" and tarjeta is not None:  # la tarjeta se basta sola (T1)
+            sesion.paso("Tarjeta con botones", f"{tarjeta.descripcion}; termina el turno")
             sesion.transcripcion.append(("agente", f"[tarjeta] {tarjeta.texto}"))
             return Respuesta(tarjeta=tarjeta)
         if _PIDE_CEDULA.search(sin_tildes(texto)) and not sesion.verificada:
@@ -211,6 +280,7 @@ class Orquestador:
         final = renderizar(a_whatsapp(texto), sesion.valores)
         sesion.transcripcion.append(("agente", texto))
         if sesion.cerrada:
+            sesion.paso("Cierre", sesion.motivo_cierre or "agente")
             self.cerrar(sesion, sesion.motivo_cierre or "agente")
         return Respuesta(mensajes=[final], tarjeta=tarjeta, cerrada=sesion.cerrada)
 
@@ -220,16 +290,29 @@ class Orquestador:
             lineas.append(
                 "[contexto] Quedan pocos turnos: propone cerrar (link, promesa o asesor)."
             )
-        if self.modelos.estratega:
+        if sesion.acuerdos and sesion.verificada:  # vencida la verificación, no se revela (D5)
+            lineas.append(
+                f"[contexto] Ya registrado en esta conversación: {'; '.join(sesion.acuerdos)}. "
+                "No lo vuelvas a ofrecer ni pidas confirmarlo."
+            )
+        recien, sesion.recien_verificada = sesion.recien_verificada, False
+        if self.modelos.estratega and sesion.verificada and not recien:  # D40, D41
             momento = clasificar_momento(self.modelos.estratega, sesion.transcripcion)
             tarjeta = momento and tarjeta_estrategia(momento)
-            if tarjeta:
-                lineas.append(f"[estrategia: {momento.value}] {tarjeta}")
+            nombre = momento.value if momento else "sin clasificar"
+            sesion.paso("Estratega", f"{nombre}: {tarjeta}" if tarjeta else nombre)
+            if tarjeta:  # una sugerencia, no una orden (D41)
+                lineas.append(
+                    f"[estrategia sugerida: {nombre}] Si encaja con lo que dijo: {tarjeta}"
+                )
+        elif self.modelos.estratega:
+            motivo = "recién verificado: retoma lo pedido" if recien else "sin verificar"
+            sesion.paso("Estratega", f"omitido: {motivo}")
         return lineas
 
     def _invocar(self, sesion: Sesion, mensaje: str) -> str | None:
         """Respuesta validada del agente; "" si el turno terminó con una tarjeta (T1) y None si
-        falla dos veces (D4, D15)."""
+        falla tras 1 + REINTENTOS intentos (D4, D15, D40)."""
         agente, controles = self._agente(sesion)
         texto = str(agente(mensaje)).strip()
         if controles.agotado:  # el modelo siguió pidiendo tools tras el tope (K1)
@@ -241,13 +324,27 @@ class Orquestador:
             return self._fin_con_tarjeta(sesion)
         v = self._validar(texto, sesion)
         trace.get_current_span().add_event("validador", {"ok": v.ok, "motivo": v.motivo or ""})
-        if not v.ok and not sesion.cerrada:
-            texto, v = self._corregir(agente, controles, sesion, f"{v.motivo} Reescríbela.")
+        sesion.paso("Validador", "aprobada" if v.ok else f"rechazada: {v.motivo}")
+        if not v.ok:
+            for _ in range(REINTENTOS):  # hasta tres intentos por turno (D40)
+                if v.ok or sesion.cerrada:
+                    break
+                texto, v = self._corregir(agente, controles, sesion, f"{v.motivo} Reescríbela.")
+                sesion.paso("Reintento", "aprobado" if v.ok else f"rechazado: {v.motivo}")
+            if not v.ok and agente.messages and agente.messages[-1]["role"] == "assistant":
+                # Lo que el cliente recibe es el texto seguro: así queda en el historial y los
+                # roles siguen alternándose (Bedrock Converse lo exige).
+                agente.messages[-1] = {
+                    "role": "assistant",
+                    "content": [{"text": TEXTOS["respuesta_segura"]}],
+                }
         elif _pide_confirmacion(texto) and not sesion.cerrada:
             # Un aviso, no un bloqueo: si la corrección no sirve, se envía la respuesta original.
             trace.get_current_span().add_event("confirma_en_texto")
+            sesion.paso("Confirmación en texto", "se le pide usar la tarjeta")
             original, historial = texto, list(agente.messages)
             texto, v = self._corregir(agente, controles, sesion, _USA_LA_TARJETA)
+            sesion.paso("Reintento", "aprobado" if v.ok else "rechazado: se envía la original")
             if not v.ok:
                 texto, v = original, Validacion(ok=True)
                 agente.messages[:] = historial
@@ -260,7 +357,13 @@ class Orquestador:
     def _validar(texto: str, sesion: Sesion) -> Validacion:
         if not texto:
             return Validacion(ok=False, motivo="La respuesta está vacía.")
-        return validar_salida(texto, set(sesion.valores), sesion.max_caracteres)
+        # Cuotas y días de las ofertas consultadas: "3 cuotas" sale si coincide con una (D40).
+        condiciones = sesion.condiciones.values()
+        numeros = {
+            "cuota": frozenset(c.numero_cuotas for c in condiciones),
+            "dia": frozenset(c.dias_prorroga for c in condiciones),
+        }
+        return validar_salida(texto, set(sesion.valores), sesion.max_caracteres, numeros)
 
     @staticmethod
     def _fin_con_tarjeta(sesion: Sesion) -> str | None:
@@ -342,6 +445,7 @@ class Orquestador:
             return
         evento = "[sistema] La cuenta del cliente cambió (p. ej. se aplicó un pago): cifras al día."
         if retiradas:
+            sesion.valores.pop("opciones", None)  # el conteo ya no vale: que vuelva a consultar
             evento += f" Ya no aplican: {', '.join(retiradas)}."
         tarjeta = sesion.tarjeta
         if tarjeta and tarjeta.monto != self._monto_actual(sesion, tarjeta.oferta_id, e):
@@ -366,43 +470,87 @@ class Orquestador:
             return sesion.oferta_aceptada.primer_pago
         return e.saldo_tras_transito
 
-    def _verificar(self, sesion: Sesion, digitos: str) -> None:
-        """El número nunca llega al LLM; solo el resultado (D24)."""
+    def _verificar(self, sesion: Sesion, digitos: str) -> Respuesta | None:
+        """El número nunca llega al LLM; solo el resultado (D24). Un intento fallido recibe un texto
+        fijo y el tercero pasa a un asesor (D40); None si es correcta y sigue el agente."""
         cliente = self.repo.cliente(sesion.customer_id)
         if verificar(cliente, digitos):
+            sesion.paso("Verificación de cédula", "correcta")
             sesion.verificada = True
             sesion.verificada_en = self.ahora()
             sesion.cedula_pedida = False
-            evento = "[sistema] Verificación de cédula correcta."
+            sesion.intentos_cedula = 0  # si vence a las 12 h, vuelve a tener tres intentos
+            sesion.recien_verificada = True
+            evento = (  # sin citar sus mensajes: ya están en el historial (D43)
+                "[sistema] Verificación de cédula correcta. Antes de responder, relee lo que pidió "
+                "el cliente antes de verificar, incluido el mensaje que sigue a este aviso: si "
+                "pidió algo que dejaste pendiente por no estar verificado, atiéndelo ahora (con la "
+                "tool que corresponda si ya eligió una opción), sin saludar de nuevo. Lo que ya le "
+                "respondiste no lo repitas."
+            )
             notas = self.repo.notas(sesion.customer_id)[-3:]
             if notas:
                 evento += " Notas de conversaciones anteriores: " + " | ".join(
                     n.texto for n in notas
                 )
-        else:
-            sesion.intentos_cedula += 1
-            evento = (
-                f"[sistema] Verificación fallida (intento {sesion.intentos_cedula} de "
-                f"{MAX_INTENTOS_CEDULA})."
+            sesion.eventos.append(evento)
+            return None
+        sesion.intentos_cedula += 1
+        sesion.paso(
+            "Verificación de cédula",
+            f"fallida (intento {sesion.intentos_cedula} de {MAX_INTENTOS_CEDULA}); texto fijo",
+        )
+        bloqueada = sesion.intentos_cedula >= MAX_INTENTOS_CEDULA
+        trace.get_current_span().add_event(
+            "verificacion",
+            {"resultado": "fallida", "intento": sesion.intentos_cedula, "bloqueada": bloqueada},
+        )
+        if bloqueada:
+            sesion.cedula_pedida = False
+            self._handoff(
+                sesion,
+                "cedula",
+                "verificacion_fallida",
+                "Tres intentos fallidos de los últimos cuatro dígitos de la cédula.",
             )
-            if sesion.intentos_cedula >= MAX_INTENTOS_CEDULA:
-                sesion.cedula_pedida = False
-                evento += " No la pidas más; ofrece un asesor."
-        sesion.eventos.append(evento)
+            return self._cierre_fijo(sesion, "handoff", TEXTOS["cedula_bloqueada"])
+        sesion.eventos.append(
+            f"[sistema] Verificación fallida (intento {sesion.intentos_cedula} de "
+            f"{MAX_INTENTOS_CEDULA}); el sistema ya pidió revisarlos."
+        )
+        sesion.transcripcion.append(("agente", TEXTOS["cedula_no_coincide"]))
+        return Respuesta(mensajes=[TEXTOS["cedula_no_coincide"]])
 
     def _boton(self, sesion: Sesion, boton: Boton) -> Respuesta:
         tarjeta = sesion.tarjeta
         sesion.tarjeta = None
         if tarjeta is None:
+            sesion.paso("Botón", f"{boton.name} sin tarjeta vigente")
             return Respuesta(mensajes=[TEXTOS["sin_tarjeta"]])
         que = tarjeta.descripcion
+        sesion.paso("Botón", f"{boton.name}: {que}")
         sesion.transcripcion.append(("cliente", f"[botón {boton.name}: {que}]"))
         if boton is Boton.cancelar:
-            sesion.eventos.append(f"[sistema] El cliente canceló la tarjeta ({que}).")
+            evento = f"[sistema] El cliente canceló la tarjeta ({que})."
+            if tarjeta.tipo == "oferta":
+                sesion.rechazadas.append(tarjeta.oferta_id)
+                quedan = [
+                    o.oferta_id
+                    for o in escalera(self.repo, sesion)
+                    if o.tipo != "cambio_fecha_corte"
+                ]
+                evento += (
+                    f" Queda por ofrecer, en orden: {', '.join(quedan)}. No vuelvas al link de "
+                    "pago inmediato ni a lo ya rechazado."
+                    if quedan
+                    else " No quedan opciones más generosas: dilo y ofrece un asesor."
+                )
+            sesion.eventos.append(evento)
             return self._turno_agente(sesion, f"Cliente: [tocó «{boton.name}»]")
         self._registrar(sesion, tarjeta)
         texto, url = self._confirmacion(sesion, tarjeta)
         trace.get_current_span().add_event("confirmacion_fija", {"tipo": tarjeta.tipo})
+        sesion.paso("Registro", f"{que} registrada; respuesta fija" + (" con link" if url else ""))
         enviado = "la confirmación y el link de pago" if url else "la confirmación"
         sesion.eventos.append(
             f"[sistema] El cliente confirmó la tarjeta ({que}): registrada. El sistema ya le envió "
@@ -455,6 +603,7 @@ class Orquestador:
                     creada=self.ahora(),
                 )
             )
+            sesion.acuerdos.append(f"oferta {tarjeta.oferta_id} aceptada")
         else:
             self.repo.guardar_promesa(
                 PromesaPago(
@@ -466,10 +615,14 @@ class Orquestador:
                     creada=self.ahora(),
                 )
             )
+            # La fecha va escrita: el agente puede leer cifras, no escribirlas, y un placeholder
+            # compartido lo pisaría la siguiente tarjeta.
+            sesion.acuerdos.append(f"promesa de pago para el {formato.fecha(tarjeta.fecha)}")
         sesion.escrituras.add(sufijo)
 
     def _no_contactar(self, sesion: Sesion, texto: str) -> Respuesta:
         """Frase explícita (D13): se deriva y pausa sin LLM; el evento llega al resumen."""
+        sesion.paso("No contactar", "frase explícita: solicitud registrada y WhatsApp pausado")
         self.repo.guardar_solicitud_no_contacto(
             SolicitudNoContacto(
                 solicitud_id=f"NC-{sesion.conversacion_id}",
@@ -485,8 +638,33 @@ class Orquestador:
         )
         return self._cierre_fijo(sesion, "no_contactar", TEXTOS["no_contactar"])
 
+    def _pide_humano(self, sesion: Sesion) -> Respuesta | None:
+        """Cuenta los pedidos de un asesor; al segundo, handoff con texto fijo (D45)."""
+        sesion.pedidos_humano += 1
+        sesion.paso("Pide un asesor", f"pedido {sesion.pedidos_humano} de {MAX_PEDIDOS_HUMANO}")
+        handoff = sesion.pedidos_humano >= MAX_PEDIDOS_HUMANO
+        trace.get_current_span().add_event(
+            "pide_humano", {"pedido": sesion.pedidos_humano, "handoff": handoff}
+        )
+        if not handoff:
+            return None
+        self._handoff(
+            sesion, "humano", "pide_humano", "El cliente pidió un asesor por segunda vez."
+        )
+        return self._cierre_fijo(sesion, "handoff", TEXTOS["handoff"])
+
+    def _sin_sentido(self, sesion: Sesion) -> Respuesta:
+        sesion.sin_sentido += 1
+        trace.get_current_span().add_event("sin_sentido", {"seguidos": sesion.sin_sentido})
+        sesion.paso("Sin sentido", f"texto fijo, sin LLM ({sesion.sin_sentido} de {MAX_STRIKES})")
+        if sesion.sin_sentido >= MAX_STRIKES:
+            return self._cierre_fijo(sesion, "sin_sentido", TEXTOS["sin_sentido_cierre"])
+        sesion.transcripcion.append(("agente", TEXTOS["sin_sentido"]))
+        return Respuesta(mensajes=[TEXTOS["sin_sentido"]])
+
     def _abuso(self, sesion: Sesion) -> Respuesta:
         sesion.strikes += 1
+        sesion.paso("Respuesta fija", f"mensaje abusivo: strike {sesion.strikes} de {MAX_STRIKES}")
         if sesion.strikes >= MAX_STRIKES:
             return self._cierre_fijo(sesion, "abuso", TEXTOS["abuso_cierre"])
         sesion.eventos.append(
@@ -496,19 +674,20 @@ class Orquestador:
         sesion.transcripcion.append(("agente", TEXTOS["abuso"]))
         return Respuesta(mensajes=[TEXTOS["abuso"]])
 
-    def _handoff_fallo(self, sesion: Sesion) -> None:
+    def _handoff(self, sesion: Sesion, sufijo: str, motivo: str, resumen: str) -> None:
         self.repo.guardar_handoff(
             Handoff(
-                handoff_id=f"HO-{sesion.conversacion_id}-fallo",
+                handoff_id=f"HO-{sesion.conversacion_id}-{sufijo}",
                 customer_id=sesion.customer_id,
                 cola=sesion.cola,
-                motivo="fallo_agente",
-                resumen="El agente no pudo generar una respuesta válida.",
+                motivo=motivo,
+                resumen=resumen,
                 creado=self.ahora(),
             )
         )
 
     def _cierre_fijo(self, sesion: Sesion, motivo: str, texto: str) -> Respuesta:
+        sesion.paso("Cierre", f"{motivo}; texto fijo")
         sesion.transcripcion.append(("agente", texto))
         self.cerrar(sesion, motivo)
         return Respuesta(mensajes=[texto], cerrada=True)

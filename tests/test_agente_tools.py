@@ -171,7 +171,7 @@ def test_promesa_con_oferta_en_su_fecha_limite(repo, ahora):
     [
         ("OF-101", "Pago total con link. Total a pagar: $427.89."),
         ("OF-102", "Total a pagar: $76.40. Fecha límite: miércoles 11 de noviembre."),
-        ("OF-112", "Plan de 6 cuotas. Paga 6 cuotas: de $71.31 y la última de $71.34."),
+        ("OF-112", "Plan de 6 cuotas. Paga 6 cuotas de $71.31."),
         ("OF-120", "Cambio de fecha de corte."),
         ("OF-130", "Descuento de $10.37. Total a pagar: $417.52."),
         ("OF-131", "Descuento de 15% en su cargo mensual. Total a pagar: $427.89."),
@@ -273,12 +273,12 @@ def test_prefijo_de_placeholders():
     assert prefijo("OF-104") == "of_104"
 
 
-def test_tarjeta_muestra_la_ultima_cuota_si_difiere(repo):
+def test_tarjeta_sin_la_ultima_cuota_aunque_difiera(repo):
     from agil.agente.tools import texto_tarjeta_oferta
 
     o = next(o for o in repo.ofertas() if o.oferta_id == "OF-112")
     texto = texto_tarjeta_oferta(o, condiciones(repo, "CL-1140215", o))
-    assert "6 cuotas: de $71.31 y la última de $71.34" in texto
+    assert "Paga 6 cuotas de $71.31." in texto and "última" not in texto
 
 
 def test_promesa_con_el_dia_de_la_semana(repo, ahora):
@@ -330,3 +330,56 @@ def test_consultar_ofertas_calcula_la_cuenta_una_vez(repo, ahora, monkeypatch):
     t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
     assert len(t["consultar_ofertas_elegibles"]()["ofertas"]) > 1
     assert len(llamadas) == 1
+
+
+def test_el_llm_nunca_recibe_la_ultima_cuota():
+    from decimal import Decimal
+
+    from agil.dominio.modelos import CondicionesOferta
+
+    base = dict(
+        oferta_id="OF-111", monto_base=Decimal("9"), monto_a_pagar=Decimal("9"), numero_cuotas=3
+    )
+    distintas = CondicionesOferta(
+        **base, monto_cuota=Decimal("2.99"), monto_ultima_cuota=Decimal("3.02")
+    )
+    assert not any("ultima" in k for k in cifras_oferta(distintas))
+    assert cifras_oferta(distintas)["of_111.monto_cuota"] == "$2.99"
+
+
+def test_sin_rechazos_la_lista_vacia_no_manda_a_asesor(tools, sesion, monkeypatch):
+    monkeypatch.setattr(tools_mod, "ofertas_elegibles", lambda *a: [])
+    r = tools["consultar_ofertas_elegibles"]()
+    assert r["ofertas"] == [] and "asesor" not in r["instruccion"]
+
+
+def test_en_la_escalera_sube_y_no_filtra_el_cambio_de_corte(repo, sesion):
+    por_id = {o.oferta_id: o for o in repo.ofertas()}
+    assert tools_mod.en_la_escalera(repo, sesion, por_id["OF-101"])
+    sesion.rechazadas = ["OF-110"]
+    assert not tools_mod.en_la_escalera(repo, sesion, por_id["OF-101"])
+    assert not tools_mod.en_la_escalera(repo, sesion, por_id["OF-110"])
+    assert tools_mod.en_la_escalera(repo, sesion, por_id["OF-111"])
+    assert tools_mod.en_la_escalera(repo, sesion, por_id["OF-120"])
+
+
+def test_ofertas_dicen_cuantas_quedan_y_si_hay_descuento(repo, ahora):
+    sesion = _sesion("CL-1152549", Segmento.dificultad_temporal, Cola.basica)
+    sesion.verificada = True
+    t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
+    r = t["consultar_ofertas_elegibles"]()
+    assert r["hay_descuento"] is False and r["opciones"] == "{{opciones}}"
+    assert sesion.valores["opciones"] == "3 opciones"  # OF-101, OF-110, OF-111 (+ OF-120)
+    sesion.rechazadas = ["OF-110"]  # solo queda OF-111 (+ OF-120, que no cuenta)
+    t["consultar_ofertas_elegibles"]()
+    assert sesion.valores["opciones"] == "1 opción"
+    mora = {x.tool_name: x for x in crear_tools(repo, _sesion(), ahora)}  # mora avanzada
+    assert mora["consultar_ofertas_elegibles"]()["hay_descuento"] is True
+
+
+def test_escalera_ordena_y_quita_lo_rechazado(repo):
+    sesion = _sesion("CL-1152549", Segmento.dificultad_temporal, Cola.basica)
+    ids = [o.oferta_id for o in tools_mod.escalera(repo, sesion)]
+    assert [i for i in ids if i != "OF-120"] == ["OF-101", "OF-110", "OF-111"] and "OF-120" in ids
+    sesion.rechazadas = ["OF-111"]
+    assert [o.oferta_id for o in tools_mod.escalera(repo, sesion)] == ["OF-120"]

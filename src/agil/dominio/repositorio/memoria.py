@@ -87,6 +87,9 @@ class RepositorioMemoria:
     def ofertas(self) -> list[Oferta]:
         return list(self._ofertas)
 
+    def guardar_contacto(self, contacto: Contacto) -> None:
+        self._contactos.append(contacto)
+
     def guardar_nota(self, nota: Nota) -> None:
         self._notas.append(nota)
 

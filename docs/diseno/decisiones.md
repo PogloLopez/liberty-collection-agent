@@ -40,7 +40,8 @@ Los esquemas de las tools no aceptan parámetros numéricos libres (`monto_descu
 
 ### D5 Verificación de identidad
 **Últimos 4 dígitos de la cédula, pedidos tarde** (Pablo, 30-oct): solo al empezar la negociación, al pedir
-datos puntuales o al registrar un compromiso. Pedirla al inicio ahuyenta al cliente. Implicaciones: la
+datos puntuales o al registrar un compromiso. Pedirla al inicio ahuyenta al cliente (excepción: si el
+cliente solo saluda, [[decisiones#D40 Revisión del demo]]). Implicaciones: la
 plantilla no muestra montos, y un hook cancela las **tools sensibles** con motivo "verificación pendiente"
 ([[framework_strands]]): las marcadas 🔒 en [[tools]] (`consultar_saldo`, `consultar_ofertas_elegibles`, `aceptar_oferta`, `registrar_promesa_pago`, `generar_link_pago`,
 `guardar_nota` y `registrar_feedback_cliente`; un tercero no debe escribir en la cuenta). Sin verificar, el
@@ -325,9 +326,8 @@ Trade-off: su límite gratuito es de 2.000 tokens por minuto (cabeceras de Groq,
 secciones `dev` (Groq) y `prod` (Bedrock, la completa Pablo en el hito 4) con URL, tiempo de espera y, por
 rol, una lista ordenada de modelos y su `max_tokens`; `LLM_PROVIDER` sigue eligiendo la sección (D7). La key
 es `SecretStr` y, si falta, la configuración no se construye. Alternativas (Claude, 1-nov): si un modelo
-falla (error de la API, cuota, tiempo de espera o respuesta vacía) se pasa al siguiente sin reintentarlo;
-si fallan todos, Strands reintenta solo si fue por cuota y, si no, es un fallo que va a un asesor (D15). En dev el agente cae de gpt-oss-120b a gpt-oss-20b (misma
-familia y otro límite por modelo en Groq); el estratega y el moderador no tienen alternativa. Trade-off: cada
+falla (error de la API, tiempo de espera o respuesta vacía) se pasa al siguiente sin reintentarlo (la cuota por minuto la reintenta Strands con el mismo modelo, D41; la diaria pasa al siguiente, D42);
+si fallan todos, Strands reintenta solo si fue por cuota y, si no, es un fallo que va a un asesor (D15). En dev el agente cae al respaldo de D42; el estratega y el moderador no tienen alternativa. Trade-off: cada
 alternativa obliga a correr los evals con ella.
 
 ### D37 Cambio de fecha de corte y varias solicitudes
@@ -338,13 +338,117 @@ la deuda vencida, que el cambio no resuelve. Si el cliente pide varias cosas, el
 que resuelve él y al final lo que va a un asesor, porque escalar cierra la conversación. Trade-off: el
 cliente no sale con el cambio hecho cuando no es elegible.
 
+### D38 Alcance del hito 3
+**App local en memoria** (Pablo, 1-nov): FastAPI envuelve el orquestador y sirve el frontend (HTML + JS sin
+build): el chat con sus botones, el panel del pipeline con los pasos reales de cada turno y la consola de
+cartera. El botón "Que sean las 9 AM" corre en Python el filtro de elegibilidad y la plantilla del
+segmento: una sola plantilla inicial por segmento en `prompts/plantillas.json`, neutra (nombre y "saldo
+pendiente", sin gravedad ni segmento, D5); la secuencia con reintentos queda para el hito 4. Las sesiones y los datos viven en la memoria del proceso (repositorio en memoria). Dependencias:
+`fastapi` y `uvicorn`; `httpx` solo en dev, para el cliente de pruebas. DynamoDB (con LocalStack), Step
+Functions, Mangum y CDK quedan para el hito 4. Trade-off: el hito 4 trae más piezas nuevas.
+Modo demo (Pablo, 1-nov): `modo_demo: true` en `config.yaml` (o `MODO_DEMO`) quita solo el tope de un
+contacto por día, para que el evaluador repita pruebas con el mismo cliente; los demás filtros siguen.
+En producción va en false.
+
+### D39 El agente se identifica
+**Liberty, y asistente virtual** (Pablo, 1-nov): la plantilla dice "le escribe Liberty" y el agente, en su
+primera respuesta, se presenta como el asistente virtual de Liberty; si le preguntan, aclara que no es una
+persona.
+
+### D40 Revisión del demo
+**Decidido por Pablo tras probar la app (1-nov):**
+1. Sin estratega antes de verificar. Si el cliente solo saluda, el agente se presenta, dice por qué le
+   escribe y pide los cuatro dígitos para darle el detalle; no menciona ofertas sin verificar.
+2. En el demo, cuando el agente pide la cédula, aparece a la izquierda del chat un globo tipo cómic con los
+   cuatro dígitos del cliente; desaparece con el siguiente mensaje y vuelve si el agente los pide de nuevo.
+3. Verificación: mientras se espera la cédula, se aceptan 4 dígitos separados por espacio, guion o punto.
+   Un intento fallido recibe un texto fijo (no coinciden; escríbalos sin puntos ni guiones).
+4. Asesor solo tras el tercer intento fallido, con texto fijo.
+5. Cada turno lleva una línea [contexto] con los acuerdos vigentes (oferta aceptada, promesa); el agente no
+   los vuelve a ofrecer.
+6. La barra del demo muestra con alto contraste "Hoy en la demo: viernes 6 de noviembre de 2026".
+7. El agente responde primero lo que el cliente pregunta y pide los dígitos solo para dar datos de la
+   cuenta; el prompt trae respuestas aprobadas a preguntas frecuentes (de dónde sale el número, si es
+   oficial, cómo dejar de recibir mensajes).
+8. El validador acepta un número junto a "cuotas" o "días" si coincide con una oferta ya consultada.
+9. Si la última cuota es igual a las demás, no se entrega su placeholder.
+10. Escalera de ofertas en el código: de menos a más generosa (descuento, cuotas, días de prórroga);
+    tocar Cancelar en una tarjeta de oferta la registra como rechazada y desde ahí solo se listan las
+    más generosas; un hook bloquea aceptar o prometer con una oferta fuera de la escalera (salvo la ya
+    aceptada). El cambio de fecha de corte no es escalón. Sin más escalones, el agente lo dice y propone
+    un asesor. Un rechazo escrito no se registra: lo maneja el agente.
+11. Mensajes sin sentido: un detector determinista responde un texto fijo sin LLM; al tercero seguido,
+    cierre sin humano. Ignora links, correos y letras repetidas ("pfff"); falso positivo conocido:
+    apellidos extranjeros como "Schwarz".
+12. Fallos: hasta 3 intentos por turno; si fallan, texto fijo seguro ("Disculpe, ¿me lo puede
+    repetir?"); 3 turnos fallidos seguidos llevan al asesor. Costo en el peor caso: 9 llamadas al agente
+    antes del asesor (centavos con Nova).
+
+### D41 Segunda revisión del demo
+**Decidido por Pablo (2-nov) tras probar la app y la repetición de sus conversaciones:**
+1. Ante un 429 de Groq el respaldo no cambia de modelo: Strands espera y reintenta el mismo (el 20b rompía
+   las llamadas a tools y daba "¿me lo puede repetir?"). El respaldo queda para errores reales y la cuota diaria (D42).
+   Trade-off: hasta ~1 min de espera en el peor caso; si se agota la cuota diaria, el turno falla igual.
+2. Tras verificar, el aviso pide retomar lo que el cliente ya pidió (redacción en D43) y en ese turno no
+   corre el estratega.
+3. Al cancelar una oferta, el aviso dice qué queda por ofrecer y prohíbe volver al pago total o a lo
+   rechazado. El agente solo menciona el link después de generarlo.
+4. consultar_ofertas_elegibles dice si hay descuentos y cuántas opciones hay en total; si pide descuento y
+   no hay, el agente lo dice. Las ofertas siguen de a una (D3), pero si pregunta si hay más, dice cuántas
+   hay; sin más escalones tras un rechazo, que es todo y un asesor.
+5. Estratega más estricto: clasifica solo el último mensaje y, si no es claro, "otro" (no inyecta nada);
+   sus tarjetas son sugerencias, no órdenes, y el panel muestra la táctica. Nuevo momento: se niega a pagar.
+6. Objeciones ("no voy a pagar", "no puedo", enojo): reconocer, preguntar qué le pasa o qué le serviría y
+   después proponer la siguiente opción o un asesor; nunca responder una negativa solo con el link.
+
+### D42 Cuota diaria de Groq
+**Ante un límite diario se pasa al siguiente modelo** (Pablo, 2-nov): la repetición agotó los 200.000
+tokens diarios de gpt-oss-120b y esperar no servía. Un 429 "per day" cae al siguiente modelo; uno por
+minuto sigue esperando al mismo (D41). El agente en dev cae a `qwen/qwen3.8-27b` (con tools según la
+página de deprecaciones de Groq y disponible para la key según `GET /models`, 2-nov) en vez de
+gpt-oss-20b, que rompía las tools. Sustituye a `llama-3.3-70b-versatile`, retirado del free tier el
+16-ago-2026 (su página de modelos aún lo lista, pero la API da 404). `reasoning_effort: low` solo va a los
+gpt-oss; qwen lleva `reasoning_format: hidden` para que su razonamiento no salga en el texto. Trade-off:
+qwen está en preview (puede retirarse sin aviso) y tiene otro tono; sus límites gratuitos se ven en la
+consola de Groq.
+
+### D43 Retomar lo pedido al verificar
+**El aviso de verificación pide releer, no cita** (Pablo, 2-nov): el historial ya llega completo al modelo
+y es corto, así que el aviso le pide releer lo que el cliente pidió antes de verificar (incluido el
+mensaje de los dígitos), atender lo que quedó pendiente y no repetir lo ya respondido. Trade-off: depende de
+que el modelo relea; si en las pruebas lo sigue ignorando, se citan los mensajes aplazados.
+
+### D44 Repetición contra qwen
+**El agente no anuncia acciones** (Pablo, 2-nov): en la repetición contra qwen3.8-27b el agente decía
+"déjeme revisar su cuenta" y terminaba el turno sin usar la tool (3 de 10 conversaciones). base.md
+prohíbe anunciar: usa la tool en el mismo turno y responde con el resultado. V1–V3 quedan asumidos para
+la demo con las cifras actuales (Pablo, 2-nov).
+
+### D45 Cuotas y pedido de un asesor
+**"Cada cuota de $X" y el segundo pedido de un asesor es fijo** (Pablo, 2-nov):
+1. El agente y la tarjeta muestran solo `monto_cuota`: "y la última de…" seguía confundiendo. La última
+   cuota sigue absorbiendo los centavos en el acuerdo. Trade-off: el texto omite esa diferencia de
+   centavos.
+2. Pedido de un asesor: el primero lo atiende el agente sin ofrecer nada ("Primero cuénteme su
+   inquietud, por favor; es posible que yo se la pueda resolver"); el orquestador cuenta los pedidos
+   (`intenciones.pide_humano`, después de la moderación) y el segundo pasa a un asesor con texto fijo,
+   sin LLM, para no depender del modelo. Si el agente ofreció el asesor y el cliente acepta, escala él
+   con `escalar_a_humano`. El detector exige el verbo junto a la persona ("quiero pagar en persona" no
+   cuenta). Trade-off: dos falsos positivos cierran la conversación con un asesor; un falso negativo lo
+   sigue resolviendo el agente con la tool.
+3. Cuántas opciones hay también es una cifra: va como `{{opciones}}`. En el humo final el modelo escribía
+   "dos" o `{{opciones}}` sin que existiera, el validador lo rechazaba tres veces y salía "¿me lo puede
+   repetir?".
+
 ## Pendientes
 
-- **V1:** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
-- **V2:** saber si el Proyecto de Ley 306 se sancionó. Mientras tanto se adopta como política interna.
-- **V3:** precios vigentes de Nova Lite y Micro. La tabla oficial no se pudo leer; las cifras usadas
+- **V1 (asumido, D44):** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
+- **V2 (asumido, D44):** saber si el Proyecto de Ley 306 se sancionó. Mientras tanto se adopta como política interna.
+- **V3 (asumido, D44):** precios vigentes de Nova Lite y Micro. La tabla oficial no se pudo leer; las cifras usadas
   vienen de un blog de AWS.
 - **P1:** perfiles de los segmentos: plantillas, prompts de tono y tarjetas de estrategia. Se redactan
   durante el desarrollo y Pablo los revisa antes de desplegar.
+- **P2:** diagrama Mermaid del paso a paso de `orquestador.py` (bifurcaciones y procesos destino) en
+  `docs/diseno/`, enlazado desde el documento de arquitectura (pedido de Pablo, 1-nov).
 
 Las ideas de [[feedback_estudio]] quedaron en D22, D23 y D24.

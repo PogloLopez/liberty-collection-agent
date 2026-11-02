@@ -70,8 +70,8 @@ def cifras_oferta(c: CondicionesOferta) -> dict[str, str]:
         and formato.porcentaje(c.porcentaje_descuento),
         "monto_descuento": c.monto_descuento and formato.dinero(c.monto_descuento),
         "numero_cuotas": c.numero_cuotas and str(c.numero_cuotas),
+        # Sin la última cuota: "y la última de…" confunde y solo difiere en centavos (D45).
         "monto_cuota": c.monto_cuota and formato.dinero(c.monto_cuota),
-        "monto_ultima_cuota": c.monto_ultima_cuota and formato.dinero(c.monto_ultima_cuota),
         "dias_prorroga": c.dias_prorroga and str(c.dias_prorroga),
         "fecha_limite": c.fecha_limite and formato.fecha(c.fecha_limite),
     }
@@ -88,11 +88,7 @@ def texto_tarjeta_oferta(oferta: Oferta, c: CondicionesOferta) -> str:
             f"Descuento de {formato.porcentaje(c.porcentaje_descuento)} en su cargo mensual."
         )
     if c.numero_cuotas and c.monto_cuota:
-        cuota, ultima = formato.dinero(c.monto_cuota), formato.dinero(c.monto_ultima_cuota)
-        if c.monto_ultima_cuota == c.monto_cuota:
-            partes.append(f"Paga {c.numero_cuotas} cuotas de {cuota}.")
-        else:
-            partes.append(f"Paga {c.numero_cuotas} cuotas: de {cuota} y la última de {ultima}.")
+        partes.append(f"Paga {c.numero_cuotas} cuotas de {formato.dinero(c.monto_cuota)}.")
     elif c.monto_a_pagar > 0 and oferta.tipo != "cambio_fecha_corte":
         partes.append(f"Total a pagar: {formato.dinero(c.monto_a_pagar)}.")
     if c.fecha_limite:
@@ -120,7 +116,27 @@ def cifras_saldo(repo: Repositorio, e: EstadoCuenta) -> dict[str, str]:
 def _generosidad(o: Oferta) -> tuple:
     """De menos a más generosa (D28): el agente sube un escalón a la vez."""
     p = o.parametros
-    return (p.porcentaje_descuento or 0, p.numero_cuotas or 0, o.requiere_aprobacion_humana)
+    return (
+        p.porcentaje_descuento or 0,
+        p.numero_cuotas or 0,
+        p.dias_prorroga or 0,
+        o.requiere_aprobacion_humana,
+    )
+
+
+def en_la_escalera(repo: Repositorio, sesion: Sesion, o: Oferta) -> bool:
+    """Escalera de ofertas (D40): tras cancelar una, solo quedan las más generosas. El cambio de
+    fecha de corte no es un escalón: no descuenta ni divide la deuda."""
+    rechazadas = [r for r in repo.ofertas() if r.oferta_id in sesion.rechazadas]
+    if o.tipo == "cambio_fecha_corte" or not rechazadas:
+        return True
+    return _generosidad(o) > max(_generosidad(r) for r in rechazadas)
+
+
+def escalera(repo: Repositorio, sesion: Sesion, e: EstadoCuenta | None = None) -> list[Oferta]:
+    """Las ofertas que aún se pueden ofrecer, de menos a más generosa (D40, D41)."""
+    elegibles = ofertas_elegibles(repo, sesion.customer_id, sesion.segmento, e)
+    return [o for o in sorted(elegibles, key=_generosidad) if en_la_escalera(repo, sesion, o)]
 
 
 def _con_llaves(valores: dict[str, str]) -> dict[str, str]:
@@ -194,10 +210,12 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
 
     @tool
     def consultar_ofertas_elegibles() -> dict:
-        """Ofertas preaprobadas para este cliente, de la menos a la más generosa, con sus cifras."""
+        """Ofertas preaprobadas para este cliente, de la menos a la más generosa, con sus cifras.
+        Las que el cliente rechazó y las menos generosas que esas ya no aparecen."""
         resultado = []
         e = estado_cuenta(repo, cid)
-        for o in sorted(ofertas_elegibles(repo, cid, sesion.segmento, e), key=_generosidad):
+        disponibles = escalera(repo, sesion, e)
+        for o in disponibles:
             _, c = oferta(o.oferta_id, e)
             resultado.append(
                 {
@@ -208,7 +226,28 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
                     "cifras": _con_llaves(cifras_oferta(c)),
                 }
             )
-        return {"ofertas": resultado, "instruccion": _ESCRIBE}
+        # Opciones que el agente ofrece él mismo: sin cambio de corte ni las de aprobación.
+        opciones = sum(
+            o.tipo != "cambio_fecha_corte" and not o.requiere_aprobacion_humana for o in disponibles
+        )
+        # También es una cifra: placeholder, con el sustantivo ya concordado (D45).
+        sesion.valores["opciones"] = f"{opciones} " + ("opción" if opciones == 1 else "opciones")
+        instruccion = (
+            _ESCRIBE + " Ofrece la primera; sube a la siguiente solo si la rechaza. Si pregunta si "
+            "hay más, dile cuántas hay en total con {{opciones}} (ya incluye la palabra opción)."
+        )
+        if sesion.rechazadas and not opciones:
+            instruccion = (
+                "No quedan opciones más generosas: dilo con claridad, sin inventar otra, y ofrece "
+                "un asesor (escalar_a_humano, motivo fuera_de_tabla)."
+            )
+        hay_descuento = any(o.parametros.porcentaje_descuento for o in disponibles)
+        return {
+            "ofertas": resultado,
+            "opciones": "{{opciones}}",
+            "hay_descuento": hay_descuento,
+            "instruccion": instruccion,
+        }
 
     @tool
     def aceptar_oferta(oferta_id: str) -> str:
@@ -350,9 +389,10 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
 
     @tool
     def escalar_a_humano(motivo: MotivoEscalamiento, resumen: str) -> str:
-        """Pasa la conversación a un asesor y la cierra. Úsala si el cliente pide un humano después
-        de tu primer intento, si pide algo fuera de las ofertas (salvo el cambio de fecha de corte:
-        solicitar_cambio_fecha_corte) o ante una disputa o vulnerabilidad.
+        """Pasa la conversación a un asesor y la cierra. Úsala si el cliente insiste en un humano
+        después de tu primer intento o acepta el asesor que le ofreciste, si pide algo fuera de las
+        ofertas (salvo el cambio de fecha de corte: solicitar_cambio_fecha_corte) o ante una disputa
+        o vulnerabilidad.
 
         Args:
             motivo: por qué se escala.

@@ -28,7 +28,9 @@ def elegible_para_contacto(repo: Repositorio, customer_id: str) -> Elegibilidad:
     return _elegibilidad(repo.cliente(customer_id), cuenta)
 
 
-def puede_enviar_ahora(repo: Repositorio, customer_id: str, momento: datetime) -> Validacion:
+def puede_enviar_ahora(
+    repo: Repositorio, customer_id: str, momento: datetime, tope_diario: bool = True
+) -> Validacion:
     """Elegible + saldo vencido + horario permitido + un contacto por día (historial_contactos)."""
     cuenta = estado_cuenta(repo, customer_id)
     elegibilidad = _elegibilidad(repo.cliente(customer_id), cuenta)
@@ -39,6 +41,8 @@ def puede_enviar_ahora(repo: Repositorio, customer_id: str, momento: datetime) -
     if not en_horario_permitido(momento):
         return Validacion(ok=False, motivo="Fuera del horario permitido de contacto.")
     dia = momento.astimezone(ZONA).date()
-    if any(c.fecha.astimezone(ZONA).date() == dia for c in repo.contactos(customer_id)):
+    if tope_diario and any(
+        c.fecha.astimezone(ZONA).date() == dia for c in repo.contactos(customer_id)
+    ):
         return Validacion(ok=False, motivo="Ya hubo un contacto con este cliente hoy.")
     return Validacion(ok=True)
