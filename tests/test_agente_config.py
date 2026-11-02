@@ -60,7 +60,7 @@ def test_crear_modelos_desde_el_yaml_sin_llamar(env, monkeypatch):
     assert isinstance(m.agente, config.ConRespaldo)
     assert [x.get_config()["model_id"] for x in m.agente.modelos] == [
         "openai/gpt-oss-120b",
-        "openai/gpt-oss-20b",
+        "llama-3.3-70b-versatile",
     ]
     assert m.estratega.get_config()["model_id"] == "openai/gpt-oss-20b"  # uno solo: sin envoltorio
     assert m.moderador.get_config()["model_id"] == "openai/gpt-oss-safeguard-20b"
@@ -98,7 +98,14 @@ def test_respaldo_relanza_el_ultimo_error_si_fallan_todos():
         _texto(config.ConRespaldo([ModeloGuionado(""), _Falla()]))
 
 
-@pytest.mark.parametrize("error", [ContextWindowOverflowException, ModelThrottledException("429")])
+@pytest.mark.parametrize(
+    "error",
+    [
+        ContextWindowOverflowException,
+        ModelThrottledException("429"),
+        ModelThrottledException("429 Rate limit reached on tokens per minute (TPM)"),
+    ],
+)
 def test_respaldo_no_cambia_de_modelo_si_se_excede_la_ventana_o_la_cuota(error):
     siguiente = ModeloGuionado("Hola.")
     with pytest.raises(type(error) if isinstance(error, Exception) else error):
@@ -156,3 +163,16 @@ def test_modo_demo_lo_pisa_el_entorno(env, monkeypatch, valor):
     monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
     monkeypatch.setenv("MODO_DEMO", str(valor).lower())
     assert _cfg(env).modo_demo is valor
+
+
+def test_cuota_diaria_pasa_al_siguiente_modelo():
+    diaria = ModelThrottledException("429 Rate limit reached on tokens per day (TPD)")
+    siguiente = ModeloGuionado("Hola.")
+    assert _texto(config.ConRespaldo([_Falla(diaria), siguiente])) == "Hola."
+
+
+def test_reasoning_effort_solo_para_gpt_oss(env, monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    m = config.crear_modelos(_cfg(env)).agente.modelos
+    assert m[0].get_config()["params"]["reasoning_effort"] == "low"
+    assert "reasoning_effort" not in m[1].get_config()["params"]

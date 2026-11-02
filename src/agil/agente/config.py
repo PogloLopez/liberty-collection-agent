@@ -114,10 +114,13 @@ class ConRespaldo(Model):
             model_id = m.get_config().get("model_id")
             try:
                 eventos = [e async for e in m.stream(messages, tool_specs, system_prompt, **kwargs)]
-            except (ContextWindowOverflowException, ModelThrottledException):
-                # Strands recorta o reintenta el mismo modelo (D41).
-                trace.get_current_span().add_event("cuota_o_ventana", {"modelo": model_id})
-                raise
+            except ModelThrottledException as e:
+                if "per day" not in str(e):  # por minuto: Strands espera y reintenta (D41)
+                    trace.get_current_span().add_event("cuota", {"modelo": model_id})
+                    raise
+                error, motivo = e, "cuota_diaria"  # esperar no sirve: siguiente modelo (D42)
+            except ContextWindowOverflowException:
+                raise  # Strands recorta y reintenta
             except Exception as e:
                 error, motivo = e, type(e).__name__
             else:
@@ -139,7 +142,8 @@ def _groq(cfg: Configuracion, entorno: Entorno, model_id: str, max_tokens: int) 
             "timeout": entorno.timeout_s,
         },
         model_id=model_id,
-        params={"max_completion_tokens": max_tokens, "reasoning_effort": "low"},
+        params={"max_completion_tokens": max_tokens}
+        | ({"reasoning_effort": "low"} if model_id.startswith("openai/gpt-oss") else {}),
     )
 
 

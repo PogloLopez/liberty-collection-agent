@@ -326,9 +326,8 @@ Trade-off: su límite gratuito es de 2.000 tokens por minuto (cabeceras de Groq,
 secciones `dev` (Groq) y `prod` (Bedrock, la completa Pablo en el hito 4) con URL, tiempo de espera y, por
 rol, una lista ordenada de modelos y su `max_tokens`; `LLM_PROVIDER` sigue eligiendo la sección (D7). La key
 es `SecretStr` y, si falta, la configuración no se construye. Alternativas (Claude, 1-nov): si un modelo
-falla (error de la API, tiempo de espera o respuesta vacía) se pasa al siguiente sin reintentarlo (la cuota la reintenta Strands con el mismo modelo, [[decisiones#D41 Segunda revisión del demo]]);
-si fallan todos, Strands reintenta solo si fue por cuota y, si no, es un fallo que va a un asesor (D15). En dev el agente cae de gpt-oss-120b a gpt-oss-20b (misma
-familia y otro límite por modelo en Groq); el estratega y el moderador no tienen alternativa. Trade-off: cada
+falla (error de la API, tiempo de espera o respuesta vacía) se pasa al siguiente sin reintentarlo (la cuota por minuto la reintenta Strands con el mismo modelo, D41; la diaria pasa al siguiente, D42);
+si fallan todos, Strands reintenta solo si fue por cuota y, si no, es un fallo que va a un asesor (D15). En dev el agente cae de gpt-oss-120b a llama-3.3-70b-versatile (D42); el estratega y el moderador no tienen alternativa. Trade-off: cada
 alternativa obliga a correr los evals con ella.
 
 ### D37 Cambio de fecha de corte y varias solicitudes
@@ -388,7 +387,7 @@ persona.
 ### D41 Segunda revisión del demo
 **Decidido por Pablo (2-nov) tras probar la app y la repetición de sus conversaciones:**
 1. Ante un 429 de Groq el respaldo no cambia de modelo: Strands espera y reintenta el mismo (el 20b rompía
-   las llamadas a tools y daba "¿me lo puede repetir?"). El 20b queda solo para errores reales.
+   las llamadas a tools y daba "¿me lo puede repetir?"). El respaldo queda para errores reales y la cuota diaria (D42).
    Trade-off: hasta ~1 min de espera en el peor caso; si se agota la cuota diaria, el turno falla igual.
 2. Tras verificar, el aviso pide retomar lo que el cliente ya pidió y en ese turno no corre el estratega.
 3. Al cancelar una oferta, el aviso dice qué queda por ofrecer y prohíbe volver al pago total o a lo
@@ -400,6 +399,14 @@ persona.
    sus tarjetas son sugerencias, no órdenes, y el panel muestra la táctica. Nuevo momento: se niega a pagar.
 6. Objeciones ("no voy a pagar", "no puedo", enojo): reconocer, preguntar qué le pasa o qué le serviría y
    después proponer la siguiente opción o un asesor; nunca responder una negativa solo con el link.
+
+### D42 Cuota diaria de Groq
+**Ante un límite diario se pasa al siguiente modelo** (Pablo, 2-nov): la repetición agotó los 200.000
+tokens diarios de gpt-oss-120b y esperar no servía. Un 429 "per day" cae al siguiente modelo; uno por
+minuto sigue esperando al mismo (D41). El agente en dev cae a `llama-3.3-70b-versatile` (producción en
+Groq, con tools, verificado en su documentación el 2-nov) en vez de gpt-oss-20b, que rompía las tools;
+`reasoning_effort` solo va a los gpt-oss. Trade-off: otro modelo con otro tono; sus límites gratuitos se
+ven en la consola de Groq.
 
 ## Pendientes
 
