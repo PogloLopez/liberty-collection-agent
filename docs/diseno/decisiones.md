@@ -330,5 +330,8 @@ alternativa obliga a correr los evals con ella.
   vienen de un blog de AWS.
 - **P1:** perfiles de los segmentos: plantillas, prompts de tono y tarjetas de estrategia. Se redactan
   durante el desarrollo y Pablo los revisa antes de desplegar.
+- **P2:** qué es "la fecha de pago regular" en "N días después de la fecha de pago" (vencimiento de la
+  factura más antigua o fecha de corte). Mientras tanto la tool pide un día concreto (D32).
+- **P3:** si los días de prórroga cuentan desde hoy (lo implementado) o desde el vencimiento original.
 
 Las ideas de [[feedback_estudio]] quedaron en D22, D23 y D24.
