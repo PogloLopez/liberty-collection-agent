@@ -347,6 +347,11 @@ pendiente", sin gravedad ni segmento, D5); la secuencia con reintentos queda par
 `fastapi` y `uvicorn`; `httpx` solo en dev, para el cliente de pruebas. DynamoDB (con LocalStack), Step
 Functions, Mangum y CDK quedan para el hito 4. Trade-off: el hito 4 trae más piezas nuevas.
 
+### D39 El agente se identifica
+**Liberty, y asistente virtual** (Pablo, 1-nov): la plantilla dice "le escribe Liberty" y el agente, en su
+primera respuesta, se presenta como el asistente virtual de Liberty; si le preguntan, aclara que no es una
+persona.
+
 ## Pendientes
 
 - **V1:** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
