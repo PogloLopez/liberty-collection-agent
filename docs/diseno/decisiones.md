@@ -389,7 +389,8 @@ persona.
 1. Ante un 429 de Groq el respaldo no cambia de modelo: Strands espera y reintenta el mismo (el 20b rompía
    las llamadas a tools y daba "¿me lo puede repetir?"). El respaldo queda para errores reales y la cuota diaria (D42).
    Trade-off: hasta ~1 min de espera en el peor caso; si se agota la cuota diaria, el turno falla igual.
-2. Tras verificar, el aviso pide retomar lo que el cliente ya pidió y en ese turno no corre el estratega.
+2. Tras verificar, el aviso pide retomar lo que el cliente ya pidió (redacción en D43) y en ese turno no
+   corre el estratega.
 3. Al cancelar una oferta, el aviso dice qué queda por ofrecer y prohíbe volver al pago total o a lo
    rechazado. El agente solo menciona el link después de generarlo.
 4. consultar_ofertas_elegibles dice si hay descuentos y cuántas opciones hay en total; si pide descuento y
@@ -407,6 +408,12 @@ minuto sigue esperando al mismo (D41). El agente en dev cae a `llama-3.3-70b-ver
 Groq, con tools, verificado en su documentación el 2-nov) en vez de gpt-oss-20b, que rompía las tools;
 `reasoning_effort` solo va a los gpt-oss. Trade-off: otro modelo con otro tono; sus límites gratuitos se
 ven en la consola de Groq.
+
+### D43 Retomar lo pedido al verificar
+**El aviso de verificación pide releer, no cita** (Pablo, 2-nov): el historial ya llega completo al modelo
+y es corto, así que el aviso le pide releer lo que el cliente pidió antes de verificar (incluido el
+mensaje de los dígitos), atender lo que quedó pendiente y no repetir lo ya respondido. Trade-off: depende de
+que el modelo relea; si en las pruebas lo sigue ignorando, se citan los mensajes aplazados.
 
 ## Pendientes
 

@@ -1056,9 +1056,25 @@ def test_tras_verificar_retoma_lo_pedido_sin_estratega(repo, ahora):
     sesion = orq.iniciar(CID, "CV-1")
     orq.atender(sesion, "quiero una prórroga")
     r = orq.atender(sesion, _digitos(repo))
-    assert "Retoma lo que el cliente pidió" in str(agente.recibido[-1][1])
+    ultimo = str(agente.recibido[-1][1])
+    aviso, cliente = ultimo.index("relee lo que pidió el cliente"), ultimo.rindex("Cliente: ")
+    assert (
+        aviso < cliente and _digitos(repo) not in ultimo
+    )  # el aviso precede a los dígitos tapados
     assert dict(r.pasos)["Estratega"].startswith("omitido: recién verificado")
     assert estratega.recibido == []
+
+
+def test_pedido_junto_a_los_digitos_llega_sin_ellos_tras_el_aviso(repo, ahora):
+    agente = ModeloGuionado("¿Me da los cuatro dígitos de su cédula?", "Ok.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "hola")
+    orq.atender(sesion, f"{_digitos(repo)}, quiero la prórroga")
+    ultimo = str(agente.recibido[-1][1])
+    assert sesion.verificada and _digitos(repo) not in ultimo
+    assert ultimo.index("relee lo que pidió") < ultimo.rindex("Cliente: ")
+    assert "quiero la prórroga" in ultimo[ultimo.rindex("Cliente: ") :]
 
 
 def test_al_cancelar_el_aviso_dice_que_queda(repo, ahora):

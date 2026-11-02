@@ -477,9 +477,12 @@ class Orquestador:
             sesion.cedula_pedida = False
             sesion.intentos_cedula = 0  # si vence a las 12 h, vuelve a tener tres intentos
             sesion.recien_verificada = True
-            evento = (
-                "[sistema] Verificación de cédula correcta. Retoma lo que el cliente pidió antes "
-                "de verificar; si ya eligió una opción, usa la tool."
+            evento = (  # sin citar sus mensajes: ya están en el historial (D43)
+                "[sistema] Verificación de cédula correcta. Antes de responder, relee lo que pidió "
+                "el cliente antes de verificar, incluido el mensaje que sigue a este aviso: si "
+                "pidió algo que dejaste pendiente por no estar verificado, atiéndelo ahora (con la "
+                "tool que corresponda si ya eligió una opción), sin saludar de nuevo. Lo que ya le "
+                "respondiste no lo repitas."
             )
             notas = self.repo.notas(sesion.customer_id)[-3:]
             if notas:
