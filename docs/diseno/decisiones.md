@@ -338,6 +338,14 @@ la deuda vencida, que el cambio no resuelve. Si el cliente pide varias cosas, el
 que resuelve él y al final lo que va a un asesor, porque escalar cierra la conversación. Trade-off: el
 cliente no sale con el cambio hecho cuando no es elegible.
 
+### D38 Alcance del hito 3
+**App local en memoria** (Pablo, 1-nov): FastAPI envuelve el orquestador y sirve el frontend (HTML + JS sin
+build): el chat con sus botones, el panel del pipeline con los pasos reales de cada turno y la consola de
+cartera. El botón "Que sean las 9 AM" corre en Python el filtro de elegibilidad y la plantilla del
+segmento. Las sesiones y los datos viven en la memoria del proceso (repositorio en memoria). Dependencias:
+`fastapi` y `uvicorn`; `httpx` solo en dev, para el cliente de pruebas. DynamoDB (con LocalStack), Step
+Functions, Mangum y CDK quedan para el hito 4. Trade-off: el hito 4 trae más piezas nuevas.
+
 ## Pendientes
 
 - **V1:** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
