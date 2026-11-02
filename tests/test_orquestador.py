@@ -860,3 +860,92 @@ def test_cuotas_de_una_oferta_consultada_pasan_sin_reintento(repo, ahora):
     assert sesion.condiciones["OF-111"].numero_cuotas == 3
     assert len(r.mensajes) == 1 and "3 cuotas de $" in r.mensajes[0]
     assert len(agente.recibido) == 2 and "no se envió" not in agente.todo_lo_recibido()
+
+
+def test_escalera_tras_cancelar_solo_quedan_las_mas_generosas(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-110"}),
+        ("consultar_ofertas_elegibles", {}),
+        ("aceptar_oferta", {"oferta_id": "OF-101"}),
+        "Le cuento las opciones.",
+    )
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar("CL-1152549", "CV-1")  # OF-101, OF-110 (2 cuotas), OF-111 (3), OF-120
+    sesion.verificada = True
+    orq.atender(sesion, "quiero cuotas")
+    orq.atender(sesion, boton=Boton.cancelar)
+    assert sesion.rechazadas == ["OF-110"]
+    resultados = str(agente.recibido[-1][1])
+    assert "OF-111" in resultados and "OF-120" in resultados
+    assert resultados.count("OF-101") == 1  # solo el intento del agente: la lista no la trae
+    assert "rechazó esta opción o una más generosa" in resultados  # el hook bloquea bajar
+
+
+def test_sin_escalones_el_agente_lo_dice_y_ofrece_asesor(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-111"}),
+        ("consultar_ofertas_elegibles", {}),
+        "No tengo otra opción.",
+    )
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar("CL-1152549", "CV-1")
+    sesion.verificada = True
+    orq.atender(sesion, "tres cuotas")
+    orq.atender(sesion, boton=Boton.cancelar)
+    assert "No quedan opciones más generosas" in str(agente.recibido[-1][1])
+
+
+def test_cancelar_el_pago_total_deja_la_prorroga(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-101"}),
+        ("aceptar_oferta", {"oferta_id": "OF-102"}),
+    )
+    orq, sesion = _verificada(repo, ahora, agente)  # olvidadizo: OF-101 y OF-102
+    orq.atender(sesion, "pago todo")
+    orq.atender(sesion, boton=Boton.cancelar)
+    assert sesion.tarjeta is not None and sesion.tarjeta.oferta_id == "OF-102"
+
+
+def test_la_promesa_no_usa_una_oferta_rechazada(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-102"}),
+        ("registrar_promesa_pago", {"fecha": "mañana", "oferta_id": "OF-102"}),
+        "Entiendo.",
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "la prórroga")
+    orq.atender(sesion, boton=Boton.cancelar)
+    assert sesion.tarjeta is None
+    assert "rechazó esta opción" in str(agente.recibido[-1][1])
+
+
+def test_la_promesa_con_la_oferta_ya_aceptada_no_se_bloquea(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-110"}),
+        ("registrar_promesa_pago", {"fecha": "mañana", "oferta_id": "OF-110"}),
+    )
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID_DIFICULTAD, "CV-1")
+    sesion.verificada = True
+    orq.atender(sesion, "dos cuotas")
+    orq.atender(sesion, boton=Boton.confirmar)
+    sesion.rechazadas = ["OF-120", "OF-111"]  # más generosa que la aceptada
+    orq.atender(sesion, "pago mañana")
+    assert sesion.tarjeta is not None and sesion.tarjeta.tipo != "oferta"
+    assert "rechazó esta opción" not in agente.todo_lo_recibido()
+
+
+def test_el_cambio_de_corte_sigue_tras_rechazar_todo(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-110"}),
+        ("consultar_ofertas_elegibles", {}),
+        ("aceptar_oferta", {"oferta_id": "OF-120"}),
+    )
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID_DIFICULTAD, "CV-1")  # OF-110 y OF-120
+    sesion.verificada = True
+    orq.atender(sesion, "cuotas")
+    orq.atender(sesion, boton=Boton.cancelar)
+    resultados = str(agente.recibido[-1][1])
+    assert "OF-120" in resultados and "No quedan opciones más generosas" in resultados
+    assert sesion.tarjeta is not None and sesion.tarjeta.oferta_id == "OF-120"

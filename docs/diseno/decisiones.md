@@ -373,8 +373,11 @@ persona.
    oficial, cómo dejar de recibir mensajes).
 8. El validador acepta un número junto a "cuotas" o "días" si coincide con una oferta ya consultada.
 9. Si la última cuota es igual a las demás, no se entrega su placeholder.
-10. Escalera de ofertas en el código: de menos a más generosa; lo cancelado o rechazado queda registrado y
-    solo se ofrecen las más generosas; sin más escalones, el agente lo dice y propone un asesor.
+10. Escalera de ofertas en el código: de menos a más generosa (descuento, cuotas, días de prórroga);
+    tocar Cancelar en una tarjeta de oferta la registra como rechazada y desde ahí solo se listan las
+    más generosas; un hook bloquea aceptar o prometer con una oferta fuera de la escalera (salvo la ya
+    aceptada). El cambio de fecha de corte no es escalón. Sin más escalones, el agente lo dice y propone
+    un asesor. Un rechazo escrito no se registra: lo maneja el agente.
 11. Mensajes sin sentido: un detector determinista responde un texto fijo sin LLM; al tercero seguido,
     cierre sin humano.
 12. Fallos: hasta 3 intentos por turno; si fallan, texto fijo seguro; 3 turnos fallidos seguidos llevan al

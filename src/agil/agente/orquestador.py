@@ -464,6 +464,8 @@ class Orquestador:
         sesion.paso("Botón", f"{boton.name}: {que}")
         sesion.transcripcion.append(("cliente", f"[botón {boton.name}: {que}]"))
         if boton is Boton.cancelar:
+            if tarjeta.tipo == "oferta":
+                sesion.rechazadas.append(tarjeta.oferta_id)
             sesion.eventos.append(f"[sistema] El cliente canceló la tarjeta ({que}).")
             return self._turno_agente(sesion, f"Cliente: [tocó «{boton.name}»]")
         self._registrar(sesion, tarjeta)

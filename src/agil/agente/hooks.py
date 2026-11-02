@@ -17,7 +17,7 @@ from strands.hooks import (
 )
 
 from agil.agente.sesion import MAX_INTENTOS_CEDULA, Sesion
-from agil.agente.tools import SENSIBLES
+from agil.agente.tools import SENSIBLES, en_la_escalera
 from agil.dominio.reglas.ofertas import validar_oferta
 from agil.dominio.repositorio.interfaz import Repositorio
 
@@ -114,6 +114,19 @@ class Controles(HookProvider):
             v = validar_oferta(self.repo, s.customer_id, s.segmento, oferta_id)
             if not v.ok:
                 event.cancel_tool = v.motivo
+            elif not self._en_la_escalera(oferta_id):
+                event.cancel_tool = (
+                    "El cliente ya rechazó esta opción o una más generosa: ofrece la siguiente de "
+                    "consultar_ofertas_elegibles."
+                )
+
+    def _en_la_escalera(self, oferta_id: str) -> bool:
+        """Una promesa sobre la oferta ya aceptada siempre vale; lo demás sube la escalera (D40)."""
+        aceptada = self.sesion.oferta_aceptada
+        if aceptada and aceptada.oferta_id == oferta_id:
+            return True
+        o = next(o for o in self.repo.ofertas() if o.oferta_id == oferta_id)
+        return en_la_escalera(self.repo, self.sesion, o)
 
     def despues_de_tool(self, event: AfterToolCallEvent) -> None:
         """La tarjeta se basta sola (T1): con ella termina el turno, sin otra llamada al modelo. El

@@ -123,7 +123,21 @@ def cifras_saldo(repo: Repositorio, e: EstadoCuenta) -> dict[str, str]:
 def _generosidad(o: Oferta) -> tuple:
     """De menos a más generosa (D28): el agente sube un escalón a la vez."""
     p = o.parametros
-    return (p.porcentaje_descuento or 0, p.numero_cuotas or 0, o.requiere_aprobacion_humana)
+    return (
+        p.porcentaje_descuento or 0,
+        p.numero_cuotas or 0,
+        p.dias_prorroga or 0,
+        o.requiere_aprobacion_humana,
+    )
+
+
+def en_la_escalera(repo: Repositorio, sesion: Sesion, o: Oferta) -> bool:
+    """Escalera de ofertas (D40): tras cancelar una, solo quedan las más generosas. El cambio de
+    fecha de corte no es un escalón: no descuenta ni divide la deuda."""
+    rechazadas = [r for r in repo.ofertas() if r.oferta_id in sesion.rechazadas]
+    if o.tipo == "cambio_fecha_corte" or not rechazadas:
+        return True
+    return _generosidad(o) > max(_generosidad(r) for r in rechazadas)
 
 
 def _con_llaves(valores: dict[str, str]) -> dict[str, str]:
@@ -197,10 +211,13 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
 
     @tool
     def consultar_ofertas_elegibles() -> dict:
-        """Ofertas preaprobadas para este cliente, de la menos a la más generosa, con sus cifras."""
+        """Ofertas preaprobadas para este cliente, de la menos a la más generosa, con sus cifras.
+        Las que el cliente rechazó y las menos generosas que esas ya no aparecen."""
         resultado = []
         e = estado_cuenta(repo, cid)
         for o in sorted(ofertas_elegibles(repo, cid, sesion.segmento, e), key=_generosidad):
+            if not en_la_escalera(repo, sesion, o):
+                continue
             _, c = oferta(o.oferta_id, e)
             resultado.append(
                 {
@@ -211,7 +228,13 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
                     "cifras": _con_llaves(cifras_oferta(c)),
                 }
             )
-        return {"ofertas": resultado, "instruccion": _ESCRIBE}
+        instruccion = _ESCRIBE + " Ofrece la primera; sube a la siguiente solo si la rechaza."
+        if sesion.rechazadas and not any(o["tipo"] != "cambio_fecha_corte" for o in resultado):
+            instruccion = (
+                "No quedan opciones más generosas: dilo con claridad, sin inventar otra, y ofrece "
+                "un asesor (escalar_a_humano, motivo fuera_de_tabla)."
+            )
+        return {"ofertas": resultado, "instruccion": instruccion}
 
     @tool
     def aceptar_oferta(oferta_id: str) -> str:

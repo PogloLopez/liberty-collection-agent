@@ -346,3 +346,19 @@ def test_sin_ultima_cuota_si_es_igual_a_las_demas():
     )
     assert "of_111.monto_ultima_cuota" not in cifras_oferta(iguales)
     assert cifras_oferta(distintas)["of_111.monto_ultima_cuota"] == "$3.02"
+
+
+def test_sin_rechazos_la_lista_vacia_no_manda_a_asesor(tools, sesion, monkeypatch):
+    monkeypatch.setattr(tools_mod, "ofertas_elegibles", lambda *a: [])
+    r = tools["consultar_ofertas_elegibles"]()
+    assert r["ofertas"] == [] and "asesor" not in r["instruccion"]
+
+
+def test_en_la_escalera_sube_y_no_filtra_el_cambio_de_corte(repo, sesion):
+    por_id = {o.oferta_id: o for o in repo.ofertas()}
+    assert tools_mod.en_la_escalera(repo, sesion, por_id["OF-101"])
+    sesion.rechazadas = ["OF-110"]
+    assert not tools_mod.en_la_escalera(repo, sesion, por_id["OF-101"])
+    assert not tools_mod.en_la_escalera(repo, sesion, por_id["OF-110"])
+    assert tools_mod.en_la_escalera(repo, sesion, por_id["OF-111"])
+    assert tools_mod.en_la_escalera(repo, sesion, por_id["OF-120"])

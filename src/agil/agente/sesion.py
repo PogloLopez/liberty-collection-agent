@@ -47,6 +47,8 @@ class Sesion(BaseModel):
     condiciones: dict[str, CondicionesOferta] = Field(default_factory=dict)
     oferta_aceptada: CondicionesOferta | None = None
     acuerdos: list[str] = Field(default_factory=list)  # lo confirmado con botones, sin cifras (D40)
+    # ofertas canceladas: la escalera sube (D40)
+    rechazadas: list[str] = Field(default_factory=list)
     tarjeta: Tarjeta | None = None
     eventos: list[str] = Field(default_factory=list)  # lo resuelto sin LLM, para el próximo turno
     contexto: list[str] = Field(default_factory=list)  # turno y estrategia; lo inyecta un hook
