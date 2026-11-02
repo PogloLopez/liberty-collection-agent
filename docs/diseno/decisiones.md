@@ -355,5 +355,7 @@ Functions, Mangum y CDK quedan para el hito 4. Trade-off: el hito 4 trae más pi
   vienen de un blog de AWS.
 - **P1:** perfiles de los segmentos: plantillas, prompts de tono y tarjetas de estrategia. Se redactan
   durante el desarrollo y Pablo los revisa antes de desplegar.
+- **P2:** diagrama Mermaid del paso a paso de `orquestador.py` (bifurcaciones y procesos destino) en
+  `docs/diseno/`, enlazado desde el documento de arquitectura (pedido de Pablo, 1-nov).
 
 Las ideas de [[feedback_estudio]] quedaron en D22, D23 y D24.

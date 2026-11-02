@@ -1,6 +1,6 @@
 """App local de la demo (D26, D38): FastAPI envuelve el orquestador y sirve el frontend.
 
-    uv run uvicorn --factory agil.app.api:crear_app --app-dir src
+    uv run uvicorn --factory agil.app.api:crear_app --app-dir src --port 8765
 
 Las sesiones viven en la memoria del proceso; en la nube pasan a DynamoDB (hito 4).
 """
