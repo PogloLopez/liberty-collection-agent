@@ -1,3 +1,4 @@
+import itertools
 import json
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -138,12 +139,28 @@ def test_validador_reintenta_una_vez_y_limpia_el_historial(repo, ahora):
     assert "$76.40" not in historial and "no se envió" not in historial
 
 
-def test_dos_salidas_invalidas_van_a_humano(repo, ahora):
-    orq = _orq(repo, ahora, ModeloGuionado("Son $76.40.", "Son 76 dólares."))
+def test_tres_intentos_por_turno_y_tres_turnos_fallidos_van_a_humano(repo, ahora):
+    malas = ["Son $76.40.", "Son 76 dólares.", "Son setenta y seis."] * 3
+    agente = ModeloGuionado(*malas)
+    orq = _orq(repo, ahora, agente)
     sesion = orq.iniciar(CID, "CV-1")
+    for turno in (1, 2):
+        r = orq.atender(sesion, "cuánto debo")
+        assert r.mensajes == [TEXTOS["respuesta_segura"]] and not r.cerrada
+        assert len(agente.recibido) == 3 * turno and sesion.fallos_seguidos == turno
+        assert "$76.40" not in str(sesion.historial)  # lo rechazado no queda
     r = orq.atender(sesion, "cuánto debo")
     assert r.mensajes == [TEXTOS["fallo"]] and r.cerrada
     assert repo.handoffs[0].motivo == "fallo_agente"
+
+
+def test_un_turno_bueno_reinicia_los_fallos(repo, ahora):
+    agente = ModeloGuionado("Son $1.", "Son $2.", "Son $3.", "Hola.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "uno")
+    assert sesion.fallos_seguidos == 1
+    assert orq.atender(sesion, "dos").mensajes == ["Hola."] and sesion.fallos_seguidos == 0
 
 
 def test_tope_de_turnos_cierra_el_codigo(repo, ahora):
@@ -289,9 +306,11 @@ def test_boton_sin_tarjeta_no_llama_al_agente_ni_cuenta_turno(repo, ahora):
     assert repo.promesas == [] and repo.aceptaciones == []
 
 
-def test_excepcion_del_modelo_va_a_humano(repo, ahora):
+def test_excepcion_del_modelo_va_a_humano_al_tercer_turno(repo, ahora):
     orq = _orq(repo, ahora, ModeloRoto())
     sesion = orq.iniciar(CID, "CV-1")
+    for _ in range(2):
+        assert orq.atender(sesion, "hola").mensajes == [TEXTOS["respuesta_segura"]]
     r = orq.atender(sesion, "hola")
     assert r.mensajes == [TEXTOS["fallo"]] and r.cerrada
     assert sesion.motivo_cierre == "fallo"
@@ -981,3 +1000,48 @@ def test_sin_sentido_con_tarjeta_pendiente_no_duplica_el_aviso(repo, ahora):
         assert orq.atender(sesion, teclazo).mensajes == [TEXTOS["sin_sentido"]]
     orq.atender(sesion, "¿y si mejor el viernes?")
     assert agente.todo_lo_recibido().count("sin responder la tarjeta pendiente") == 1
+
+
+def test_tras_un_turno_fallido_los_roles_siguen_alternandose(repo, ahora):
+    agente = ModeloGuionado("Son $1.", "Son $2.", "Son $3.", "Hola.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "uno")
+    roles = [m["role"] for m in sesion.historial]
+    assert all(a != b for a, b in itertools.pairwise(roles))
+    assert sesion.historial[-1]["content"] == [{"text": TEXTOS["respuesta_segura"]}]
+
+
+def test_una_excepcion_no_deja_historial_a_medias(repo, ahora):
+    orq = _orq(repo, ahora, ModeloRoto())
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "hola")
+    assert sesion.historial == []
+
+
+def test_tarjeta_en_el_ultimo_reintento_termina_el_turno_con_la_tarjeta(repo, ahora):
+    agente = ModeloGuionado(
+        "Son $1.", "Son $2.", ("registrar_promesa_pago", {"fecha": "mañana"}), "Son $3."
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    sesion.fallos_seguidos = 2
+    r = orq.atender(sesion, "le pago mañana")
+    assert r.mensajes == [] and r.tarjeta is not None and not r.cerrada
+    assert sesion.fallos_seguidos == 0 and len(agente.recibido) == 3
+    assert TEXTOS["respuesta_segura"] not in json.dumps(sesion.historial, ensure_ascii=False)
+
+
+def test_tool_que_cierra_durante_los_reintentos_usa_el_texto_del_cierre(repo, ahora):
+    agente = ModeloGuionado(
+        "Son $1.",
+        ("escalar_a_humano", {"motivo": "pide_humano", "resumen": "x"}),
+        "Son $2.",
+        "Son $3.",
+    )
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    r = orq.atender(sesion, "quiero un humano")
+    assert r.mensajes == [TEXTOS["handoff"]] and r.cerrada
+    assert len(agente.recibido) == 3  # sin un tercer intento tras el cierre
+    assert len(repo.handoffs) == 1 and repo.handoffs[0].motivo == "pide_humano"
+    assert sesion.fallos_seguidos == 0

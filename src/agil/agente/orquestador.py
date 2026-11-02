@@ -21,7 +21,13 @@ from agil.agente.auxiliares import clasificar_momento, es_abusivo, resumir, tarj
 from agil.agente.config import Modelos
 from agil.agente.hooks import RESPUESTA_TOPE, Controles
 from agil.agente.perfiles import cargar_perfil, prompt_sistema
-from agil.agente.sesion import MAX_INTENTOS_CEDULA, MAX_STRIKES, Respuesta, Sesion
+from agil.agente.sesion import (
+    MAX_FALLOS_SEGUIDOS,
+    MAX_INTENTOS_CEDULA,
+    MAX_STRIKES,
+    Respuesta,
+    Sesion,
+)
 from agil.agente.tools import cifras_oferta, cifras_saldo, crear_tools, link_pago, prefijo
 from agil.dominio.harness.identidad import enmascarar, extraer_digitos, verificar
 from agil.dominio.harness.intenciones import Boton, pide_no_contacto, sin_sentido
@@ -56,6 +62,7 @@ TEXTOS = {
     "fallo": "Disculpe, tuve un inconveniente. Un asesor continuará la conversación con usted.",
     "handoff": "Un asesor continuará la conversación con usted. Gracias por su paciencia.",
     "sin_tarjeta": "Esa opción ya no está disponible.",
+    "respuesta_segura": "Disculpe, ¿me lo puede repetir?",
     "sin_sentido": "No entendí su mensaje. ¿Me lo escribe de nuevo?",
     "sin_sentido_cierre": (
         "Vamos a cerrar esta conversación por ahora. Si necesita ayuda, escríbanos."
@@ -83,6 +90,7 @@ _USA_LA_TARJETA = (
     "aceptar_oferta o registrar_promesa_pago: la tarjeta con botones es la confirmación. Si aún no "
     "eligió, propón la opción sin pedirle que confirme."
 )
+REINTENTOS = 2
 _tracer = trace.get_tracer("agil.orquestador")
 
 
@@ -220,20 +228,35 @@ class Orquestador:
         mensaje = "\n".join([*sesion.eventos, linea_cliente])
         sesion.eventos = []
         tarjeta_previa = sesion.tarjeta
+        n = len(sesion.historial)
         try:
             texto = self._invocar(sesion, mensaje)
         except Exception:
             log.exception("Fallo del agente")
+            del sesion.historial[n:]  # sin un toolUse a medias que rompa los turnos siguientes
             texto = None
         if texto is None:
             sesion.tarjeta = None
             if sesion.cerrada:  # una tool ya cerró (handoff o no contacto): solo falló el texto
                 motivo = sesion.motivo_cierre
                 return self._cierre_fijo(sesion, motivo, TEXTOS.get(motivo, TEXTOS["handoff"]))
-            self._handoff(  # fallo nuestro: humano (D15)
-                sesion, "fallo", "fallo_agente", "El agente no pudo generar una respuesta válida."
+            # Fallo nuestro (D15): texto seguro; tres turnos fallidos seguidos van al asesor (D40).
+            sesion.fallos_seguidos += 1
+            if sesion.fallos_seguidos >= MAX_FALLOS_SEGUIDOS:
+                self._handoff(
+                    sesion,
+                    "fallo",
+                    "fallo_agente",
+                    "El agente no pudo generar una respuesta válida.",
+                )
+                return self._cierre_fijo(sesion, "fallo", TEXTOS["fallo"])
+            sesion.paso(
+                "Respuesta segura",
+                f"texto fijo (turno fallido {sesion.fallos_seguidos} de {MAX_FALLOS_SEGUIDOS})",
             )
-            return self._cierre_fijo(sesion, "fallo", TEXTOS["fallo"])
+            sesion.transcripcion.append(("agente", TEXTOS["respuesta_segura"]))
+            return Respuesta(mensajes=[TEXTOS["respuesta_segura"]])
+        sesion.fallos_seguidos = 0
 
         tarjeta = sesion.tarjeta if sesion.tarjeta is not tarjeta_previa else None
         if texto == "" and tarjeta is not None:  # la tarjeta se basta sola (T1)
@@ -272,7 +295,7 @@ class Orquestador:
 
     def _invocar(self, sesion: Sesion, mensaje: str) -> str | None:
         """Respuesta validada del agente; "" si el turno terminó con una tarjeta (T1) y None si
-        falla dos veces (D4, D15)."""
+        falla tras 1 + REINTENTOS intentos (D4, D15, D40)."""
         agente, controles = self._agente(sesion)
         texto = str(agente(mensaje)).strip()
         if controles.agotado:  # el modelo siguió pidiendo tools tras el tope (K1)
@@ -285,9 +308,19 @@ class Orquestador:
         v = self._validar(texto, sesion)
         trace.get_current_span().add_event("validador", {"ok": v.ok, "motivo": v.motivo or ""})
         sesion.paso("Validador", "aprobada" if v.ok else f"rechazada: {v.motivo}")
-        if not v.ok and not sesion.cerrada:
-            texto, v = self._corregir(agente, controles, sesion, f"{v.motivo} Reescríbela.")
-            sesion.paso("Reintento", "aprobado" if v.ok else f"rechazado: {v.motivo}")
+        if not v.ok:
+            for _ in range(REINTENTOS):  # hasta tres intentos por turno (D40)
+                if v.ok or sesion.cerrada:
+                    break
+                texto, v = self._corregir(agente, controles, sesion, f"{v.motivo} Reescríbela.")
+                sesion.paso("Reintento", "aprobado" if v.ok else f"rechazado: {v.motivo}")
+            if not v.ok and agente.messages and agente.messages[-1]["role"] == "assistant":
+                # Lo que el cliente recibe es el texto seguro: así queda en el historial y los
+                # roles siguen alternándose (Bedrock Converse lo exige).
+                agente.messages[-1] = {
+                    "role": "assistant",
+                    "content": [{"text": TEXTOS["respuesta_segura"]}],
+                }
         elif _pide_confirmacion(texto) and not sesion.cerrada:
             # Un aviso, no un bloqueo: si la corrección no sirve, se envía la respuesta original.
             trace.get_current_span().add_event("confirma_en_texto")

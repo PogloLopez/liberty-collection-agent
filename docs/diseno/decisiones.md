@@ -381,8 +381,9 @@ persona.
 11. Mensajes sin sentido: un detector determinista responde un texto fijo sin LLM; al tercero seguido,
     cierre sin humano. Ignora links, correos y letras repetidas ("pfff"); falso positivo conocido:
     apellidos extranjeros como "Schwarz".
-12. Fallos: hasta 3 intentos por turno; si fallan, texto fijo seguro; 3 turnos fallidos seguidos llevan al
-    asesor.
+12. Fallos: hasta 3 intentos por turno; si fallan, texto fijo seguro ("Disculpe, ¿me lo puede
+    repetir?"); 3 turnos fallidos seguidos llevan al asesor. Costo en el peor caso: 9 llamadas al agente
+    antes del asesor (centavos con Nova).
 
 ## Pendientes
 
