@@ -10,32 +10,38 @@ import logging
 import re
 from collections.abc import Callable
 from datetime import datetime
+from decimal import Decimal
 
 from opentelemetry import trace
 from strands import Agent
 from strands.agent.conversation_manager import SlidingWindowConversationManager
 
+from agil.agente import formato
 from agil.agente.auxiliares import clasificar_momento, es_abusivo, resumir, tarjeta_estrategia
 from agil.agente.config import Modelos
-from agil.agente.hooks import Controles
+from agil.agente.hooks import RESPUESTA_TOPE, Controles
 from agil.agente.perfiles import cargar_perfil, prompt_sistema
 from agil.agente.sesion import MAX_INTENTOS_CEDULA, MAX_STRIKES, Respuesta, Sesion
-from agil.agente.tools import crear_tools
+from agil.agente.tools import cifras_oferta, cifras_saldo, crear_tools, link_pago, prefijo
 from agil.dominio.harness.identidad import enmascarar, extraer_digitos, verificar
 from agil.dominio.harness.intenciones import Boton, pide_no_contacto
 from agil.dominio.harness.placeholders import renderizar
 from agil.dominio.harness.texto import sin_tildes
-from agil.dominio.harness.validador import validar_salida
+from agil.dominio.harness.validador import a_whatsapp, validar_salida
 from agil.dominio.modelos import (
     AceptacionOferta,
     Cola,
+    EstadoCuenta,
     Handoff,
     Nota,
     PromesaPago,
     Segmento,
     SolicitudNoContacto,
+    Validacion,
 )
+from agil.dominio.reglas.calculos import estado_cuenta
 from agil.dominio.reglas.calendario import ZONA
+from agil.dominio.reglas.ofertas import condiciones, ofertas_elegibles
 from agil.dominio.reglas.segmentacion import segmentar
 from agil.dominio.repositorio.interfaz import Repositorio
 
@@ -50,9 +56,27 @@ TEXTOS = {
     "fallo": "Disculpe, tuve un inconveniente. Un asesor continuará la conversación con usted.",
     "handoff": "Un asesor continuará la conversación con usted. Gracias por su paciencia.",
     "sin_tarjeta": "Esa opción ya no está disponible.",
+    "pasos": RESPUESTA_TOPE,
 }
 _PIDE_CEDULA = re.compile(r"\bcedula\b|\bcuatro digitos\b", re.I)
+# Preguntas que piden confirmar en texto lo que confirma una tarjeta ("¿Confirma…?",
+# "¿Lo registro?"); no "¿Ya registró su pago?" ni la de los cuatro dígitos de la cédula.
+_PREGUNTA = re.compile(r"[^.!?]*\?")
+_CONFIRMA = re.compile(
+    r"\b(?:confirma(?:mos)?|confirmo|l[ao] registr(?:o|amos)|registramos|procedo|procedemos)\b",
+    re.I,
+)
+_USA_LA_TARJETA = (
+    "No pidas confirmación en texto. Si el cliente ya eligió una oferta o un día, llama a "
+    "aceptar_oferta o registrar_promesa_pago: la tarjeta con botones es la confirmación. Si aún no "
+    "eligió, propón la opción sin pedirle que confirme."
+)
 _tracer = trace.get_tracer("agil.orquestador")
+
+
+def _pide_confirmacion(texto: str) -> bool:
+    preguntas = _PREGUNTA.findall(sin_tildes(texto))
+    return any(_CONFIRMA.search(p) and not _PIDE_CEDULA.search(p) for p in preguntas)
 
 
 class Orquestador:
@@ -127,10 +151,22 @@ class Orquestador:
     def _atender(self, sesion: Sesion, texto: str, boton: Boton | None) -> Respuesta:
         if sesion.cerrada:
             return Respuesta(cerrada=True)
+        if sesion.vencer_verificacion(self.ahora()):  # también ante un botón: anula la tarjeta
+            sesion.eventos.append(
+                "[sistema] La verificación venció (12 horas): pide de nuevo los cuatro dígitos "
+                "antes de dar datos de la cuenta."
+            )
+        self._refrescar_cifras(sesion)
         if boton:
             return self._boton(sesion, boton)
         if pide_no_contacto(texto):
             return self._no_contactar(sesion, texto)
+        if sesion.tarjeta:  # T2: escribió en vez de tocar un botón; la tarjeta sigue vigente
+            trace.get_current_span().add_event("tarjeta_pendiente")
+            sesion.eventos.append(
+                "[sistema] El cliente escribió sin responder la tarjeta pendiente "
+                f"({sesion.tarjeta.descripcion})."
+            )
 
         # Ninguna cédula llega a un modelo; sin verificar, ningún dígito (D24). Solo cuenta como
         # intento si el agente la pidió ("1500" es ambiguo).
@@ -166,11 +202,14 @@ class Orquestador:
             self._handoff_fallo(sesion)  # fallo nuestro: humano (D15)
             return self._cierre_fijo(sesion, "fallo", TEXTOS["fallo"])
 
+        tarjeta = sesion.tarjeta if sesion.tarjeta is not tarjeta_previa else None
+        if texto == "" and tarjeta is not None:  # la tarjeta se basta sola (T1)
+            sesion.transcripcion.append(("agente", f"[tarjeta] {tarjeta.texto}"))
+            return Respuesta(tarjeta=tarjeta)
         if _PIDE_CEDULA.search(sin_tildes(texto)) and not sesion.verificada:
             sesion.cedula_pedida = True
-        final = renderizar(texto, sesion.valores)
+        final = renderizar(a_whatsapp(texto), sesion.valores)
         sesion.transcripcion.append(("agente", texto))
-        tarjeta = sesion.tarjeta if sesion.tarjeta is not tarjeta_previa else None
         if sesion.cerrada:
             self.cerrar(sesion, sesion.motivo_cierre or "agente")
         return Respuesta(mensajes=[final], tarjeta=tarjeta, cerrada=sesion.cerrada)
@@ -189,32 +228,72 @@ class Orquestador:
         return lineas
 
     def _invocar(self, sesion: Sesion, mensaje: str) -> str | None:
-        """Respuesta validada del agente, o None si falla dos veces (D4, D15)."""
-        agente = self._agente(sesion)
+        """Respuesta validada del agente; "" si el turno terminó con una tarjeta (T1) y None si
+        falla dos veces (D4, D15)."""
+        agente, controles = self._agente(sesion)
         texto = str(agente(mensaje)).strip()
-        v = validar_salida(texto, set(sesion.valores), sesion.max_caracteres)
+        if controles.agotado:  # el modelo siguió pidiendo tools tras el tope (K1)
+            trace.get_current_span().add_event("tope_pasos", {"pasos": controles.pasos})
+            sesion.historial = list(agente.messages)
+            return None if sesion.cerrada else TEXTOS["pasos"]
+        if controles.tarjeta_enviada:
+            sesion.historial = list(agente.messages)
+            return self._fin_con_tarjeta(sesion)
+        v = self._validar(texto, sesion)
         trace.get_current_span().add_event("validador", {"ok": v.ok, "motivo": v.motivo or ""})
         if not v.ok and not sesion.cerrada:
-            fallido = agente.messages[-1]
-            sesion.contexto = []
-            texto = str(agente(f"[sistema] Tu respuesta no se envió: {v.motivo} Reescríbela."))
-            texto = texto.strip()
-            v = validar_salida(texto, set(sesion.valores), sesion.max_caracteres)
-            # El intento fallido y la corrección no quedan en el historial.
-            i = next((i for i, m in enumerate(agente.messages) if m is fallido), None)
-            if i is not None:
-                del agente.messages[i : i + 2]
+            texto, v = self._corregir(agente, controles, sesion, f"{v.motivo} Reescríbela.")
+        elif _pide_confirmacion(texto) and not sesion.cerrada:
+            # Un aviso, no un bloqueo: si la corrección no sirve, se envía la respuesta original.
+            trace.get_current_span().add_event("confirma_en_texto")
+            original, historial = texto, list(agente.messages)
+            texto, v = self._corregir(agente, controles, sesion, _USA_LA_TARJETA)
+            if not v.ok:
+                texto, v = original, Validacion(ok=True)
+                agente.messages[:] = historial
         sesion.historial = list(agente.messages)
+        if controles.tarjeta_enviada:
+            return self._fin_con_tarjeta(sesion)
         return texto if v.ok else None
 
-    def _agente(self, sesion: Sesion) -> Agent:
+    @staticmethod
+    def _validar(texto: str, sesion: Sesion) -> Validacion:
+        if not texto:
+            return Validacion(ok=False, motivo="La respuesta está vacía.")
+        return validar_salida(texto, set(sesion.valores), sesion.max_caracteres)
+
+    @staticmethod
+    def _fin_con_tarjeta(sesion: Sesion) -> str | None:
+        """ "" si la tarjeta es el mensaje del turno; None si una tool también cerró la sesión: la
+        tarjeta se descarta y se usa el texto fijo del cierre."""
+        if sesion.cerrada:
+            sesion.tarjeta = None
+            return None
+        return ""
+
+    def _corregir(
+        self, agente: Agent, controles: Controles, sesion: Sesion, motivo: str
+    ) -> tuple[str, Validacion]:
+        """Un reintento con el motivo; el intento fallido y el aviso no quedan en el historial."""
+        fallido = agente.messages[-1]
+        sesion.contexto = []
+        texto = str(agente(f"[sistema] Tu respuesta no se envió: {motivo}")).strip()
+        i = next((i for i, m in enumerate(agente.messages) if m is fallido), None)
+        if i is not None:
+            del agente.messages[i : i + 2]
+        if controles.tarjeta_enviada:  # lo decide _fin_con_tarjeta
+            return "", Validacion(ok=True)
+        return texto, self._validar(texto, sesion)
+
+    def _agente(self, sesion: Sesion) -> tuple[Agent, Controles]:
         cliente = self.repo.cliente(sesion.customer_id)
         perfil = cargar_perfil(sesion.segmento)
-        return Agent(
+        controles = Controles(self.repo, sesion, self.ahora)
+        agente = Agent(
             model=self.modelos.agente,
             system_prompt=prompt_sistema(perfil, cliente, self.ahora()),
             tools=crear_tools(self.repo, sesion, self.ahora),
-            hooks=[Controles(self.repo, sesion)],
+            hooks=[controles],
             messages=sesion.historial,
             conversation_manager=SlidingWindowConversationManager(window_size=20),
             callback_handler=None,
@@ -223,14 +302,76 @@ class Orquestador:
                 "agil.segmento": sesion.segmento.value,
             },
         )
+        return agente, controles
 
     # --- Lo que resuelve el código ---
+
+    def _refrescar_cifras(self, sesion: Sesion) -> None:
+        """Recalcula las cifras ya mostradas al llegar cada mensaje: entre mensajes una carga pudo
+        aplicar un pago (H3). La oferta ya aceptada no cambia: es un acuerdo registrado. Una tarjeta
+        pendiente cuyo monto cambió se anula."""
+        if not sesion.valores:
+            return
+        cid = sesion.customer_id
+        e = estado_cuenta(self.repo, cid)
+        antes = dict(sesion.valores)
+        if "saldo_vencido" in sesion.valores:
+            sesion.valores.update(cifras_saldo(self.repo, e))
+        aceptada = sesion.oferta_aceptada and sesion.oferta_aceptada.oferta_id
+        abiertas = [oid for oid in sesion.condiciones if oid != aceptada]
+        elegibles = (
+            {o.oferta_id: o for o in ofertas_elegibles(self.repo, cid, sesion.segmento, e)}
+            if abiertas
+            else {}
+        )
+        retiradas = []
+        for oferta_id in abiertas:
+            o = elegibles.get(oferta_id)
+            nuevas = o and condiciones(self.repo, cid, o, e)
+            if nuevas == sesion.condiciones[oferta_id]:
+                continue
+            p = f"{prefijo(oferta_id)}."
+            sesion.valores = {k: v for k, v in sesion.valores.items() if not k.startswith(p)}
+            if nuevas:
+                sesion.condiciones[oferta_id] = nuevas
+                sesion.valores.update(cifras_oferta(nuevas))
+            else:
+                del sesion.condiciones[oferta_id]
+                retiradas.append(oferta_id)
+        if sesion.valores == antes:
+            return
+        evento = "[sistema] La cuenta del cliente cambió (p. ej. se aplicó un pago): cifras al día."
+        if retiradas:
+            evento += f" Ya no aplican: {', '.join(retiradas)}."
+        tarjeta = sesion.tarjeta
+        if tarjeta and tarjeta.monto != self._monto_actual(sesion, tarjeta.oferta_id, e):
+            sesion.tarjeta = None
+            evento += f" Se anuló la tarjeta pendiente ({tarjeta.descripcion})."
+        trace.get_current_span().add_event(
+            "cifras_actualizadas",
+            {
+                "retiradas": len(retiradas),
+                "tarjeta_anulada": tarjeta is not None and sesion.tarjeta is None,
+            },
+        )
+        sesion.eventos.append(evento)
+
+    @staticmethod
+    def _monto_actual(sesion: Sesion, oferta_id: str | None, e: EstadoCuenta) -> Decimal | None:
+        """Lo que hoy respalda una tarjeta: su oferta, la aceptada o el saldo (monto_a_cobrar)."""
+        if oferta_id:
+            c = sesion.condiciones.get(oferta_id)
+            return c and c.primer_pago
+        if sesion.oferta_aceptada:
+            return sesion.oferta_aceptada.primer_pago
+        return e.saldo_tras_transito
 
     def _verificar(self, sesion: Sesion, digitos: str) -> None:
         """El número nunca llega al LLM; solo el resultado (D24)."""
         cliente = self.repo.cliente(sesion.customer_id)
         if verificar(cliente, digitos):
             sesion.verificada = True
+            sesion.verificada_en = self.ahora()
             sesion.cedula_pedida = False
             evento = "[sistema] Verificación de cédula correcta."
             notas = self.repo.notas(sesion.customer_id)[-3:]
@@ -254,14 +395,52 @@ class Orquestador:
         sesion.tarjeta = None
         if tarjeta is None:
             return Respuesta(mensajes=[TEXTOS["sin_tarjeta"]])
-        que = f"oferta {tarjeta.oferta_id}" if tarjeta.tipo == "oferta" else "promesa de pago"
-        if boton is Boton.confirmar:
-            self._registrar(sesion, tarjeta)
-            sesion.eventos.append(f"[sistema] El cliente confirmó la tarjeta ({que}): registrada.")
-        else:
-            sesion.eventos.append(f"[sistema] El cliente canceló la tarjeta ({que}).")
+        que = tarjeta.descripcion
         sesion.transcripcion.append(("cliente", f"[botón {boton.name}: {que}]"))
-        return self._turno_agente(sesion, f"Cliente: [tocó «{boton.name}»]")
+        if boton is Boton.cancelar:
+            sesion.eventos.append(f"[sistema] El cliente canceló la tarjeta ({que}).")
+            return self._turno_agente(sesion, f"Cliente: [tocó «{boton.name}»]")
+        self._registrar(sesion, tarjeta)
+        texto, url = self._confirmacion(sesion, tarjeta)
+        trace.get_current_span().add_event("confirmacion_fija", {"tipo": tarjeta.tipo})
+        enviado = "la confirmación y el link de pago" if url else "la confirmación"
+        sesion.eventos.append(
+            f"[sistema] El cliente confirmó la tarjeta ({que}): registrada. El sistema ya le envió "
+            f"{enviado}: no lo repitas."
+        )
+        # La transcripción alimenta el resumen de cierre: sin el link, que caduca.
+        sesion.transcripcion.append(
+            ("agente", texto.replace(url, "{{link_pago}}") if url else texto)
+        )
+        return Respuesta(mensajes=[texto])
+
+    def _confirmacion(self, sesion: Sesion, tarjeta) -> tuple[str, str | None]:
+        """Texto fijo tras Confirmar (D22): qué quedó registrado y, si falta pagar, el link."""
+        nombre = self.repo.cliente(sesion.customer_id).nombre.split()[0]
+        cierre = " ¿Le ayudo con algo más?"
+        url, nuevo = None, False
+        if tarjeta.monto > 0:
+            url, nuevo = link_pago(self.repo, sesion, tarjeta.monto, self.ahora)
+        dinero = formato.dinero(tarjeta.monto)
+        if tarjeta.tipo == "promesa":
+            link = f"este link: {url}." if nuevo else "el link que le envié."
+            return (
+                f"Listo, {nombre}. Quedó registrada su promesa de pago de {dinero} para el "
+                f"{formato.fecha(tarjeta.fecha)}. Ese día puede pagar con {link}{cierre}"
+            ), url if nuevo else None
+        c = sesion.oferta_aceptada
+        oferta = next(o for o in self.repo.ofertas() if o.oferta_id == tarjeta.oferta_id)
+        if oferta.tipo == "cambio_fecha_corte":
+            texto = f"Listo, {nombre}. Quedó aceptado el cambio de fecha de corte."
+            pago = f" Su saldo vencido sigue pendiente: puede pagar {dinero}"
+        else:
+            texto = f"Listo, {nombre}. Quedó aceptada su oferta."
+            pago = f" Puede pagar {'la primera cuota, ' if c.numero_cuotas else ''}{dinero}"
+            if c.fecha_limite:
+                pago += f", hasta el {formato.fecha(c.fecha_limite)}"
+        if url:
+            texto += f"{pago}, con este link: {url}."
+        return texto + cierre, url
 
     def _registrar(self, sesion: Sesion, tarjeta) -> None:
         sufijo = f"{sesion.conversacion_id}-{len(sesion.escrituras)}"

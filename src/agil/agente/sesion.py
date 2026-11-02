@@ -1,6 +1,6 @@
 """Estado de una conversación. Serializable para que el hito 3 lo guarde entre mensajes."""
 
-from datetime import date
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from typing import Any, Literal
 
@@ -10,6 +10,7 @@ from agil.dominio.modelos import Cola, CondicionesOferta, Segmento
 
 MAX_INTENTOS_CEDULA = 3
 MAX_STRIKES = 3
+VIGENCIA_VERIFICACION = timedelta(hours=12)  # o hasta el cierre (Pablo, 1-nov)
 
 
 class Tarjeta(BaseModel):
@@ -21,6 +22,11 @@ class Tarjeta(BaseModel):
     oferta_id: str | None = None
     fecha: date | None = None
 
+    @property
+    def descripcion(self) -> str:
+        """Qué confirma, sin cifras: va al agente y al historial."""
+        return f"oferta {self.oferta_id}" if self.tipo == "oferta" else "promesa de pago"
+
 
 class Sesion(BaseModel):
     conversacion_id: str
@@ -31,6 +37,7 @@ class Sesion(BaseModel):
     max_caracteres: int
     turno: int = 0
     verificada: bool = False
+    verificada_en: datetime | None = None
     cedula_pedida: bool = False
     intentos_cedula: int = 0
     strikes: int = 0
@@ -45,6 +52,22 @@ class Sesion(BaseModel):
     transcripcion: list[tuple[str, str]] = Field(default_factory=list)  # ya enmascarada
     escrituras: set[str] = Field(default_factory=set)  # IDs ya escritos: tools idempotentes
     historial: list[dict[str, Any]] = Field(default_factory=list)  # mensajes del agente Strands
+
+    def vencer_verificacion(self, ahora: datetime) -> bool:
+        """Reinicia la verificación si pasaron 12 horas; True si venció en esta llamada.
+
+        Descarta las cifras y la tarjeta pendiente: sin verificar no se muestra ningún dato.
+        """
+        if not (self.verificada and self.verificada_en):
+            return False
+        if ahora - self.verificada_en < VIGENCIA_VERIFICACION:
+            return False
+        self.verificada = False
+        self.verificada_en = None
+        self.valores.clear()
+        self.condiciones.clear()
+        self.tarjeta = None
+        return True
 
     def cerrar(self, motivo: str) -> None:
         self.cerrada = True

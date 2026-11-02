@@ -70,7 +70,7 @@ Solo los aplicados cambian el estado de la factura; los en tránsito los muestra
 | `oferta_id`, `nombre`, `tipo` | `pago_total_link`, `plan_cuotas`, `cambio_fecha_corte`, `descuento_retencion`, `liquidacion` |
 | `segmentos_elegibles` | Dónde puede ofrecerse |
 | `aplica_a` | Base del rango: `saldo_vencido`; `factura_vencida` (saldo pendiente de la más antigua); `cargo_mensual` (ARPU); `cargo_reconexion` (cargos cuyo concepto dice "reconexión"); `cuenta` sin rango |
-| `parametros` | `porcentaje_descuento` (string), `numero_cuotas`, `dias_prorroga` (int); `null` si no aplica |
+| `parametros` | `porcentaje_descuento` (string), `numero_cuotas`, `dias_prorroga`, `dias_mora_max` (int, tope de mora con la prórroga, [[decisiones#D32 Fecha de la promesa]]); `null` u omitido si no aplica |
 | `monto_min`, `monto_max` | Rango de saldo en que es válida |
 | `vigencia_desde`, `vigencia_hasta` | OF-132 ya venció: el motor debe rechazarla |
 | `requiere_aprobacion_humana` | Si es `true`, el agente escala en vez de aceptar |

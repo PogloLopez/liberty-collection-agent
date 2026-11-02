@@ -12,6 +12,7 @@ Colombia), a Santiago Quiroz.
 - `docs/diseno/indice.md` — entrada al diseño. Lo decidido vive **solo** en `docs/diseno/decisiones.md`.
 - `docs/documento_arquitectura.html` — documento de arquitectura para el evaluador, publicado en
   https://claude.ai/artifact/2M7xQgMLm1MioFVa9TBBmL. Si cambia una decisión, se actualiza y se republica.
+- `config.yaml` — modelos por entorno y rol, con alternativas (D36); la key va en `.env`.
 - `docs/diseno/despliegue_demo.md` — qué se despliega y cuánto cuesta. `docs/diseno/datos_mock.md` — datos.
 - `data/mock/` — datos sintéticos; `etiquetas_esperadas.json` es el oráculo de tests, el agente no lo lee.
 - `.claude/hooks/bloquear_aws_cli.py` — único hook: bloquea todo comando que pueda llegar a AWS.

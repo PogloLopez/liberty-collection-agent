@@ -146,6 +146,7 @@ class ParametrosOferta(Modelo):
     porcentaje_descuento: Monto | None = None
     numero_cuotas: int | None = None
     dias_prorroga: int | None = None
+    dias_mora_max: int | None = None
 
 
 class Oferta(Modelo):

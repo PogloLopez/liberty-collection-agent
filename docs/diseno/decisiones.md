@@ -174,6 +174,10 @@ promesa (Pablo, 31-oct; idea del estudio con otro agente).
   siga la conversación con naturalidad. Igual con todo lo que el router resuelve sin LLM: la verificación
   (el resultado, nunca los dígitos) y el no contactar (cierra la conversación: el evento llega al resumen de
   cierre y a la siguiente). El código decide; el LLM solo queda informado.
+- **Confirmar no pasa por el LLM** (Pablo, 1-nov): el código responde con un texto fijo (qué quedó
+  registrado, el monto, la fecha y el link si falta pagar) y termina con "¿Le ayudo con algo más?". En el
+  humo, el agente reenviaba el link o pedía pagar hoy después de una promesa. Cancelar sí va al agente,
+  que propone otra opción. Trade-off: ese mensaje suena menos natural, pero el acuerdo ya está hecho.
 
 → [[tools]]
 
@@ -271,15 +275,32 @@ Detalles (Claude, 1-nov): sin verificar, ningún dígito llega a un modelo y, ve
 intentos fallidos bloquean la verificación y el agente ofrece un asesor; el contexto del turno y la estrategia
 no se guarda en el historial; las ofertas llegan ordenadas de menos a más generosa; los textos fijos (no
 contactar, abuso, tope, fallo, handoff) viven en el código y en producción serían plantillas aprobadas por legal.
+Revisión de Pablo (1-nov): la verificación dura 12 horas o hasta el cierre; el contexto va después del texto
+del cliente para no cortar el caché por prefijo (Groq y el caché implícito de Nova en Bedrock comparan el
+prefijo exacto); el tope de pasos le dice al agente qué resumir y, si insiste en llamar tools, el código corta
+el bucle y responde un texto fijo. La tarjeta se basta sola: dice qué se confirma y qué tocar, y con
+ella termina el turno, sin otra llamada al modelo (`agent.cancel`). Si el cliente escribe con una tarjeta
+pendiente, el agente recibe un aviso [sistema] y la tarjeta sigue vigente. Si el agente pide confirmar en
+texto, el código le pide una vez usar la tool; si la corrección no sirve, se envía la respuesta original.
+Las cifras ya mostradas se recalculan al llegar cada mensaje (entre mensajes pudo aplicarse un pago): si
+cambian, el agente recibe un aviso, las ofertas que dejaron de aplicar se retiran y una tarjeta pendiente con
+otras cifras se anula.
 
 ### D32 Fecha de la promesa
 **El LLM propone, el código valida** (Pablo, 1-nov): `registrar_promesa_pago` recibe el día acordado con
-el cliente, tal como lo dijo ("el miércoles", "mañana") o en ISO, y el código lo convierte en fecha: en el
+el cliente, tal como lo dijo ("el miércoles", "mañana"; ISO solo se tolera, el LLM no la calcula), y el código lo convierte en fecha: en el
 humo el LLM calculó mal los días de la semana (Claude, 1-nov). La tool la rechaza con motivo si cae
 fuera de la ventana (mañana … hoy + la prórroga máxima de las ofertas elegibles, o la fecha límite de la
 oferta elegida). El monto lo pone siempre el código. Es la única excepción a "solo IDs" de
 [[decisiones#D3 Negociación]]: una fecha acotada, nunca en el texto. Trade-off: el LLM puede proponer una
 fecha que el cliente no dijo; lo mitiga la confirmación con botones ([[decisiones#D22 Confirmación con botones]]).
+Alcance (revisión de Pablo, decidido por Claude, 1-nov): todo cuenta desde hoy; entiende "dentro de N días" y
+días del mes ("el 15": el próximo que no haya pasado). "La próxima semana" o "N días después del vencimiento"
+no se convierten: la tool pide al agente un día concreto del cliente y le prohíbe calcularlo él.
+Tope de mora (Pablo, 1-nov): la prórroga cuenta desde hoy, pero cada oferta tiene `dias_mora_max` y la mora
+al final de la prórroga no lo supera: días = mín(`dias_prorroga`, `dias_mora_max` − días de mora). Si no
+queda ningún día, la oferta no es elegible; la ventana de la promesa usa los mismos días. En el mock, OF-102
+tiene tope de 30 días y OF-103 de 15. Trade-off: la mayoría de reincidentes pierde la prórroga.
 
 ### D33 Perfiles del prototipo
 **Cinco perfiles, tres detallados** (Pablo, 1-nov): olvidadizo, dificultad temporal y mora avanzada (los de
@@ -298,6 +319,24 @@ de Groq o LocalStack, 1-nov; Claude eligió el modelo). LocalStack no emula Guar
 implementa `ApplyGuardrail` y exige el plan Ultimate). Entrada abusiva: respuesta fija y strike; al tercero
 cierra sin humano ([[decisiones#D15 Fallos]]). En la nube lo reemplaza Guardrails ([[decisiones#D4 Guardia de contenido]]).
 Trade-off: su límite gratuito es de 2.000 tokens por minuto (cabeceras de Groq, 1-nov); si falla, el mensaje pasa (no bloquea al cliente).
+
+### D36 Configuración de modelos
+**`config.yaml` + `.env` con `pydantic-settings`** (pedido de Pablo en su revisión, 1-nov): el YAML tiene las
+secciones `dev` (Groq) y `prod` (Bedrock, la completa Pablo en el hito 4) con URL, tiempo de espera y, por
+rol, una lista ordenada de modelos y su `max_tokens`; `LLM_PROVIDER` sigue eligiendo la sección (D7). La key
+es `SecretStr` y, si falta, la configuración no se construye. Alternativas (Claude, 1-nov): si un modelo
+falla (error de la API, cuota, tiempo de espera o respuesta vacía) se pasa al siguiente sin reintentarlo;
+si fallan todos, Strands reintenta solo si fue por cuota y, si no, es un fallo que va a un asesor (D15). En dev el agente cae de gpt-oss-120b a gpt-oss-20b (misma
+familia y otro límite por modelo en Groq); el estratega y el moderador no tienen alternativa. Trade-off: cada
+alternativa obliga a correr los evals con ella.
+
+### D37 Cambio de fecha de corte y varias solicitudes
+**Mover la fecha de pago de cada mes no es un acuerdo** (Pablo, 1-nov; era el pendiente P2): si la oferta de cambio de fecha de
+corte (OF-120) es elegible, el agente la ofrece con su tarjeta; si no, `solicitar_cambio_fecha_corte`
+(requiere verificación) deja un handoff en la cola básica sin cerrar la conversación, y el agente sigue con
+la deuda vencida, que el cambio no resuelve. Si el cliente pide varias cosas, el agente las atiende una por una: primero lo
+que resuelve él y al final lo que va a un asesor, porque escalar cierra la conversación. Trade-off: el
+cliente no sale con el cambio hecho cuando no es elegible.
 
 ## Pendientes
 

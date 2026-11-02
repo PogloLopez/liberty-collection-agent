@@ -5,7 +5,13 @@ import pytest
 
 from agil.agente import tools as tools_mod
 from agil.agente.sesion import Sesion
-from agil.agente.tools import cifras_oferta, crear_tools, prefijo, texto_tarjeta_oferta
+from agil.agente.tools import (
+    CONFIRMA_OFERTA,
+    cifras_oferta,
+    crear_tools,
+    prefijo,
+    texto_tarjeta_oferta,
+)
 from agil.dominio.modelos import Cola, EtiquetaFeedback, FlagMemoria, Segmento, Validacion
 from agil.dominio.reglas.ofertas import condiciones
 
@@ -32,8 +38,8 @@ def tools(repo, sesion, ahora):
     return {t.tool_name: t for t in crear_tools(repo, sesion, ahora)}
 
 
-def test_nueve_tools_sin_customer_id(tools):
-    assert len(tools) == 9
+def test_diez_tools_sin_customer_id(tools):
+    assert len(tools) == 10
     for t in tools.values():
         assert "customer_id" not in t.tool_spec["inputSchema"]["json"].get("properties", {})
 
@@ -152,7 +158,7 @@ def test_escritura_fallida_se_puede_reintentar(tools, repo, monkeypatch):
 
 
 def test_promesa_con_oferta_en_su_fecha_limite(repo, ahora):
-    sesion = _sesion("CL-1152549", Segmento.dificultad_temporal, Cola.basica)
+    sesion = _sesion("CL-1173697", Segmento.dificultad_temporal, Cola.basica)
     t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
     tarde = (repo.fecha_referencia + timedelta(days=5)).isoformat()
     assert sesion.tarjeta is None
@@ -164,7 +170,7 @@ def test_promesa_con_oferta_en_su_fecha_limite(repo, ahora):
     ("oferta_id", "esperado"),
     [
         ("OF-101", "Pago total con link. Total a pagar: $427.89."),
-        ("OF-102", "Total a pagar: $427.89. Fecha límite: miércoles 11 de noviembre."),
+        ("OF-102", "Total a pagar: $76.40. Fecha límite: miércoles 11 de noviembre."),
         ("OF-112", "Plan de 6 cuotas. Paga 6 cuotas: de $71.31 y la última de $71.34."),
         ("OF-120", "Cambio de fecha de corte."),
         ("OF-130", "Descuento de $10.37. Total a pagar: $417.52."),
@@ -175,8 +181,9 @@ def test_promesa_con_oferta_en_su_fecha_limite(repo, ahora):
 )
 def test_texto_tarjeta_por_tipo_de_oferta(repo, oferta_id, esperado):
     oferta = next(o for o in repo.ofertas() if o.oferta_id == oferta_id)
-    texto = texto_tarjeta_oferta(oferta, condiciones(repo, "CL-1140215", oferta))
-    assert texto.startswith(f"{oferta.nombre}.") and texto.endswith(esperado)
+    cid = "CL-1171492" if oferta_id == "OF-102" else "CL-1140215"  # 100 días: sin prórroga
+    texto = texto_tarjeta_oferta(oferta, condiciones(repo, cid, oferta))
+    assert texto.startswith(f"{oferta.nombre}.") and texto.endswith(f"{esperado} {CONFIRMA_OFERTA}")
     if oferta.tipo == "cambio_fecha_corte":
         assert "$" not in texto
 
@@ -209,7 +216,7 @@ def _ventana_abierta(monkeypatch):
 
 def test_promesa_con_oferta_despues_de_su_fecha_limite(repo, ahora, monkeypatch):
     _ventana_abierta(monkeypatch)
-    sesion = _sesion("CL-1152549", Segmento.dificultad_temporal, Cola.basica)
+    sesion = _sesion("CL-1173697", Segmento.dificultad_temporal, Cola.basica)
     t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
     tarde = (repo.fecha_referencia + timedelta(days=6)).isoformat()
     assert "fecha límite" in t["registrar_promesa_pago"](fecha=tarde, oferta_id="OF-102")
@@ -233,6 +240,27 @@ def test_escalar_y_derivar_idempotentes(tools, sesion, repo):
         tools["derivar_solicitud_contacto"](texto="x")
     assert len(repo.handoffs) == 1 and len(repo.solicitudes_no_contacto) == 1
     assert sesion.motivo_cierre == "handoff"  # el primer motivo de cierre se conserva
+
+
+def test_cambio_de_corte_registra_sin_cerrar_y_no_frena_un_escalamiento(tools, sesion, repo):
+    for _ in range(2):
+        assert "sigue con la deuda" in tools["solicitar_cambio_fecha_corte"](texto="al día diez")
+    assert not sesion.cerrada
+    tools["escalar_a_humano"](motivo="pide_humano", resumen="x")
+    assert [(h.motivo, h.cola) for h in repo.handoffs] == [
+        ("cambio_fecha_corte", Cola.basica),
+        ("pide_humano", Cola.especializada),
+    ]
+
+
+def test_cambio_de_corte_con_otro_texto_registra_otra_solicitud(tools, sesion, repo):
+    tools["solicitar_cambio_fecha_corte"](texto="al día diez")
+    tools["solicitar_cambio_fecha_corte"](texto="mejor al día quince")
+    assert [(h.customer_id, h.resumen) for h in repo.handoffs] == [
+        (sesion.customer_id, "al día diez"),
+        (sesion.customer_id, "mejor al día quince"),
+    ]
+    assert len(sesion.escrituras) == 2 and not sesion.cerrada
 
 
 def test_escalar_pide_humano_usa_la_cola_de_la_sesion(tools, repo):
@@ -273,3 +301,32 @@ def test_promesa_con_dia_relativo_usa_la_fecha_de_referencia(repo, ahora):
     t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
     t["registrar_promesa_pago"](fecha="Mañana.")
     assert sesion.tarjeta.fecha == repo.fecha_referencia + timedelta(days=1)
+
+
+def test_promesa_con_plazo_en_dias(repo, ahora):
+    sesion = _sesion("CL-1171492", Segmento.olvidadizo, Cola.basica)
+    t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
+    t["registrar_promesa_pago"](fecha="dentro de 3 días")
+    assert sesion.tarjeta.fecha == repo.fecha_referencia + timedelta(days=3)
+
+
+def test_promesa_ilegible_pide_no_calcular_la_fecha(repo, ahora):
+    sesion = _sesion("CL-1171492", Segmento.olvidadizo, Cola.basica)
+    t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
+    msg = t["registrar_promesa_pago"](fecha="la próxima semana")
+    assert "No la calcules" in msg and "dentro de N días" in msg
+    assert sesion.tarjeta is None
+
+
+def test_consultar_ofertas_calcula_la_cuenta_una_vez(repo, ahora, monkeypatch):
+    from agil.agente import tools
+    from agil.dominio.reglas import ofertas
+
+    llamadas = []
+    original = tools.estado_cuenta
+    for modulo in (tools, ofertas):
+        monkeypatch.setattr(modulo, "estado_cuenta", lambda *a: llamadas.append(a) or original(*a))
+    sesion = _sesion("CL-1140215", Segmento.mora_avanzada, Cola.especializada)
+    t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
+    assert len(t["consultar_ofertas_elegibles"]()["ofertas"]) > 1
+    assert len(llamadas) == 1

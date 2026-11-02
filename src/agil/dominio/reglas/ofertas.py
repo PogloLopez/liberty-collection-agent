@@ -38,6 +38,15 @@ def _monto_base(
     return None
 
 
+def dias_prorroga(oferta: Oferta, estado: EstadoCuenta) -> int:
+    """Días desde hoy, recortados para que la mora total no pase de `dias_mora_max` (D32)."""
+    par = oferta.parametros
+    dias = par.dias_prorroga or 0
+    if par.dias_mora_max is not None:
+        dias = min(dias, par.dias_mora_max - estado.dias_mora)
+    return max(dias, 0)
+
+
 def _motivo_rechazo(
     repo: Repositorio, customer_id: str, segmento: Segmento, oferta: Oferta, estado: EstadoCuenta
 ) -> str | None:
@@ -53,16 +62,22 @@ def _motivo_rechazo(
         return f"La oferta {oid} no aplica: el cliente no tiene cargos sobre los que aplicarla."
     if oferta.aplica_a != "cuenta" and not oferta.monto_min <= monto <= oferta.monto_max:
         return f"La oferta {oid} no aplica: el monto del cliente está fuera de su rango."
+    if oferta.parametros.dias_prorroga and not dias_prorroga(oferta, estado):
+        return f"La oferta {oid} no aplica: el cliente ya supera la mora que admite su prórroga."
     return None
 
 
-def ofertas_elegibles(repo: Repositorio, customer_id: str, segmento: Segmento) -> list[Oferta]:
+def ofertas_elegibles(
+    repo: Repositorio, customer_id: str, segmento: Segmento, estado: EstadoCuenta | None = None
+) -> list[Oferta]:
     """Segmento elegible, vigente y monto base (según `aplica_a`) en [monto_min, monto_max].
 
     `segmento` lo inyecta la sesión desde `segmentar`, nunca el LLM. Incluye las que requieren
     aprobación humana: `validar_oferta` las rechaza para escalar. KeyError si el cliente no existe.
+    `estado` evita recalcular la cuenta si el llamador ya la tiene.
     """
-    estado = estado_cuenta(repo, customer_id)
+    if estado is None:
+        estado = estado_cuenta(repo, customer_id)
     return [
         o for o in repo.ofertas() if _motivo_rechazo(repo, customer_id, segmento, o, estado) is None
     ]
@@ -91,14 +106,17 @@ def _redondear(monto: Decimal, modo: str = ROUND_HALF_UP) -> Decimal:
     return monto.quantize(_CENTAVO, rounding=modo)
 
 
-def condiciones(repo: Repositorio, customer_id: str, oferta: Oferta) -> CondicionesOferta:
+def condiciones(
+    repo: Repositorio, customer_id: str, oferta: Oferta, estado: EstadoCuenta | None = None
+) -> CondicionesOferta:
     """Cifras que el código calcula para la oferta (D28). Llamar solo con ofertas elegibles.
 
     El descuento se calcula sobre lo que queda por pagar (nunca más que el saldo tras los pagos en
     tránsito) y se resta de él, salvo el del cargo mensual, que aplica a las facturas futuras. Las
     cuotas se redondean hacia abajo y la última absorbe los centavos: suman exacto.
     """
-    estado = estado_cuenta(repo, customer_id)
+    if estado is None:
+        estado = estado_cuenta(repo, customer_id)
     base = _monto_base(repo, customer_id, oferta, estado)
     if base is None:
         raise ValueError(f"La oferta {oferta.oferta_id} no aplica a {customer_id}")
@@ -116,9 +134,8 @@ def condiciones(repo: Repositorio, customer_id: str, oferta: Oferta) -> Condicio
     if par.numero_cuotas:
         cuota = _redondear(a_pagar / par.numero_cuotas, ROUND_DOWN)
         ultima = a_pagar - cuota * (par.numero_cuotas - 1)
-    limite = None
-    if par.dias_prorroga:
-        limite = repo.fecha_referencia + timedelta(days=par.dias_prorroga)
+    dias = dias_prorroga(oferta, estado) or None
+    limite = dias and repo.fecha_referencia + timedelta(days=dias)
     return CondicionesOferta(
         oferta_id=oferta.oferta_id,
         monto_base=base,
@@ -128,7 +145,7 @@ def condiciones(repo: Repositorio, customer_id: str, oferta: Oferta) -> Condicio
         numero_cuotas=par.numero_cuotas,
         monto_cuota=cuota,
         monto_ultima_cuota=ultima,
-        dias_prorroga=par.dias_prorroga,
+        dias_prorroga=dias,
         fecha_limite=limite,
     )
 
@@ -137,8 +154,9 @@ def validar_fecha_promesa(
     repo: Repositorio, customer_id: str, segmento: Segmento, fecha: date
 ) -> Validacion:
     """Ventana de la promesa (D32): de mañana a hoy + la prórroga máxima de las elegibles."""
+    estado = estado_cuenta(repo, customer_id)
     maximo = max(
-        (o.parametros.dias_prorroga or 0 for o in ofertas_elegibles(repo, customer_id, segmento)),
+        (dias_prorroga(o, estado) for o in ofertas_elegibles(repo, customer_id, segmento, estado)),
         default=0,
     )
     if not maximo:

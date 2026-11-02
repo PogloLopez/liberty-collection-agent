@@ -1,6 +1,6 @@
 {
   "duda": "Responde la duda en una frase y propón el siguiente paso más simple.",
-  "listo_para_pagar": "No agregues nada: genera el link y compártelo.",
+  "listo_para_pagar": "Si eligió una oferta que aún no confirmó, llama a aceptar_oferta; si no, genera el link y compártelo. No pidas confirmación en texto.",
   "pago_reciente": "No confirmes ni desmientas: consulta el saldo y explica el plazo de aplicación.",
   "objecion_monto": "Reconoce la objeción sin discutir y ofrece la opción menos generosa que reduzca el pago de hoy.",
   "dificultad_economica": "Valida la situación en una frase y propón la prórroga o las cuotas más cortas; pregunta cuándo recibe ingresos.",
