@@ -5,7 +5,7 @@ import asyncio
 import pytest
 from conftest import ModeloGuionado
 from pydantic import ValidationError
-from strands.types.exceptions import ContextWindowOverflowException
+from strands.types.exceptions import ContextWindowOverflowException, ModelThrottledException
 
 from agil.agente import config
 
@@ -98,10 +98,11 @@ def test_respaldo_relanza_el_ultimo_error_si_fallan_todos():
         _texto(config.ConRespaldo([ModeloGuionado(""), _Falla()]))
 
 
-def test_respaldo_no_cambia_de_modelo_si_se_excede_la_ventana():
+@pytest.mark.parametrize("error", [ContextWindowOverflowException, ModelThrottledException("429")])
+def test_respaldo_no_cambia_de_modelo_si_se_excede_la_ventana_o_la_cuota(error):
     siguiente = ModeloGuionado("Hola.")
-    with pytest.raises(ContextWindowOverflowException):
-        _texto(config.ConRespaldo([_Falla(ContextWindowOverflowException), siguiente]))
+    with pytest.raises(type(error) if isinstance(error, Exception) else error):
+        _texto(config.ConRespaldo([_Falla(error), siguiente]))
     assert siguiente.recibido == []
 
 

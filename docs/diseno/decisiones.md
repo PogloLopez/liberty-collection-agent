@@ -326,7 +326,7 @@ Trade-off: su límite gratuito es de 2.000 tokens por minuto (cabeceras de Groq,
 secciones `dev` (Groq) y `prod` (Bedrock, la completa Pablo en el hito 4) con URL, tiempo de espera y, por
 rol, una lista ordenada de modelos y su `max_tokens`; `LLM_PROVIDER` sigue eligiendo la sección (D7). La key
 es `SecretStr` y, si falta, la configuración no se construye. Alternativas (Claude, 1-nov): si un modelo
-falla (error de la API, cuota, tiempo de espera o respuesta vacía) se pasa al siguiente sin reintentarlo;
+falla (error de la API, tiempo de espera o respuesta vacía) se pasa al siguiente sin reintentarlo (la cuota la reintenta Strands con el mismo modelo, [[decisiones#D41 Segunda revisión del demo]]);
 si fallan todos, Strands reintenta solo si fue por cuota y, si no, es un fallo que va a un asesor (D15). En dev el agente cae de gpt-oss-120b a gpt-oss-20b (misma
 familia y otro límite por modelo en Groq); el estratega y el moderador no tienen alternativa. Trade-off: cada
 alternativa obliga a correr los evals con ella.
@@ -384,6 +384,22 @@ persona.
 12. Fallos: hasta 3 intentos por turno; si fallan, texto fijo seguro ("Disculpe, ¿me lo puede
     repetir?"); 3 turnos fallidos seguidos llevan al asesor. Costo en el peor caso: 9 llamadas al agente
     antes del asesor (centavos con Nova).
+
+### D41 Segunda revisión del demo
+**Decidido por Pablo (2-nov) tras probar la app y la repetición de sus conversaciones:**
+1. Ante un 429 de Groq el respaldo no cambia de modelo: Strands espera y reintenta el mismo (el 20b rompía
+   las llamadas a tools y daba "¿me lo puede repetir?"). El 20b queda solo para errores reales.
+   Trade-off: hasta ~1 min de espera en el peor caso; si se agota la cuota diaria, el turno falla igual.
+2. Tras verificar, el aviso pide retomar lo que el cliente ya pidió y en ese turno no corre el estratega.
+3. Al cancelar una oferta, el aviso dice qué queda por ofrecer y prohíbe volver al pago total o a lo
+   rechazado. El agente solo menciona el link después de generarlo.
+4. consultar_ofertas_elegibles dice si hay descuentos y cuántas opciones quedan; si pide descuento y no
+   hay, el agente lo dice. Las ofertas siguen de a una (D3), pero si pregunta si hay más, dice cuántas
+   quedan y, si no quedan, que es todo.
+5. Estratega más estricto: clasifica solo el último mensaje y, si no es claro, "otro" (no inyecta nada);
+   sus tarjetas son sugerencias, no órdenes, y el panel muestra la táctica. Nuevo momento: se niega a pagar.
+6. Objeciones ("no voy a pagar", "no puedo", enojo): reconocer, preguntar qué le pasa o qué le serviría y
+   después proponer la siguiente opción o un asesor; nunca responder una negativa solo con el link.
 
 ## Pendientes
 

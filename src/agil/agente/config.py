@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict, YamlConfigSettingsSource
 from strands.models import Model
 from strands.models.openai import OpenAIModel
-from strands.types.exceptions import ContextWindowOverflowException
+from strands.types.exceptions import ContextWindowOverflowException, ModelThrottledException
 
 from agil.dominio.repositorio.memoria import RAIZ
 
@@ -114,7 +114,9 @@ class ConRespaldo(Model):
             model_id = m.get_config().get("model_id")
             try:
                 eventos = [e async for e in m.stream(messages, tool_specs, system_prompt, **kwargs)]
-            except ContextWindowOverflowException:
+            except (ContextWindowOverflowException, ModelThrottledException):
+                # Strands recorta o reintenta el mismo modelo (D41).
+                trace.get_current_span().add_event("cuota_o_ventana", {"modelo": model_id})
                 raise
             except Exception as e:
                 error, motivo = e, type(e).__name__
