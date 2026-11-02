@@ -418,11 +418,30 @@ y es corto, así que el aviso le pide releer lo que el cliente pidió antes de v
 mensaje de los dígitos), atender lo que quedó pendiente y no repetir lo ya respondido. Trade-off: depende de
 que el modelo relea; si en las pruebas lo sigue ignorando, se citan los mensajes aplazados.
 
+### D44 Repetición contra qwen
+**El agente no anuncia acciones** (Pablo, 2-nov): en la repetición contra qwen3.8-27b el agente decía
+"déjeme revisar su cuenta" y terminaba el turno sin usar la tool (3 de 10 conversaciones). base.md
+prohíbe anunciar: usa la tool en el mismo turno y responde con el resultado. V1–V3 quedan asumidos para
+la demo con las cifras actuales (Pablo, 2-nov).
+
+### D45 Cuotas y pedido de un asesor
+**"Cada cuota de $X" y el segundo pedido de un asesor es fijo** (Pablo, 2-nov):
+1. El agente y la tarjeta muestran solo `monto_cuota`: "y la última de…" seguía confundiendo. La última
+   cuota sigue absorbiendo los centavos en el acuerdo. Trade-off: el texto omite esa diferencia de
+   centavos.
+2. Pedido de un asesor: el primero lo atiende el agente sin ofrecer nada ("Primero cuénteme su
+   inquietud, por favor; es posible que yo se la pueda resolver"); el orquestador cuenta los pedidos
+   (`intenciones.pide_humano`, después de la moderación) y el segundo pasa a un asesor con texto fijo,
+   sin LLM, para no depender del modelo. Si el agente ofreció el asesor y el cliente acepta, escala él
+   con `escalar_a_humano`. El detector exige el verbo junto a la persona ("quiero pagar en persona" no
+   cuenta). Trade-off: dos falsos positivos cierran la conversación con un asesor; un falso negativo lo
+   sigue resolviendo el agente con la tool.
+
 ## Pendientes
 
-- **V1:** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
-- **V2:** saber si el Proyecto de Ley 306 se sancionó. Mientras tanto se adopta como política interna.
-- **V3:** precios vigentes de Nova Lite y Micro. La tabla oficial no se pudo leer; las cifras usadas
+- **V1 (asumido, D44):** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
+- **V2 (asumido, D44):** saber si el Proyecto de Ley 306 se sancionó. Mientras tanto se adopta como política interna.
+- **V3 (asumido, D44):** precios vigentes de Nova Lite y Micro. La tabla oficial no se pudo leer; las cifras usadas
   vienen de un blog de AWS.
 - **P1:** perfiles de los segmentos: plantillas, prompts de tono y tarjetas de estrategia. Se redactan
   durante el desarrollo y Pablo los revisa antes de desplegar.

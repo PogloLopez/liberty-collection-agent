@@ -1,9 +1,9 @@
 """Orquestador de turno (D31): lo que la Lambda router resuelve sin LLM, y luego el agente.
 
 Orden por mensaje: botones (D22) → no contactar explícito (D13) → enmascarar la cédula (D24) →
-moderación (D35) → verificación por código (D5) → contador y estratega (D16) → agente →
-validador con un reintento (D4, D15) → render de placeholders (B4). Lo resuelto sin LLM entra al
-agente como evento resumido en su siguiente turno (D22).
+moderación (D35) → verificación por código (D5) → pedido de asesor (D45) → contador y estratega
+(D16) → agente → validador con un reintento (D4, D15) → render de placeholders (B4). Lo resuelto
+sin LLM entra al agente como evento resumido en su siguiente turno (D22).
 """
 
 import logging
@@ -24,6 +24,7 @@ from agil.agente.perfiles import cargar_perfil, prompt_sistema
 from agil.agente.sesion import (
     MAX_FALLOS_SEGUIDOS,
     MAX_INTENTOS_CEDULA,
+    MAX_PEDIDOS_HUMANO,
     MAX_STRIKES,
     Respuesta,
     Sesion,
@@ -37,7 +38,7 @@ from agil.agente.tools import (
     prefijo,
 )
 from agil.dominio.harness.identidad import enmascarar, extraer_digitos, verificar
-from agil.dominio.harness.intenciones import Boton, pide_no_contacto, sin_sentido
+from agil.dominio.harness.intenciones import Boton, pide_humano, pide_no_contacto, sin_sentido
 from agil.dominio.harness.placeholders import renderizar
 from agil.dominio.harness.texto import sin_tildes
 from agil.dominio.harness.validador import a_whatsapp, validar_salida
@@ -223,6 +224,8 @@ class Orquestador:
                 return self._abuso(sesion)
         if digitos and sesion.cedula_pedida and (fallo := self._verificar(sesion, digitos)):
             return fallo
+        if pide_humano(visible) and (r := self._pide_humano(sesion)):  # tras la moderación (D45)
+            return r
         return self._turno_agente(sesion, f"Cliente: {visible}")
 
     def _turno_agente(self, sesion: Sesion, linea_cliente: str) -> Respuesta:
@@ -633,6 +636,21 @@ class Orquestador:
             ("sistema", "Solicitud de no contacto registrada; WhatsApp pausado.")
         )
         return self._cierre_fijo(sesion, "no_contactar", TEXTOS["no_contactar"])
+
+    def _pide_humano(self, sesion: Sesion) -> Respuesta | None:
+        """Cuenta los pedidos de un asesor; al segundo, handoff con texto fijo (D45)."""
+        sesion.pedidos_humano += 1
+        sesion.paso("Pide un asesor", f"pedido {sesion.pedidos_humano} de {MAX_PEDIDOS_HUMANO}")
+        handoff = sesion.pedidos_humano >= MAX_PEDIDOS_HUMANO
+        trace.get_current_span().add_event(
+            "pide_humano", {"pedido": sesion.pedidos_humano, "handoff": handoff}
+        )
+        if not handoff:
+            return None
+        self._handoff(
+            sesion, "humano", "pide_humano", "El cliente pidió un asesor por segunda vez."
+        )
+        return self._cierre_fijo(sesion, "handoff", TEXTOS["handoff"])
 
     def _sin_sentido(self, sesion: Sesion) -> Respuesta:
         sesion.sin_sentido += 1

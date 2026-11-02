@@ -1108,3 +1108,27 @@ def test_al_cancelar_sin_escalones_el_aviso_manda_a_asesor(repo, ahora):
     aviso = str(agente.recibido[-1][1])
     assert "No quedan opciones más generosas: dilo y ofrece un asesor." in aviso
     assert "Queda por ofrecer" not in aviso
+
+
+def test_primer_pedido_de_asesor_va_al_agente_y_el_segundo_pasa_a_humano(repo, ahora):
+    agente = ModeloGuionado("Con gusto le ayudo yo. ¿Qué necesita?")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    r1 = orq.atender(sesion, "Un asesor por favor")
+    assert not r1.cerrada and len(agente.recibido) == 1
+    assert "Un asesor por favor" in agente.todo_lo_recibido()
+    assert ("Pide un asesor", "pedido 1 de 2") in r1.pasos and repo.handoffs == []
+    r2 = orq.atender(sesion, "quiero hablar con una persona")
+    assert r2.mensajes == [TEXTOS["handoff"]] and r2.cerrada
+    assert sesion.cerrada and sesion.motivo_cierre == "handoff"
+    assert len(agente.recibido) == 1  # el segundo pedido no llama al modelo
+    assert [(h.handoff_id, h.motivo) for h in repo.handoffs] == [("HO-CV-1-humano", "pide_humano")]
+
+
+def test_pedido_de_asesor_abusivo_cuenta_como_strike_y_no_como_pedido(repo, ahora):
+    agente = ModeloGuionado()
+    orq = _orq(repo, ahora, agente, moderador=ModeloGuionado("1"))
+    sesion = orq.iniciar(CID, "CV-1")
+    r = orq.atender(sesion, "quiero un asesor, insulto")
+    assert r.mensajes == [TEXTOS["abuso"]] and sesion.strikes == 1
+    assert sesion.pedidos_humano == 0 and agente.recibido == [] and repo.handoffs == []

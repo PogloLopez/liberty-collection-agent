@@ -51,6 +51,23 @@ def pide_no_contacto(mensaje: str) -> bool:
     return bool(oraciones) and all(_ORACION.match(o) for o in oraciones)
 
 
+# La persona va pegada al verbo: "quiero pagar en persona" o "lo que me dijo el asesor" no cuentan.
+_PERSONA = r"(?:una? )?(?:asesora?|human[oa]|persona|operadora?|ejecutiv[oa]|agente)"
+_CON = rf"(?:con (?:{_PERSONA}|alguien)|a {_PERSONA})"
+_PIDE_HUMANO = re.compile(
+    rf"\b(?:hablar|comunicarme|pasar(?:me)?|pasame|paseme|pasenme|atienda) {_CON}\b"
+    rf"|\b(?:quiero|necesito|deme|denme) {_PERSONA}\b|^{_PERSONA}(?: por favor)?$"
+)
+_NEGADO = re.compile(rf"\bno (?:quiero|necesito) (?:hablar {_CON}|{_PERSONA})\b")
+
+
+def pide_humano(mensaje: str) -> bool:
+    """Pide hablar con un asesor ("quiero hablar con una persona", "un asesor por favor"). Dos
+    pedidos lo pasan a un asesor (D45)."""
+    m = _normalizar(mensaje)
+    return bool(_PIDE_HUMANO.search(m)) and not _NEGADO.search(m)
+
+
 # Palabras frecuentes: si aparece una, el mensaje tiene sentido aunque traiga ruido.
 _COMUNES = frozenset(
     re.findall(

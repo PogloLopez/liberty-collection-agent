@@ -387,9 +387,10 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
 
     @tool
     def escalar_a_humano(motivo: MotivoEscalamiento, resumen: str) -> str:
-        """Pasa la conversación a un asesor y la cierra. Úsala si el cliente pide un humano después
-        de tu primer intento, si pide algo fuera de las ofertas (salvo el cambio de fecha de corte:
-        solicitar_cambio_fecha_corte) o ante una disputa o vulnerabilidad.
+        """Pasa la conversación a un asesor y la cierra. Úsala si el cliente insiste en un humano
+        después de tu primer intento o acepta el asesor que le ofreciste, si pide algo fuera de las
+        ofertas (salvo el cambio de fecha de corte: solicitar_cambio_fecha_corte) o ante una disputa
+        o vulnerabilidad.
 
         Args:
             motivo: por qué se escala.

@@ -11,6 +11,7 @@ from agil.dominio.modelos import Cola, CondicionesOferta, Segmento
 MAX_INTENTOS_CEDULA = 3
 MAX_STRIKES = 3
 MAX_FALLOS_SEGUIDOS = 3  # turnos sin respuesta válida antes de pasar a un asesor (D40)
+MAX_PEDIDOS_HUMANO = 2  # el primero lo intenta resolver el agente; el segundo va a un asesor (D45)
 VIGENCIA_VERIFICACION = timedelta(hours=12)  # o hasta el cierre (Pablo, 1-nov)
 
 
@@ -44,6 +45,7 @@ class Sesion(BaseModel):
     strikes: int = 0
     sin_sentido: int = 0  # mensajes sin sentido seguidos (D40)
     fallos_seguidos: int = 0  # turnos en que el agente no logró una respuesta válida (D40)
+    pedidos_humano: int = 0  # D45
     cerrada: bool = False
     motivo_cierre: str | None = None
     valores: dict[str, str] = Field(default_factory=dict)  # placeholder → cifra ya formateada

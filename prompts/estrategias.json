@@ -10,6 +10,6 @@
   "se_niega_a_pagar": "No respondas con el link. Reconoce lo que siente, pregunta qué le pasa o qué le serviría y, según eso, propón la siguiente opción o un asesor.",
   "enojo": "Baja el tono: reconoce la molestia sin justificarte, en una frase, y ofrece ayuda concreta o un asesor.",
   "disputa": "No discutas la factura: escala a un asesor con motivo disputa.",
-  "pide_humano": "Si ya intentaste ayudar una vez, escala con motivo pide_humano; si no, ofrece resolverlo tú en una frase.",
+  "pide_humano": "No le ofrezcas nada: pídele con calidez que te cuente su inquietud, que quizá tú se la puedas resolver.",
   "conforme": "El cliente ya resolvió: agradece y despídete en una frase. No vuelvas a enviar el link ni ofrezcas nada más."
 }
