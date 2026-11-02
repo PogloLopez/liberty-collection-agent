@@ -70,11 +70,8 @@ def cifras_oferta(c: CondicionesOferta) -> dict[str, str]:
         and formato.porcentaje(c.porcentaje_descuento),
         "monto_descuento": c.monto_descuento and formato.dinero(c.monto_descuento),
         "numero_cuotas": c.numero_cuotas and str(c.numero_cuotas),
+        # Sin la última cuota: "y la última de…" confunde y solo difiere en centavos (D45).
         "monto_cuota": c.monto_cuota and formato.dinero(c.monto_cuota),
-        # Si la última es igual a las demás no se entrega: "y la última de…" confunde (D40).
-        "monto_ultima_cuota": c.monto_ultima_cuota != c.monto_cuota
-        and c.monto_ultima_cuota
-        and formato.dinero(c.monto_ultima_cuota),
         "dias_prorroga": c.dias_prorroga and str(c.dias_prorroga),
         "fecha_limite": c.fecha_limite and formato.fecha(c.fecha_limite),
     }
@@ -91,11 +88,7 @@ def texto_tarjeta_oferta(oferta: Oferta, c: CondicionesOferta) -> str:
             f"Descuento de {formato.porcentaje(c.porcentaje_descuento)} en su cargo mensual."
         )
     if c.numero_cuotas and c.monto_cuota:
-        cuota, ultima = formato.dinero(c.monto_cuota), formato.dinero(c.monto_ultima_cuota)
-        if c.monto_ultima_cuota == c.monto_cuota:
-            partes.append(f"Paga {c.numero_cuotas} cuotas de {cuota}.")
-        else:
-            partes.append(f"Paga {c.numero_cuotas} cuotas: de {cuota} y la última de {ultima}.")
+        partes.append(f"Paga {c.numero_cuotas} cuotas de {formato.dinero(c.monto_cuota)}.")
     elif c.monto_a_pagar > 0 and oferta.tipo != "cambio_fecha_corte":
         partes.append(f"Total a pagar: {formato.dinero(c.monto_a_pagar)}.")
     if c.fecha_limite:

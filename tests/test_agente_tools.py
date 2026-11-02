@@ -171,7 +171,7 @@ def test_promesa_con_oferta_en_su_fecha_limite(repo, ahora):
     [
         ("OF-101", "Pago total con link. Total a pagar: $427.89."),
         ("OF-102", "Total a pagar: $76.40. Fecha límite: miércoles 11 de noviembre."),
-        ("OF-112", "Plan de 6 cuotas. Paga 6 cuotas: de $71.31 y la última de $71.34."),
+        ("OF-112", "Plan de 6 cuotas. Paga 6 cuotas de $71.31."),
         ("OF-120", "Cambio de fecha de corte."),
         ("OF-130", "Descuento de $10.37. Total a pagar: $417.52."),
         ("OF-131", "Descuento de 15% en su cargo mensual. Total a pagar: $427.89."),
@@ -273,12 +273,12 @@ def test_prefijo_de_placeholders():
     assert prefijo("OF-104") == "of_104"
 
 
-def test_tarjeta_muestra_la_ultima_cuota_si_difiere(repo):
+def test_tarjeta_sin_la_ultima_cuota_aunque_difiera(repo):
     from agil.agente.tools import texto_tarjeta_oferta
 
     o = next(o for o in repo.ofertas() if o.oferta_id == "OF-112")
     texto = texto_tarjeta_oferta(o, condiciones(repo, "CL-1140215", o))
-    assert "6 cuotas: de $71.31 y la última de $71.34" in texto
+    assert "Paga 6 cuotas de $71.31." in texto and "última" not in texto
 
 
 def test_promesa_con_el_dia_de_la_semana(repo, ahora):
@@ -332,7 +332,7 @@ def test_consultar_ofertas_calcula_la_cuenta_una_vez(repo, ahora, monkeypatch):
     assert len(llamadas) == 1
 
 
-def test_sin_ultima_cuota_si_es_igual_a_las_demas():
+def test_el_llm_nunca_recibe_la_ultima_cuota():
     from decimal import Decimal
 
     from agil.dominio.modelos import CondicionesOferta
@@ -340,12 +340,11 @@ def test_sin_ultima_cuota_si_es_igual_a_las_demas():
     base = dict(
         oferta_id="OF-111", monto_base=Decimal("9"), monto_a_pagar=Decimal("9"), numero_cuotas=3
     )
-    iguales = CondicionesOferta(**base, monto_cuota=Decimal("3"), monto_ultima_cuota=Decimal("3"))
     distintas = CondicionesOferta(
         **base, monto_cuota=Decimal("2.99"), monto_ultima_cuota=Decimal("3.02")
     )
-    assert "of_111.monto_ultima_cuota" not in cifras_oferta(iguales)
-    assert cifras_oferta(distintas)["of_111.monto_ultima_cuota"] == "$3.02"
+    assert not any("ultima" in k for k in cifras_oferta(distintas))
+    assert cifras_oferta(distintas)["of_111.monto_cuota"] == "$2.99"
 
 
 def test_sin_rechazos_la_lista_vacia_no_manda_a_asesor(tools, sesion, monkeypatch):
