@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proyecto Ágil</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <h1>Proyecto Ágil <span>demo de cobranza por WhatsApp</span></h1>
+    <nav>
+      <button class="pestana activa" data-vista="demo">Conversación</button>
+      <button class="pestana" data-vista="consola">Consola de cartera</button>
+    </nav>
+  </header>
+
+  <main id="demo" class="vista">
+    <section class="controles">
+      <label>Cliente
+        <select id="cliente"></select>
+      </label>
+      <button id="nueve" class="primario">Que sean las 9 AM</button>
+      <span id="estado" class="estado"></span>
+    </section>
+
+    <section class="paneles">
+      <div class="telefono">
+        <div class="cabecera-chat">LLA Panamá · WhatsApp (simulado)</div>
+        <div id="chat" class="chat"><p class="vacio">Elija un cliente y pulse «Que sean las 9 AM».</p></div>
+        <form id="formulario" class="entrada">
+          <input id="texto" autocomplete="off" placeholder="Escriba como el cliente…" disabled>
+          <button id="enviar" disabled>Enviar</button>
+        </form>
+      </div>
+
+      <div class="pipeline">
+        <h2>Recorrido del pipeline</h2>
+        <p class="nota">Pasos reales de cada mensaje: lo determinista decide, el LLM conversa.</p>
+        <ol id="pasos" class="pasos"></ol>
+      </div>
+    </section>
+  </main>
+
+  <main id="consola" class="vista oculta">
+    <section class="tarjetas" id="vivo"></section>
+    <h2>Otros módulos <span class="nota">datos de ejemplo</span></h2>
+    <section class="tarjetas" id="modulos"></section>
+  </main>
+
+  <dialog id="dialogo"><div id="dialogo-cuerpo"></div><form method="dialog"><button>Cerrar</button></form></dialog>
+  <script src="app.js"></script>
+</body>
+</html>
