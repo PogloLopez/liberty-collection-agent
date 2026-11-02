@@ -169,8 +169,18 @@ def test_estratega_inyecta_su_tarjeta(repo, ahora):
     agente = ModeloGuionado()
     orq = _orq(repo, ahora, agente, estratega=ModeloGuionado("pago_reciente"))
     sesion = orq.iniciar(CID, "CV-1")
+    sesion.verificada = True
     orq.atender(sesion, "ya pagué")
     assert "[estrategia: pago_reciente]" in agente.todo_lo_recibido()
+
+
+def test_sin_verificar_no_hay_estratega(repo, ahora):
+    agente, estratega = ModeloGuionado(), ModeloGuionado("evasion")
+    orq = _orq(repo, ahora, agente, estratega=estratega)
+    sesion = orq.iniciar(CID, "CV-1")
+    r = orq.atender(sesion, "hola")
+    assert estratega.recibido == [] and dict(r.pasos)["Estratega"] == "omitido: sin verificar"
+    assert "[estrategia:" not in agente.todo_lo_recibido()
 
 
 def test_tres_strikes_cierran_sin_humano(repo, ahora):
@@ -189,7 +199,7 @@ def test_cierre_por_tool_deja_resumen(repo, ahora):
         ("escalar_a_humano", {"motivo": "pide_humano", "resumen": "Pide asesor."}),
         "Un asesor le escribirá.",
     )
-    estratega = ModeloGuionado("pide_humano", '{"texto": "Pidió un asesor.", "flags": []}')
+    estratega = ModeloGuionado('{"texto": "Pidió un asesor.", "flags": []}')  # sin verificar
     orq = _orq(repo, ahora, agente, estratega=estratega)
     sesion = orq.iniciar(CID, "CV-1")
     r = orq.atender(sesion, "quiero hablar con una persona")
@@ -236,14 +246,14 @@ class ModeloRoto(ModeloGuionado):
 
 def test_cedula_no_llega_al_estratega_ni_al_resumen(repo, ahora):
     agente = ModeloGuionado("¿Me confirma los últimos cuatro dígitos de su cédula?", "Gracias.")
-    estratega = ModeloGuionado("duda", "duda", '{"texto": "Verificó.", "flags": []}')
+    estratega = ModeloGuionado("duda", '{"texto": "Verificó.", "flags": []}')
     orq = _orq(repo, ahora, agente, estratega=estratega)
     sesion = orq.iniciar(CID, "CV-1")
     orq.atender(sesion, "hola")
     orq.atender(sesion, _digitos(repo))
     assert sesion.verificada
     orq.cerrar(sesion, "fin")
-    assert len(estratega.recibido) == 3  # dos estrategias y el resumen
+    assert len(estratega.recibido) == 2  # la estrategia tras verificar y el resumen
     assert _digitos(repo) not in estratega.todo_lo_recibido()
     assert _digitos(repo) not in str(sesion.transcripcion)
 
@@ -802,3 +812,39 @@ def test_fallo_de_cedula_no_gasta_turno_ni_llega_al_agente_y_se_reinicia_al_veri
     sesion.cedula_pedida = True
     r = orq.atender(sesion, malos)
     assert r.mensajes == [TEXTOS["cedula_no_coincide"]] and not sesion.cerrada
+
+
+def test_los_acuerdos_vigentes_llegan_en_cada_turno(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-102"}), "Con gusto.", "Listo.")
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "quiero la prórroga")
+    orq.atender(sesion, boton=Boton.confirmar)
+    orq.atender(sesion, "gracias")
+    orq.atender(sesion, "otra cosa")
+    for _, mensajes in agente.recibido[-2:]:
+        assert "Ya registrado en esta conversación: oferta OF-102 aceptada" in str(mensajes)
+
+
+def test_vencida_la_verificacion_no_se_mandan_los_acuerdos(repo, ahora):
+    reloj = {"t": ahora()}
+    agente = ModeloGuionado(("registrar_promesa_pago", {"fecha": "mañana"}), "Ok.", "Ok.")
+    orq = _orq(repo, lambda: reloj["t"], agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.verificada, sesion.verificada_en = True, reloj["t"]
+    orq.atender(sesion, "le pago mañana")
+    orq.atender(sesion, boton=Boton.confirmar)
+    assert sesion.acuerdos == ["promesa de pago para el sábado 7 de noviembre"]
+    orq.atender(sesion, "gracias")
+    assert "promesa de pago para el sábado" in str(agente.recibido[-1][1])
+    reloj["t"] += timedelta(hours=12)
+    orq.atender(sesion, "hola de nuevo")
+    assert "Ya registrado" not in str(agente.recibido[-1][1])
+
+
+def test_los_acuerdos_sobreviven_a_serializar_la_sesion(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-102"}), "Con gusto.")
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "quiero la prórroga")
+    orq.atender(sesion, boton=Boton.confirmar)
+    reanudada = Sesion.model_validate(json.loads(sesion.model_dump_json()))
+    assert reanudada.acuerdos == ["oferta OF-102 aceptada"]

@@ -40,7 +40,8 @@ Los esquemas de las tools no aceptan parámetros numéricos libres (`monto_descu
 
 ### D5 Verificación de identidad
 **Últimos 4 dígitos de la cédula, pedidos tarde** (Pablo, 30-oct): solo al empezar la negociación, al pedir
-datos puntuales o al registrar un compromiso. Pedirla al inicio ahuyenta al cliente. Implicaciones: la
+datos puntuales o al registrar un compromiso. Pedirla al inicio ahuyenta al cliente (excepción: si el
+cliente solo saluda, [[decisiones#D40 Revisión del demo]]). Implicaciones: la
 plantilla no muestra montos, y un hook cancela las **tools sensibles** con motivo "verificación pendiente"
 ([[framework_strands]]): las marcadas 🔒 en [[tools]] (`consultar_saldo`, `consultar_ofertas_elegibles`, `aceptar_oferta`, `registrar_promesa_pago`, `generar_link_pago`,
 `guardar_nota` y `registrar_feedback_cliente`; un tercero no debe escribir en la cuenta). Sin verificar, el

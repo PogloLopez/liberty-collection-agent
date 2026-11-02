@@ -246,12 +246,19 @@ class Orquestador:
             lineas.append(
                 "[contexto] Quedan pocos turnos: propone cerrar (link, promesa o asesor)."
             )
-        if self.modelos.estratega:
+        if sesion.acuerdos and sesion.verificada:  # vencida la verificación, no se revela (D5)
+            lineas.append(
+                f"[contexto] Ya registrado en esta conversación: {'; '.join(sesion.acuerdos)}. "
+                "No lo vuelvas a ofrecer ni pidas confirmarlo."
+            )
+        if self.modelos.estratega and sesion.verificada:  # sin verificar no hay táctica (D40)
             momento = clasificar_momento(self.modelos.estratega, sesion.transcripcion)
             tarjeta = momento and tarjeta_estrategia(momento)
             sesion.paso("Estratega", momento.value if momento else "sin clasificar")
             if tarjeta:
                 lineas.append(f"[estrategia: {momento.value}] {tarjeta}")
+        elif self.modelos.estratega:
+            sesion.paso("Estratega", "omitido: sin verificar")
         return lineas
 
     def _invocar(self, sesion: Sesion, mensaje: str) -> str | None:
@@ -509,6 +516,7 @@ class Orquestador:
                     creada=self.ahora(),
                 )
             )
+            sesion.acuerdos.append(f"oferta {tarjeta.oferta_id} aceptada")
         else:
             self.repo.guardar_promesa(
                 PromesaPago(
@@ -520,6 +528,9 @@ class Orquestador:
                     creada=self.ahora(),
                 )
             )
+            # La fecha va escrita: el agente puede leer cifras, no escribirlas, y un placeholder
+            # compartido lo pisaría la siguiente tarjeta.
+            sesion.acuerdos.append(f"promesa de pago para el {formato.fecha(tarjeta.fecha)}")
         sesion.escrituras.add(sufijo)
 
     def _no_contactar(self, sesion: Sesion, texto: str) -> Respuesta:
