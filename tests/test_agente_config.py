@@ -148,3 +148,10 @@ def test_respaldo_propaga_la_config_a_todos_y_lee_la_del_primero():
     respaldo.update_config(max_tokens=7)
     assert a.cfg["max_tokens"] == b.cfg["max_tokens"] == 7
     assert respaldo.get_config()["model_id"] == "a"
+
+
+@pytest.mark.parametrize("valor", [True, False])
+def test_modo_demo_lo_pisa_el_entorno(env, monkeypatch, valor):
+    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    monkeypatch.setenv("MODO_DEMO", str(valor).lower())
+    assert _cfg(env).modo_demo is valor

@@ -13,8 +13,8 @@ CID = "CL-1171492"
 
 @pytest.fixture
 def cliente(repo):
-    def crear(*guion):
-        return TestClient(crear_app(repo, Modelos(agente=ModeloGuionado(*guion))))
+    def crear(*guion, modo_demo=False):
+        return TestClient(crear_app(repo, Modelos(agente=ModeloGuionado(*guion)), modo_demo))
 
     return crear
 
@@ -85,6 +85,11 @@ def test_campana_bloqueada_no_abre_conversacion(cliente):
     assert len(http.get("/api/cartera").json()["conversaciones"]) == 1
 
 
+def test_modo_demo_abre_otra_conversacion_con_el_mismo_cliente(cliente):
+    http = cliente(modo_demo=True)
+    assert _abrir(http) != _abrir(http)
+
+
 def test_sirve_el_frontend(cliente):
     http = cliente()
     assert "Proyecto Ágil" in http.get("/").text
@@ -113,3 +118,14 @@ def test_mensaje_sin_texto_da_422(cliente):
     http = cliente()
     cv = _abrir(http)
     assert http.post(f"/api/conversaciones/{cv}/mensajes", json={}).status_code == 422
+
+
+def test_sin_modelos_lee_modo_demo_de_la_config(repo, monkeypatch):
+    from types import SimpleNamespace
+
+    import agil.app.api as api
+
+    monkeypatch.setattr(api, "Configuracion", lambda: SimpleNamespace(modo_demo=True))
+    monkeypatch.setattr(api, "crear_modelos", lambda cfg: Modelos(agente=ModeloGuionado()))
+    http = TestClient(crear_app(repo))
+    assert _abrir(http) != _abrir(http)

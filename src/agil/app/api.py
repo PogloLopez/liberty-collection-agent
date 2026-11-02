@@ -12,7 +12,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from agil.agente.config import Modelos, crear_modelos
+from agil.agente.config import Configuracion, Modelos, crear_modelos
 from agil.agente.orquestador import Orquestador
 from agil.agente.sesion import Respuesta, Sesion
 from agil.app.campana import que_sean_las_9
@@ -37,9 +37,15 @@ class Toque(BaseModel):
     boton: Boton
 
 
-def crear_app(repo: RepositorioMemoria | None = None, modelos: Modelos | None = None) -> FastAPI:
+def crear_app(
+    repo: RepositorioMemoria | None = None, modelos: Modelos | None = None, modo_demo: bool = False
+) -> FastAPI:
+    """Sin modelos, los crea desde `config.yaml` y `.env`, que también dicen si es modo demo."""
+    if modelos is None:
+        cfg = Configuracion()
+        modelos, modo_demo = crear_modelos(cfg), cfg.modo_demo
     repo = repo or RepositorioMemoria()
-    orq = Orquestador(repo, modelos or crear_modelos())
+    orq = Orquestador(repo, modelos)
     sesiones: dict[str, Sesion] = {}
     candado = threading.Lock()  # un turno a la vez: el orquestador muta la sesión y el repo
     app = FastAPI(title="Proyecto Ágil")
@@ -67,7 +73,9 @@ def crear_app(repo: RepositorioMemoria | None = None, modelos: Modelos | None = 
             raise HTTPException(404, "Cliente no encontrado")
         with candado:
             conversacion_id = f"CV-{len(sesiones) + 1:03d}"
-            envio = que_sean_las_9(orq, c.customer_id, conversacion_id, repo.fecha_referencia)
+            envio = que_sean_las_9(
+                orq, c.customer_id, conversacion_id, repo.fecha_referencia, modo_demo
+            )
             if envio.sesion:
                 sesiones[conversacion_id] = envio.sesion
             return {

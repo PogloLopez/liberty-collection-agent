@@ -42,6 +42,7 @@ class Configuracion(BaseSettings):
 
     llm_provider: Literal["groq", "bedrock"] = "groq"
     groq_api_key: SecretStr | None = None
+    modo_demo: bool = False  # sin el tope de un contacto por día (D38)
     dev: Entorno
     prod: Entorno
 

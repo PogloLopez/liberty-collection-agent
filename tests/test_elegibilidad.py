@@ -78,3 +78,12 @@ def test_cliente_inexistente_lanza_key_error():
         elegible_para_contacto(REPO, "CL-0000000")
     with pytest.raises(KeyError):
         puede_enviar_ahora(REPO, "CL-0000000", _pa(2026, 11, 6, 9, 0))
+
+
+def test_sin_tope_diario_permite_otro_contacto_el_mismo_dia():
+    assert puede_enviar_ahora(REPO, "CL-1171492", _pa(2026, 11, 4, 15, 0), tope_diario=False).ok
+
+
+def test_sin_tope_diario_sigue_rechazando_fuera_de_horario_y_no_elegibles():
+    assert not puede_enviar_ahora(REPO, "CL-1171492", _pa(2026, 11, 6, 18, 0), tope_diario=False).ok
+    assert not puede_enviar_ahora(REPO, "CL-1125516", _pa(2026, 11, 6, 9, 0), tope_diario=False).ok

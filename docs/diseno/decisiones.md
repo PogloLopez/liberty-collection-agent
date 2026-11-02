@@ -346,6 +346,9 @@ segmento: una sola plantilla inicial por segmento en `prompts/plantillas.json`, 
 pendiente", sin gravedad ni segmento, D5); la secuencia con reintentos queda para el hito 4. Las sesiones y los datos viven en la memoria del proceso (repositorio en memoria). Dependencias:
 `fastapi` y `uvicorn`; `httpx` solo en dev, para el cliente de pruebas. DynamoDB (con LocalStack), Step
 Functions, Mangum y CDK quedan para el hito 4. Trade-off: el hito 4 trae más piezas nuevas.
+Modo demo (Pablo, 1-nov): `modo_demo: true` en `config.yaml` (o `MODO_DEMO`) quita solo el tope de un
+contacto por día, para que el evaluador repita pruebas con el mismo cliente; los demás filtros siguen.
+En producción va en false.
 
 ### D39 El agente se identifica
 **Liberty, y asistente virtual** (Pablo, 1-nov): la plantilla dice "le escribe Liberty" y el agente, en su

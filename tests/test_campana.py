@@ -70,10 +70,15 @@ def test_plantillas_neutras_sin_gravedad_segmento_ni_montos(segmento):
     assert not re.search(r"\d", texto)
 
 
-def test_contacto_id_unico_por_cliente_y_dia(orq, repo):
-    for cid in DEMO[:2]:
-        que_sean_las_9(orq, cid, f"CV-{cid}", repo.fecha_referencia)
-    ids = [
-        c.contacto_id for cid in DEMO[:2] for c in repo.contactos(cid) if c.campana_id == "CP-DEMO"
-    ]
-    assert ids == [f"CT-{cid}-{repo.fecha_referencia:%Y%m%d}" for cid in DEMO[:2]]
+def test_modo_demo_permite_repetir_el_mismo_cliente_el_mismo_dia(orq, repo):
+    hoy = repo.fecha_referencia
+    for cv in ("CV-1", "CV-2"):
+        envio = que_sean_las_9(orq, DEMO[0], cv, hoy, modo_demo=True)
+        assert envio.sesion and "modo demo" in dict(envio.pasos)["Filtro de contacto"]
+    ids = [c.contacto_id for c in repo.contactos(DEMO[0]) if c.campana_id == "CP-DEMO"]
+    assert ids == ["CT-CV-1", "CT-CV-2"]
+
+
+def test_modo_demo_no_quita_los_demas_filtros(orq, repo):
+    envio = que_sean_las_9(orq, "CL-1125516", "CV-1", repo.fecha_referencia, modo_demo=True)
+    assert envio.sesion is None and "grupo" in dict(envio.pasos)["Filtro de contacto"]

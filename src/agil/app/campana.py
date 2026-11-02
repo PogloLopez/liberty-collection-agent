@@ -31,20 +31,26 @@ def plantilla(segmento: str, nombre: str) -> tuple[str, str]:
     return p["id"], p["texto"].format(nombre=nombre.split()[0])
 
 
-def que_sean_las_9(orq: Orquestador, customer_id: str, conversacion_id: str, hoy: date) -> Envio:
+def que_sean_las_9(
+    orq: Orquestador, customer_id: str, conversacion_id: str, hoy: date, modo_demo: bool = False
+) -> Envio:
     """Un span por envío, sin el texto ni el nombre del cliente."""
     with _tracer.start_as_current_span("agil.campana") as span:
-        envio = _enviar(orq, customer_id, conversacion_id, hoy)
+        envio = _enviar(orq, customer_id, conversacion_id, hoy, modo_demo)
         span.set_attribute("session.id", conversacion_id)
+        span.set_attribute("agil.modo_demo", modo_demo)
         span.set_attribute("agil.enviado", envio.sesion is not None)
         return envio
 
 
-def _enviar(orq: Orquestador, customer_id: str, conversacion_id: str, hoy: date) -> Envio:
+def _enviar(
+    orq: Orquestador, customer_id: str, conversacion_id: str, hoy: date, modo_demo: bool
+) -> Envio:
     repo = orq.repo
     momento = datetime.combine(hoy, time(9), ZONA)
-    v = puede_enviar_ahora(repo, customer_id, momento)
-    pasos = [("Disparador", "las 9 AM (simulado)"), ("Filtro de contacto", v.motivo or "aprobado")]
+    v = puede_enviar_ahora(repo, customer_id, momento, tope_diario=not modo_demo)
+    filtro = v.motivo or ("aprobado (modo demo: sin tope diario)" if modo_demo else "aprobado")
+    pasos = [("Disparador", "las 9 AM (simulado)"), ("Filtro de contacto", filtro)]
     if not v.ok:
         return Envio(pasos=pasos)
     seg = segmentar(repo, customer_id)
@@ -53,7 +59,7 @@ def _enviar(orq: Orquestador, customer_id: str, conversacion_id: str, hoy: date)
     sesion = orq.iniciar(customer_id, conversacion_id, texto)
     repo.guardar_contacto(
         Contacto(
-            contacto_id=f"CT-{customer_id}-{hoy:%Y%m%d}",  # único: un contacto por día
+            contacto_id=f"CT-{conversacion_id}",
             customer_id=customer_id,
             campana_id=CAMPANA_ID,
             fecha=momento,
