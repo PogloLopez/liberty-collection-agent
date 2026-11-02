@@ -18,6 +18,8 @@ _CEDULA = re.compile(
 _FECHA = re.compile(r"[0-9]{1,2}-(?:0?[1-9]|1[0-2])-(?:19|20)[0-9]{2}", re.ASCII)
 # Dígitos sueltos separados solo por espacios ("2 9 0 8"); punto y guion son montos o fechas.
 _GRUPO = re.compile(r"[0-9](?: ?[0-9])*", re.ASCII)
+# Con la cédula pedida, un mensaje de solo 4 dígitos con separadores ("13-85") es un intento.
+_SOLO_CUATRO = re.compile(r"[0-9](?:[ .-]?[0-9]){3}", re.ASCII)
 
 
 def ultimos_cuatro(cedula: str) -> str:
@@ -25,11 +27,14 @@ def ultimos_cuatro(cedula: str) -> str:
     return re.sub(r"[^0-9]", "", cedula)[-4:]
 
 
-def extraer_digitos(mensaje: str) -> str | None:
+def extraer_digitos(mensaje: str, pedida: bool = False) -> str | None:
     """Los 4 dígitos si el mensaje es un intento de verificación; None si no.
 
-    "1500" es ambiguo: el router solo la usa mientras espera la verificación.
+    "1500" es ambiguo: el router solo la usa mientras espera la verificación. Con `pedida`, también
+    acepta un mensaje que es solo 4 dígitos separados por espacio, guion o punto (D40).
     """
+    if pedida and _SOLO_CUATRO.fullmatch(mensaje.strip()):
+        return re.sub(r"[^0-9]", "", mensaje)
     cedulas = [c for c in _CEDULA.findall(mensaje) if not _FECHA.fullmatch(c)]
     if len(cedulas) == 1:
         return ultimos_cuatro(cedulas[0])

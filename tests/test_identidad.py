@@ -50,6 +50,20 @@ def test_extraer_digitos(mensaje, esperado):
     assert extraer_digitos(mensaje) == esperado
 
 
+@pytest.mark.parametrize(
+    ("mensaje", "esperado"),
+    [
+        ("13-85", "1385"),
+        ("2.9.0.8", "2908"),
+        (" 2 9-0.8 ", "2908"),
+        ("13-855", None),
+        ("hola", None),
+    ],
+)
+def test_extraer_digitos_con_la_cedula_pedida_acepta_separadores(mensaje, esperado):
+    assert extraer_digitos(mensaje, pedida=True) == esperado
+
+
 def test_verificar():
     cliente = RepositorioMemoria().clientes()[0]
     correcto = ultimos_cuatro(cliente.cedula)

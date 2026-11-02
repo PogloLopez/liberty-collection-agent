@@ -154,3 +154,23 @@ def test_punto_sin_espacio_no_es_url():
 )
 def test_a_whatsapp(entrada, esperado):
     assert a_whatsapp(entrada) == esperado
+
+
+@pytest.mark.parametrize(
+    ("texto", "ok"),
+    [
+        ("Puede pagar en 3 cuotas de {{of_111.monto_cuota}}.", True),
+        ("Le ofrezco tres cuotas sin recargo.", True),
+        ("Tiene cinco días de plazo.", True),
+        ("Le doy 6 cuotas.", False),  # no coincide con ninguna oferta consultada
+        ("Pague 3 hoy.", False),  # sin "cuotas" ni "días" sigue siendo una cifra
+        ("Tiene 3 días.", False),  # 3 es de cuotas, no de días
+        ("Le doy 5 cuotas.", False),
+        ("Le doy 13 cuotas.", False),
+        ("Son Tres Cuotas.", True),
+        ("Son 3.5 cuotas.", False),
+    ],
+)
+def test_cuotas_y_dias_que_coinciden_con_una_oferta(texto, ok):
+    numeros = {"cuota": frozenset({3}), "dia": frozenset({5})}
+    assert validar_salida(texto, {"of_111.monto_cuota"}, MAX, numeros).ok is ok
