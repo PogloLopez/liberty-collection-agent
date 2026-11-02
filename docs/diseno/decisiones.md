@@ -475,6 +475,21 @@ despliegue.
 Trade-off: en producción habría que pasar el reloj real al orquestador; en la demo la vigencia de 12 h
 de la verificación no se alcanza (la cubren los tests con un reloj propio).
 
+### D48 Imágenes con uv
+**Las dos imágenes instalan con uv desde `uv.lock`, en dos etapas** (Pablo, 2-nov): la primera trae `uv`
+fijado (`ghcr.io/astral-sh/uv:0.8.14`, la versión de desarrollo) e instala las dependencias congeladas sin
+los grupos `dev` ni `infra`; la final copia solo el resultado y el código. Ya no existe un
+`requirements` exportado que pudiera desactualizarse. Antes de desplegar, la guía prueba los dos builds en
+local. Trade-off: la imagen de Lambda exporta del lock e instala con `--target`, porque Lambda busca los
+paquetes en `${LAMBDA_TASK_ROOT}` y no en un entorno virtual.
+
+### D49 Concurrencia de la API
+**Sin concurrencia reservada** (Pablo, 2-nov): la cuenta tiene una cuota de 10 ejecuciones
+concurrentes (`get-account-settings`), y Lambda solo deja reservar si quedan al menos 100 sin reservar
+(guía de Lambda, 2-nov). Esa cuota ya es el tope: nunca hay más de 10 Lambdas a la vez en toda la cuenta.
+Junto con el código de acceso, acota el costo de un abuso del link. Trade-off: la API comparte la cuota
+con los pasos de la campaña; con el tráfico de una evaluación sobra.
+
 ## Pendientes
 
 - **V1 (asumido, D44):** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).

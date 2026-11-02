@@ -66,7 +66,8 @@ El rango por corrida incluye la memoria de sesiones que quedan abiertas sin uso.
   capacidad reservada. Sin VPC privada, sin endpoints y sin capacidad reservada. Una llave KMS propia o un
   secreto suman centavos.
 - **Recursos que se olvidan:** `cdk destroy` al terminar.
-- **Abuso del link:** código de acceso + throttling en API Gateway.
+- **Abuso del link:** código de acceso + la cuota de 10 Lambdas concurrentes de la cuenta como tope
+  ([[decisiones#D49 Concurrencia de la API]]).
 
 La alarma de presupuesto de USD 10 sigue activa. Antes de desplegar, Pablo confirma las cifras en la
 calculadora de AWS.
