@@ -461,6 +461,11 @@ def test_confirmar_promesa_con_link_reusado_no_lo_anuncia(repo, ahora):
     assert "la confirmación y el link de pago" not in recibido
 
 
+def test_negrita_markdown_sale_como_negrita_de_whatsapp(repo, ahora):
+    orq, sesion = _verificada(repo, ahora, ModeloGuionado("Toque **Confirmar**."))
+    assert orq.atender(sesion, "hola").mensajes == ["Toque *Confirmar*."]
+
+
 def test_texto_con_tarjeta_pendiente_avisa_al_agente(repo, ahora):
     agente = ModeloGuionado(("registrar_promesa_pago", {"fecha": "mañana"}), "Elija en la tarjeta.")
     orq, sesion = _verificada(repo, ahora, agente)

@@ -4,7 +4,7 @@ import unicodedata
 import pytest
 
 from agil.dominio.harness.placeholders import placeholders_en
-from agil.dominio.harness.validador import validar_salida
+from agil.dominio.harness.validador import a_whatsapp, validar_salida
 from agil.dominio.repositorio.memoria import DATOS_MOCK
 
 MAX = 400
@@ -139,3 +139,18 @@ def test_tildes_en_forma_nfd_se_bloquean():
 
 def test_punto_sin_espacio_no_es_url():
     assert validar_salida("Gracias.Hoy le escribo.", set(), MAX).ok
+
+
+@pytest.mark.parametrize(
+    ("entrada", "esperado"),
+    [
+        ("Toque **Confirmar**.", "Toque *Confirmar*."),
+        ("**Uno** y **dos**", "*Uno* y *dos*"),
+        ("Pague **{{monto_total}}** hoy", "Pague *{{monto_total}}* hoy"),
+        ("Ya en *negrita* de WhatsApp", "Ya en *negrita* de WhatsApp"),
+        ("Asterisco * suelto y ** doble suelto", "Asterisco * suelto y ** doble suelto"),
+        ("Sin formato", "Sin formato"),
+    ],
+)
+def test_a_whatsapp(entrada, esperado):
+    assert a_whatsapp(entrada) == esperado

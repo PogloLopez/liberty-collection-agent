@@ -47,6 +47,14 @@ _REGLAS = [
 ]
 
 
+_NEGRITA = re.compile(r"\*\*(.+?)\*\*")
+
+
+def a_whatsapp(texto: str) -> str:
+    """'**x**' (Markdown) → '*x*' (negrita de WhatsApp)."""
+    return _NEGRITA.sub(r"*\1*", texto)
+
+
 def validar_salida(
     texto: str, placeholders_permitidos: set[str], max_caracteres: int
 ) -> Validacion:

@@ -27,7 +27,7 @@ from agil.dominio.harness.identidad import enmascarar, extraer_digitos, verifica
 from agil.dominio.harness.intenciones import Boton, pide_no_contacto
 from agil.dominio.harness.placeholders import renderizar
 from agil.dominio.harness.texto import sin_tildes
-from agil.dominio.harness.validador import validar_salida
+from agil.dominio.harness.validador import a_whatsapp, validar_salida
 from agil.dominio.modelos import (
     AceptacionOferta,
     Cola,
@@ -208,7 +208,7 @@ class Orquestador:
             return Respuesta(tarjeta=tarjeta)
         if _PIDE_CEDULA.search(sin_tildes(texto)) and not sesion.verificada:
             sesion.cedula_pedida = True
-        final = renderizar(texto, sesion.valores)
+        final = renderizar(a_whatsapp(texto), sesion.valores)
         sesion.transcripcion.append(("agente", texto))
         if sesion.cerrada:
             self.cerrar(sesion, sesion.motivo_cierre or "agente")
