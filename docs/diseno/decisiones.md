@@ -330,6 +330,14 @@ si fallan todos, Strands reintenta solo si fue por cuota y, si no, es un fallo q
 familia y otro límite por modelo en Groq); el estratega y el moderador no tienen alternativa. Trade-off: cada
 alternativa obliga a correr los evals con ella.
 
+### D37 Cambio de fecha de corte y varias solicitudes
+**Mover la fecha de pago de cada mes no es un acuerdo** (Pablo, 1-nov; era el pendiente P2): si la oferta de cambio de fecha de
+corte (OF-120) es elegible, el agente la ofrece con su tarjeta; si no, `solicitar_cambio_fecha_corte`
+(requiere verificación) deja un handoff en la cola básica sin cerrar la conversación, y el agente sigue con
+la deuda vencida, que el cambio no resuelve. Si el cliente pide varias cosas, el agente las atiende una por una: primero lo
+que resuelve él y al final lo que va a un asesor, porque escalar cierra la conversación. Trade-off: el
+cliente no sale con el cambio hecho cuando no es elegible.
+
 ## Pendientes
 
 - **V1:** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
@@ -338,7 +346,5 @@ alternativa obliga a correr los evals con ella.
   vienen de un blog de AWS.
 - **P1:** perfiles de los segmentos: plantillas, prompts de tono y tarjetas de estrategia. Se redactan
   durante el desarrollo y Pablo los revisa antes de desplegar.
-- **P2:** qué es "la fecha de pago regular" en "N días después de la fecha de pago" (vencimiento de la
-  factura más antigua o fecha de corte). Mientras tanto la tool pide un día concreto (D32).
 
 Las ideas de [[feedback_estudio]] quedaron en D22, D23 y D24.

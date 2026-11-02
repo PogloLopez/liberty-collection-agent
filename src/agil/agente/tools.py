@@ -1,4 +1,4 @@
-"""Las 9 tools del agente (tools.md). El `customer_id` y el segmento salen de la sesión: ninguna
+"""Las 10 tools del agente (tools.md). El `customer_id` y el segmento salen de la sesión: ninguna
 tool los recibe del LLM. Las cifras vuelven junto al placeholder que el LLM debe escribir (D28)."""
 
 import hashlib
@@ -39,6 +39,7 @@ SENSIBLES = frozenset(
         "generar_link_pago",
         "guardar_nota",
         "registrar_feedback_cliente",
+        "solicitar_cambio_fecha_corte",
     }
 )
 URL_PAGOS = "https://pagos.liberty.example/l/"
@@ -322,9 +323,36 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
         return "Solicitud registrada y conversación cerrada. Despídete en una frase."
 
     @tool
+    def solicitar_cambio_fecha_corte(texto: str) -> str:
+        """El cliente quiere que su factura venza otro día de cada mes y la oferta de cambio de
+        fecha de corte no está entre sus ofertas: registra la solicitud para un asesor (cola básica)
+        sin cerrar la conversación.
+
+        Args:
+            texto: lo que pidió el cliente, con el día que quiere, sin datos de la cédula.
+        """
+        if handoff_id := nuevo_id("HO", "corte", texto):
+            repo.guardar_handoff(
+                Handoff(
+                    handoff_id=handoff_id,
+                    customer_id=cid,
+                    cola=Cola.basica,
+                    motivo="cambio_fecha_corte",
+                    resumen=texto,
+                    creado=ahora(),
+                )
+            )
+            sesion.escrituras.add(handoff_id)
+        return (
+            "Solicitud registrada: un asesor gestionará el cambio. Díselo al cliente sin prometer "
+            "tiempos y sigue con la deuda vencida: el cambio no la resuelve."
+        )
+
+    @tool
     def escalar_a_humano(motivo: MotivoEscalamiento, resumen: str) -> str:
         """Pasa la conversación a un asesor y la cierra. Úsala si el cliente pide un humano después
-        de tu primer intento, si pide algo fuera de las ofertas o ante una disputa o vulnerabilidad.
+        de tu primer intento, si pide algo fuera de las ofertas (salvo el cambio de fecha de corte:
+        solicitar_cambio_fecha_corte) o ante una disputa o vulnerabilidad.
 
         Args:
             motivo: por qué se escala.
@@ -359,5 +387,6 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
         guardar_nota,
         registrar_feedback_cliente,
         derivar_solicitud_contacto,
+        solicitar_cambio_fecha_corte,
         escalar_a_humano,
     ]

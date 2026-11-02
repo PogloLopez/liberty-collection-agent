@@ -136,6 +136,7 @@ _ARGS_SENSIBLES = {
     "generar_link_pago": {},
     "guardar_nota": {"texto": "x", "flags": []},
     "registrar_feedback_cliente": {"texto": "x", "etiquetas": []},
+    "solicitar_cambio_fecha_corte": {"texto": "x"},
 }
 
 
@@ -151,7 +152,12 @@ def test_cada_tool_sensible_se_cancela_sin_verificar(repo, ahora, nombre):
     _agente(repo, sesion, ahora, modelo)("hola")
     assert any(VERIFICACION_PENDIENTE in r for r in _resultados_de_tools(modelo))
     assert sesion.tarjeta is None and sesion.valores == {} and sesion.escrituras == set()
-    assert repo.links == [] and repo.feedbacks == [] and len(repo.notas("CL-1140215")) == notas
+    assert (
+        repo.links == []
+        and repo.feedbacks == []
+        and repo.handoffs == []
+        and len(repo.notas("CL-1140215")) == notas
+    )
 
 
 def test_contador_de_pasos_se_reinicia_cada_turno(repo, ahora):

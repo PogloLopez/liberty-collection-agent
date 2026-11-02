@@ -38,8 +38,8 @@ def tools(repo, sesion, ahora):
     return {t.tool_name: t for t in crear_tools(repo, sesion, ahora)}
 
 
-def test_nueve_tools_sin_customer_id(tools):
-    assert len(tools) == 9
+def test_diez_tools_sin_customer_id(tools):
+    assert len(tools) == 10
     for t in tools.values():
         assert "customer_id" not in t.tool_spec["inputSchema"]["json"].get("properties", {})
 
@@ -240,6 +240,27 @@ def test_escalar_y_derivar_idempotentes(tools, sesion, repo):
         tools["derivar_solicitud_contacto"](texto="x")
     assert len(repo.handoffs) == 1 and len(repo.solicitudes_no_contacto) == 1
     assert sesion.motivo_cierre == "handoff"  # el primer motivo de cierre se conserva
+
+
+def test_cambio_de_corte_registra_sin_cerrar_y_no_frena_un_escalamiento(tools, sesion, repo):
+    for _ in range(2):
+        assert "sigue con la deuda" in tools["solicitar_cambio_fecha_corte"](texto="al día diez")
+    assert not sesion.cerrada
+    tools["escalar_a_humano"](motivo="pide_humano", resumen="x")
+    assert [(h.motivo, h.cola) for h in repo.handoffs] == [
+        ("cambio_fecha_corte", Cola.basica),
+        ("pide_humano", Cola.especializada),
+    ]
+
+
+def test_cambio_de_corte_con_otro_texto_registra_otra_solicitud(tools, sesion, repo):
+    tools["solicitar_cambio_fecha_corte"](texto="al día diez")
+    tools["solicitar_cambio_fecha_corte"](texto="mejor al día quince")
+    assert [(h.customer_id, h.resumen) for h in repo.handoffs] == [
+        (sesion.customer_id, "al día diez"),
+        (sesion.customer_id, "mejor al día quince"),
+    ]
+    assert len(sesion.escrituras) == 2 and not sesion.cerrada
 
 
 def test_escalar_pide_humano_usa_la_cola_de_la_sesion(tools, repo):

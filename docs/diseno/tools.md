@@ -23,6 +23,7 @@ verificación de cédula ([[decisiones#D5 Verificación de identidad]]).
 | `guardar_nota` 🔒 | Texto libre + flags de catálogo cerrado ([[memoria]]) | Sí |
 | `registrar_feedback_cliente` 🔒 | Texto libre + etiquetas (`queja_servicio`, `queja_precio`, `quiere_cancelar`…) | Sí |
 | `derivar_solicitud_contacto` | El cliente pide no ser contactado: deriva al área de atención, cierra la conversación y pausa WhatsApp ([[decisiones#D13 No contactar]]) | Sí |
+| `solicitar_cambio_fecha_corte` 🔒 | Handoff a la cola básica sin cerrar la conversación, cuando la oferta de cambio de corte no es elegible ([[decisiones#D37 Cambio de fecha de corte y varias solicitudes]]) | Sí |
 | `escalar_a_humano` | Handoff a la cola que corresponda, con resumen y motivo ([[decisiones#D17 Colas de escalamiento]]) | Sí |
 
 Los montos nunca pasan por el texto del LLM: llegan por placeholders ([[decisiones#Base]], B4). Los esquemas
