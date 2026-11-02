@@ -688,7 +688,7 @@ def test_pasos_de_verificacion_correcta_y_fallida(repo, ahora):
     sesion.cedula_pedida = True
     malos = "0000" if _digitos(repo) != "0000" else "1111"
     fallida = dict(orq.atender(sesion, malos).pasos)
-    assert fallida["Verificación de cédula"] == "fallida (intento 1 de 3)"
+    assert fallida["Verificación de cédula"] == "fallida (intento 1 de 3); texto fijo"
     pasos = orq.atender(sesion, f"es {_digitos(repo)}").pasos
     nombres = [n for n, _ in pasos]
     assert nombres[:3] == ["Datos enmascarados", "Moderación", "Verificación de cédula"]
@@ -742,3 +742,63 @@ def test_pasos_de_la_verificacion_vencida_dentro_del_hook(repo, ahora):
     nombres = [n for n, _ in orq.atender(sesion, "¿cuánto debo?").pasos]
     i = nombres.index("Verificación vencida")
     assert nombres[i + 1] == "Tool consultar_saldo" and not sesion.verificada
+
+
+def test_cedula_con_guiones_cuenta_y_el_fallo_tiene_texto_fijo(repo, ahora):
+    agente = ModeloGuionado("Gracias.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.cedula_pedida = True
+    d = _digitos(repo)
+    malos = "0000" if d != "0000" else "1111"
+    for intento in (1, 2):
+        r = orq.atender(sesion, f"{malos[:2]}-{malos[2:]}")
+        assert r.mensajes == [TEXTOS["cedula_no_coincide"]] and not r.cerrada
+        assert sesion.intentos_cedula == intento and agente.recibido == []
+    r = orq.atender(sesion, f"{d[:2]}.{d[2:]}")
+    assert sesion.verificada and r.mensajes == ["Gracias."]
+
+
+def test_tercer_fallo_de_cedula_pasa_a_un_asesor(repo, ahora):
+    orq = _orq(repo, ahora, ModeloGuionado())
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.cedula_pedida = True
+    malos = "0000" if _digitos(repo) != "0000" else "1111"
+    for _ in range(3):
+        r = orq.atender(sesion, malos)
+    assert r.mensajes == [TEXTOS["cedula_bloqueada"]] and r.cerrada
+    assert [h.motivo for h in repo.handoffs] == ["verificacion_fallida"]
+
+
+def test_el_intento_de_cedula_solo_cuenta_justo_despues_de_pedirla(repo, ahora):
+    agente = ModeloGuionado("¿Me da los cuatro dígitos de su cédula?", "Entendido.", "Ok.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "hola")
+    assert sesion.cedula_pedida
+    orq.atender(sesion, "prefiero no darla")  # el agente no la pide otra vez
+    orq.atender(sesion, "15-02")
+    assert sesion.intentos_cedula == 0 and not sesion.verificada
+
+
+def test_fallo_de_cedula_no_gasta_turno_ni_llega_al_agente_y_se_reinicia_al_verificar(repo, ahora):
+    reloj = [ahora()]
+    agente = ModeloGuionado("Gracias.", "Listo.")
+    orq = _orq(repo, lambda: reloj[0], agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    d = _digitos(repo)
+    malos = "0000" if d != "0000" else "1111"
+    sesion.cedula_pedida = True
+    for _ in range(2):
+        orq.atender(sesion, malos)
+    assert sesion.turno == 0 and agente.recibido == []
+    orq.atender(sesion, d)
+    assert sesion.verificada and sesion.intentos_cedula == 0 and sesion.turno == 1
+    recibido = agente.todo_lo_recibido()
+    assert malos not in recibido and TEXTOS["cedula_no_coincide"] not in recibido
+    reloj[0] += timedelta(hours=12)  # vence: vuelve a tener tres intentos
+    orq.atender(sesion, "hola")
+    assert not sesion.verificada
+    sesion.cedula_pedida = True
+    r = orq.atender(sesion, malos)
+    assert r.mensajes == [TEXTOS["cedula_no_coincide"]] and not sesion.cerrada

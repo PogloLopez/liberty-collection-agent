@@ -355,6 +355,30 @@ En producción va en false.
 primera respuesta, se presenta como el asistente virtual de Liberty; si le preguntan, aclara que no es una
 persona.
 
+### D40 Revisión del demo
+**Decidido por Pablo tras probar la app (1-nov):**
+1. Sin estratega antes de verificar. Si el cliente solo saluda, el agente se presenta, dice por qué le
+   escribe y pide los cuatro dígitos para darle el detalle; no menciona ofertas sin verificar.
+2. En el demo, cuando el agente pide la cédula, aparece a la izquierda del chat un globo tipo cómic con los
+   cuatro dígitos del cliente; desaparece con el siguiente mensaje y vuelve si el agente los pide de nuevo.
+3. Verificación: mientras se espera la cédula, se aceptan 4 dígitos separados por espacio, guion o punto.
+   Un intento fallido recibe un texto fijo (no coinciden; escríbalos sin puntos ni guiones).
+4. Asesor solo tras el tercer intento fallido, con texto fijo.
+5. Cada turno lleva una línea [contexto] con los acuerdos vigentes (oferta aceptada, promesa); el agente no
+   los vuelve a ofrecer.
+6. La barra del demo muestra con alto contraste "Hoy en la demo: viernes 6 de noviembre de 2026".
+7. El agente responde primero lo que el cliente pregunta y pide los dígitos solo para dar datos de la
+   cuenta; el prompt trae respuestas aprobadas a preguntas frecuentes (de dónde sale el número, si es
+   oficial, cómo dejar de recibir mensajes).
+8. El validador acepta un número junto a "cuotas" o "días" si coincide con una oferta ya consultada.
+9. Si la última cuota es igual a las demás, no se entrega su placeholder.
+10. Escalera de ofertas en el código: de menos a más generosa; lo cancelado o rechazado queda registrado y
+    solo se ofrecen las más generosas; sin más escalones, el agente lo dice y propone un asesor.
+11. Mensajes sin sentido: un detector determinista responde un texto fijo sin LLM; al tercero seguido,
+    cierre sin humano.
+12. Fallos: hasta 3 intentos por turno; si fallan, texto fijo seguro; 3 turnos fallidos seguidos llevan al
+    asesor.
+
 ## Pendientes
 
 - **V1:** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
