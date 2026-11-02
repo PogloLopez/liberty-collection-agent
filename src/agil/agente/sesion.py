@@ -65,6 +65,7 @@ class Sesion(BaseModel):
         self.verificada = False
         self.verificada_en = None
         self.valores.clear()
+        self.condiciones.clear()
         self.tarjeta = None
         return True
 

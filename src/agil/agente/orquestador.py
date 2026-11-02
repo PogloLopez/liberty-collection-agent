@@ -10,6 +10,7 @@ import logging
 import re
 from collections.abc import Callable
 from datetime import datetime
+from decimal import Decimal
 
 from opentelemetry import trace
 from strands import Agent
@@ -20,7 +21,7 @@ from agil.agente.config import Modelos
 from agil.agente.hooks import RESPUESTA_TOPE, Controles
 from agil.agente.perfiles import cargar_perfil, prompt_sistema
 from agil.agente.sesion import MAX_INTENTOS_CEDULA, MAX_STRIKES, Respuesta, Sesion
-from agil.agente.tools import crear_tools
+from agil.agente.tools import cifras_oferta, cifras_saldo, crear_tools, prefijo
 from agil.dominio.harness.identidad import enmascarar, extraer_digitos, verificar
 from agil.dominio.harness.intenciones import Boton, pide_no_contacto
 from agil.dominio.harness.placeholders import renderizar
@@ -29,6 +30,7 @@ from agil.dominio.harness.validador import validar_salida
 from agil.dominio.modelos import (
     AceptacionOferta,
     Cola,
+    EstadoCuenta,
     Handoff,
     Nota,
     PromesaPago,
@@ -36,7 +38,9 @@ from agil.dominio.modelos import (
     SolicitudNoContacto,
     Validacion,
 )
+from agil.dominio.reglas.calculos import estado_cuenta
 from agil.dominio.reglas.calendario import ZONA
+from agil.dominio.reglas.ofertas import condiciones, ofertas_elegibles
 from agil.dominio.reglas.segmentacion import segmentar
 from agil.dominio.repositorio.interfaz import Repositorio
 
@@ -146,15 +150,16 @@ class Orquestador:
     def _atender(self, sesion: Sesion, texto: str, boton: Boton | None) -> Respuesta:
         if sesion.cerrada:
             return Respuesta(cerrada=True)
-        if boton:
-            return self._boton(sesion, boton)
-        if pide_no_contacto(texto):
-            return self._no_contactar(sesion, texto)
-        if sesion.vencer_verificacion(self.ahora()):
+        if sesion.vencer_verificacion(self.ahora()):  # también ante un botón: anula la tarjeta
             sesion.eventos.append(
                 "[sistema] La verificación venció (12 horas): pide de nuevo los cuatro dígitos "
                 "antes de dar datos de la cuenta."
             )
+        self._refrescar_cifras(sesion)
+        if boton:
+            return self._boton(sesion, boton)
+        if pide_no_contacto(texto):
+            return self._no_contactar(sesion, texto)
         if sesion.tarjeta:  # T2: escribió en vez de tocar un botón; la tarjeta sigue vigente
             trace.get_current_span().add_event("tarjeta_pendiente")
             sesion.eventos.append(
@@ -299,6 +304,66 @@ class Orquestador:
         return agente, controles
 
     # --- Lo que resuelve el código ---
+
+    def _refrescar_cifras(self, sesion: Sesion) -> None:
+        """Recalcula las cifras ya mostradas al llegar cada mensaje: entre mensajes una carga pudo
+        aplicar un pago (H3). La oferta ya aceptada no cambia: es un acuerdo registrado. Una tarjeta
+        pendiente cuyo monto cambió se anula."""
+        if not sesion.valores:
+            return
+        cid = sesion.customer_id
+        e = estado_cuenta(self.repo, cid)
+        antes = dict(sesion.valores)
+        if "saldo_vencido" in sesion.valores:
+            sesion.valores.update(cifras_saldo(self.repo, e))
+        aceptada = sesion.oferta_aceptada and sesion.oferta_aceptada.oferta_id
+        abiertas = [oid for oid in sesion.condiciones if oid != aceptada]
+        elegibles = (
+            {o.oferta_id: o for o in ofertas_elegibles(self.repo, cid, sesion.segmento, e)}
+            if abiertas
+            else {}
+        )
+        retiradas = []
+        for oferta_id in abiertas:
+            o = elegibles.get(oferta_id)
+            nuevas = o and condiciones(self.repo, cid, o, e)
+            if nuevas == sesion.condiciones[oferta_id]:
+                continue
+            p = f"{prefijo(oferta_id)}."
+            sesion.valores = {k: v for k, v in sesion.valores.items() if not k.startswith(p)}
+            if nuevas:
+                sesion.condiciones[oferta_id] = nuevas
+                sesion.valores.update(cifras_oferta(nuevas))
+            else:
+                del sesion.condiciones[oferta_id]
+                retiradas.append(oferta_id)
+        if sesion.valores == antes:
+            return
+        evento = "[sistema] La cuenta del cliente cambió (p. ej. se aplicó un pago): cifras al día."
+        if retiradas:
+            evento += f" Ya no aplican: {', '.join(retiradas)}."
+        tarjeta = sesion.tarjeta
+        if tarjeta and tarjeta.monto != self._monto_actual(sesion, tarjeta.oferta_id, e):
+            sesion.tarjeta = None
+            evento += f" Se anuló la tarjeta pendiente ({tarjeta.descripcion})."
+        trace.get_current_span().add_event(
+            "cifras_actualizadas",
+            {
+                "retiradas": len(retiradas),
+                "tarjeta_anulada": tarjeta is not None and sesion.tarjeta is None,
+            },
+        )
+        sesion.eventos.append(evento)
+
+    @staticmethod
+    def _monto_actual(sesion: Sesion, oferta_id: str | None, e: EstadoCuenta) -> Decimal | None:
+        """Lo que hoy respalda una tarjeta: su oferta, la aceptada o el saldo (monto_a_cobrar)."""
+        if oferta_id:
+            c = sesion.condiciones.get(oferta_id)
+            return c and c.primer_pago
+        if sesion.oferta_aceptada:
+            return sesion.oferta_aceptada.primer_pago
+        return e.saldo_tras_transito
 
     def _verificar(self, sesion: Sesion, digitos: str) -> None:
         """El número nunca llega al LLM; solo el resultado (D24)."""

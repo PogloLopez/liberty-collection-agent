@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 from conftest import ModeloGuionado
@@ -10,6 +10,8 @@ from agil.agente.sesion import Sesion
 from agil.agente.tools import CONFIRMA_PROMESA
 from agil.dominio.harness.identidad import ultimos_cuatro
 from agil.dominio.harness.intenciones import Boton
+from agil.dominio.modelos import Pago
+from agil.dominio.reglas.calculos import estado_cuenta
 
 CID = "CL-1171492"  # olvidadizo, con prórroga de 5 días
 
@@ -452,3 +454,102 @@ def test_reintento_por_salida_invalida_puede_terminar_con_tarjeta(repo, ahora):
     r = orq.atender(sesion, "le pago mañana")
     assert r.mensajes == [] and r.tarjeta is not None and not r.cerrada
     assert "dólares" not in json.dumps(sesion.historial, ensure_ascii=False)
+
+
+def _pago_en_transito(repo, monto):
+    factura = estado_cuenta(repo, CID).facturas_vencidas[0]
+    repo._pagos.append(
+        Pago(
+            pago_id="PG-H3",
+            factura_id=factura.factura_id,
+            customer_id=CID,
+            fecha=datetime.combine(repo.fecha_referencia, datetime.min.time()).astimezone(),
+            monto=monto,
+            canal="app",
+            estado="en_transito",
+        )
+    )
+
+
+def test_un_pago_entre_mensajes_actualiza_cifras_y_anula_la_tarjeta(repo, ahora):
+    agente = ModeloGuionado(
+        ("consultar_saldo", {}),
+        ("registrar_promesa_pago", {"fecha": "mañana"}),
+        "Veo su pago.",
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "le pago mañana")
+    assert sesion.tarjeta is not None and sesion.valores["saldo_tras_transito"] == "$76.40"
+    _pago_en_transito(repo, "76.40")
+    orq.atender(sesion, "ya pagué")
+    assert sesion.tarjeta is None and sesion.valores["saldo_tras_transito"] == "$0.00"
+    recibido = agente.todo_lo_recibido()
+    assert "La cuenta del cliente cambió" in recibido and "Se anuló la tarjeta" in recibido
+
+
+def test_una_oferta_que_deja_de_aplicar_se_retira(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-102"}), "Entendido.")
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "quiero la prórroga")
+    _pago_en_transito(repo, "76.40")
+    r = orq.atender(sesion, boton=Boton.confirmar)  # llega tarde: ya no hay nada que aceptar
+    assert r.mensajes == [TEXTOS["sin_tarjeta"]] and repo.aceptaciones == []
+    assert "OF-102" not in sesion.condiciones
+    assert not any(k.startswith("of_102.") for k in sesion.valores)
+    assert any("Ya no aplican: OF-102" in e for e in sesion.eventos)  # llega en el próximo turno
+
+
+def test_sin_cambios_en_la_cuenta_no_hay_aviso(repo, ahora):
+    agente = ModeloGuionado(("consultar_saldo", {}), "Su saldo es {{saldo_vencido}}.", "Ok.")
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "¿cuánto debo?")
+    orq.atender(sesion, "ok")
+    assert "La cuenta del cliente cambió" not in agente.todo_lo_recibido()
+
+
+def test_la_oferta_aceptada_no_se_recalcula_tras_el_pago(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-102"}), ("generar_link_pago", {}), "Listo.", "Ok."
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "quiero la prórroga")
+    orq.atender(sesion, boton=Boton.confirmar)
+    cifras = {k: v for k, v in sesion.valores.items() if k.startswith("of_102.")}
+    _pago_en_transito(repo, "76.40")
+    orq.atender(sesion, "ya pagué")
+    assert "OF-102" in sesion.condiciones
+    assert {k: v for k, v in sesion.valores.items() if k.startswith("of_102.")} == cifras
+    assert "Ya no aplican" not in agente.todo_lo_recibido()
+
+
+def test_boton_tras_vencer_la_verificacion_no_registra(repo, ahora):
+    reloj = {"t": ahora()}
+    agente = ModeloGuionado(("registrar_promesa_pago", {"fecha": "mañana"}))
+    orq = _orq(repo, lambda: reloj["t"], agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.verificada, sesion.verificada_en = True, reloj["t"]
+    orq.atender(sesion, "le pago mañana")
+    reloj["t"] += timedelta(hours=12)
+    r = orq.atender(sesion, boton=Boton.confirmar)
+    assert r.mensajes == [TEXTOS["sin_tarjeta"]] and repo.promesas == []
+    assert not sesion.condiciones and not sesion.valores
+
+
+def test_la_tarjeta_sigue_si_su_monto_no_cambio(repo, ahora):
+    agente = ModeloGuionado(
+        ("aceptar_oferta", {"oferta_id": "OF-102"}),
+        ("consultar_saldo", {}),
+        ("registrar_promesa_pago", {"fecha": "mañana"}),
+        "Veo su abono.",
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "quiero la prórroga")
+    orq.atender(sesion, boton=Boton.confirmar)
+    orq.atender(sesion, "le pago mañana")
+    tarjeta, saldo = sesion.tarjeta, sesion.valores["saldo_tras_transito"]
+    assert tarjeta is not None and tarjeta.monto == sesion.oferta_aceptada.primer_pago
+    _pago_en_transito(repo, "10.00")
+    orq.atender(sesion, "aboné algo")
+    assert sesion.valores["saldo_tras_transito"] != saldo and sesion.tarjeta == tarjeta
+    recibido = agente.todo_lo_recibido()
+    assert "La cuenta del cliente cambió" in recibido and "Se anuló la tarjeta" not in recibido

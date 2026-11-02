@@ -99,6 +99,22 @@ def texto_tarjeta_oferta(oferta: Oferta, c: CondicionesOferta) -> str:
     return " ".join(partes)
 
 
+def cifras_saldo(repo: Repositorio, e: EstadoCuenta) -> dict[str, str]:
+    """Placeholders de consultar_saldo (sin llaves) → cifra formateada."""
+    valores = {
+        "saldo_vencido": formato.dinero(e.saldo_vencido),
+        "dias_mora": str(e.dias_mora),
+        "monto_en_transito": formato.dinero(e.monto_en_transito),
+        "saldo_tras_transito": formato.dinero(e.saldo_tras_transito),
+        "plazo_aplicacion": repo.parametros["plazo_aplicacion_pago"],
+    }
+    if e.facturas_vencidas:
+        antigua = min(e.facturas_vencidas, key=lambda f: f.fecha_vencimiento)
+        valores["periodo_factura"] = formato.periodo(antigua.periodo)
+        valores["fecha_vencimiento"] = formato.fecha(antigua.fecha_vencimiento)
+    return valores
+
+
 def _generosidad(o: Oferta) -> tuple:
     """De menos a más generosa (D28): el agente sube un escalón a la vez."""
     p = o.parametros
@@ -142,17 +158,7 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
     def consultar_saldo() -> dict:
         """Saldo vencido, días de mora, factura más antigua y pagos en tránsito del cliente."""
         e = estado_cuenta(repo, cid)
-        valores = {
-            "saldo_vencido": formato.dinero(e.saldo_vencido),
-            "dias_mora": str(e.dias_mora),
-            "monto_en_transito": formato.dinero(e.monto_en_transito),
-            "saldo_tras_transito": formato.dinero(e.saldo_tras_transito),
-            "plazo_aplicacion": repo.parametros["plazo_aplicacion_pago"],
-        }
-        if e.facturas_vencidas:
-            antigua = min(e.facturas_vencidas, key=lambda f: f.fecha_vencimiento)
-            valores["periodo_factura"] = formato.periodo(antigua.periodo)
-            valores["fecha_vencimiento"] = formato.fecha(antigua.fecha_vencimiento)
+        valores = cifras_saldo(repo, e)
         sesion.valores.update(valores)
         return {
             "cifras": _con_llaves(valores),

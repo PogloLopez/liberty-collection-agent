@@ -278,6 +278,9 @@ el bucle y responde un texto fijo. La tarjeta se basta sola: dice qué se confir
 ella termina el turno, sin otra llamada al modelo (`agent.cancel`). Si el cliente escribe con una tarjeta
 pendiente, el agente recibe un aviso [sistema] y la tarjeta sigue vigente. Si el agente pide confirmar en
 texto, el código le pide una vez usar la tool; si la corrección no sirve, se envía la respuesta original.
+Las cifras ya mostradas se recalculan al llegar cada mensaje (entre mensajes pudo aplicarse un pago): si
+cambian, el agente recibe un aviso, las ofertas que dejaron de aplicar se retiran y una tarjeta pendiente con
+otras cifras se anula.
 
 ### D32 Fecha de la promesa
 **El LLM propone, el código valida** (Pablo, 1-nov): `registrar_promesa_pago` recibe el día acordado con
