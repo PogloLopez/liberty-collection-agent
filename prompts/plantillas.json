@@ -1,0 +1,22 @@
+{
+  "olvidadizo": {
+    "id": "recordatorio_amable_v2",
+    "texto": "Hola {nombre}, ¿cómo está? Su factura de este mes ya venció. Responda este mensaje si quiere que lo veamos juntos."
+  },
+  "dificultad_temporal": {
+    "id": "aviso_saldo_opciones_v1",
+    "texto": "Hola {nombre}, su cuenta tiene un saldo pendiente. Tenemos opciones para ayudarle a ponerse al día; responda este mensaje y lo vemos juntos."
+  },
+  "mora_avanzada": {
+    "id": "aviso_mora_avanzada_v2",
+    "texto": "{nombre}, su cuenta tiene un saldo pendiente. Queremos ayudarle a resolverlo; responda este mensaje."
+  },
+  "reincidente": {
+    "id": "recordatorio_compromiso_v1",
+    "texto": "{nombre}, le recordamos que su factura sigue pendiente. Respóndanos para buscar una opción."
+  },
+  "valioso_churn": {
+    "id": "aviso_cliente_preferente_v1",
+    "texto": "Hola {nombre}, le recordamos que su factura quedó pendiente. Responda este mensaje si podemos ayudarle."
+  }
+}
