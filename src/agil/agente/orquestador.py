@@ -24,7 +24,7 @@ from agil.agente.perfiles import cargar_perfil, prompt_sistema
 from agil.agente.sesion import MAX_INTENTOS_CEDULA, MAX_STRIKES, Respuesta, Sesion
 from agil.agente.tools import cifras_oferta, cifras_saldo, crear_tools, link_pago, prefijo
 from agil.dominio.harness.identidad import enmascarar, extraer_digitos, verificar
-from agil.dominio.harness.intenciones import Boton, pide_no_contacto
+from agil.dominio.harness.intenciones import Boton, pide_no_contacto, sin_sentido
 from agil.dominio.harness.placeholders import renderizar
 from agil.dominio.harness.texto import sin_tildes
 from agil.dominio.harness.validador import a_whatsapp, validar_salida
@@ -56,6 +56,10 @@ TEXTOS = {
     "fallo": "Disculpe, tuve un inconveniente. Un asesor continuará la conversación con usted.",
     "handoff": "Un asesor continuará la conversación con usted. Gracias por su paciencia.",
     "sin_tarjeta": "Esa opción ya no está disponible.",
+    "sin_sentido": "No entendí su mensaje. ¿Me lo escribe de nuevo?",
+    "sin_sentido_cierre": (
+        "Vamos a cerrar esta conversación por ahora. Si necesita ayuda, escríbanos."
+    ),
     "cedula_no_coincide": (
         "Esos dígitos no coinciden con los de la cuenta. Revíselos y escríbalos de nuevo: solo los "
         "cuatro números, sin puntos ni guiones."
@@ -176,10 +180,12 @@ class Orquestador:
         if sesion.tarjeta:  # T2: escribió en vez de tocar un botón; la tarjeta sigue vigente
             trace.get_current_span().add_event("tarjeta_pendiente")
             sesion.paso("Tarjeta pendiente", "escribió sin tocar los botones")
-            sesion.eventos.append(
+            aviso = (
                 "[sistema] El cliente escribió sin responder la tarjeta pendiente "
                 f"({sesion.tarjeta.descripcion})."
             )
+            if aviso not in sesion.eventos:
+                sesion.eventos.append(aviso)
 
         # Ninguna cédula llega a un modelo; sin verificar, ningún dígito (D24). Solo cuenta como
         # intento si el agente la pidió ("1500" es ambiguo).
@@ -189,6 +195,9 @@ class Orquestador:
         if visible != texto:
             sesion.paso("Datos enmascarados", "ningún dígito de la cédula llega a un modelo")
 
+        if not digitos and sin_sentido(visible):  # antes de cualquier modelo (D40)
+            return self._sin_sentido(sesion)
+        sesion.sin_sentido = 0
         if self.modelos.moderador:
             abusivo = es_abusivo(self.modelos.moderador, visible)
             sesion.paso("Moderación", "abusivo" if abusivo else "sin problemas")
@@ -558,6 +567,15 @@ class Orquestador:
             ("sistema", "Solicitud de no contacto registrada; WhatsApp pausado.")
         )
         return self._cierre_fijo(sesion, "no_contactar", TEXTOS["no_contactar"])
+
+    def _sin_sentido(self, sesion: Sesion) -> Respuesta:
+        sesion.sin_sentido += 1
+        trace.get_current_span().add_event("sin_sentido", {"seguidos": sesion.sin_sentido})
+        sesion.paso("Sin sentido", f"texto fijo, sin LLM ({sesion.sin_sentido} de {MAX_STRIKES})")
+        if sesion.sin_sentido >= MAX_STRIKES:
+            return self._cierre_fijo(sesion, "sin_sentido", TEXTOS["sin_sentido_cierre"])
+        sesion.transcripcion.append(("agente", TEXTOS["sin_sentido"]))
+        return Respuesta(mensajes=[TEXTOS["sin_sentido"]])
 
     def _abuso(self, sesion: Sesion) -> Respuesta:
         sesion.strikes += 1

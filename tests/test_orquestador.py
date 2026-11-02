@@ -949,3 +949,35 @@ def test_el_cambio_de_corte_sigue_tras_rechazar_todo(repo, ahora):
     resultados = str(agente.recibido[-1][1])
     assert "OF-120" in resultados and "No quedan opciones más generosas" in resultados
     assert sesion.tarjeta is not None and sesion.tarjeta.oferta_id == "OF-120"
+
+
+def test_tres_mensajes_sin_sentido_cierran_sin_llm(repo, ahora):
+    agente = ModeloGuionado("Hola.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    assert orq.atender(sesion, "oipuhwegpubqwpiugbw").mensajes == [TEXTOS["sin_sentido"]]
+    assert orq.atender(sesion, "hola").mensajes == ["Hola."]  # un mensaje válido reinicia
+    orq.atender(sesion, "weoinphpiuwebnhw")
+    orq.atender(sesion, "oiuneiurbhgqeihgbqwegh")
+    r = orq.atender(sesion, "opnpi9uqwebggqg")
+    assert r.mensajes == [TEXTOS["sin_sentido_cierre"]] and r.cerrada
+    assert len(agente.recibido) == 1 and repo.handoffs == [] and sesion.turno == 1
+
+
+def test_cedula_con_ruido_sin_sentido_verifica(repo, ahora):
+    agente = ModeloGuionado("Gracias.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.cedula_pedida = True
+    r = orq.atender(sesion, f"{_digitos(repo)} oipuhwegpub")
+    assert sesion.verificada and sesion.sin_sentido == 0 and r.mensajes == ["Gracias."]
+
+
+def test_sin_sentido_con_tarjeta_pendiente_no_duplica_el_aviso(repo, ahora):
+    agente = ModeloGuionado(("registrar_promesa_pago", {"fecha": "mañana"}), "Elija en la tarjeta.")
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "le pago mañana")
+    for teclazo in ("oipuhwegpubqwpiugbw", "weoinphpiuwebnhw"):
+        assert orq.atender(sesion, teclazo).mensajes == [TEXTOS["sin_sentido"]]
+    orq.atender(sesion, "¿y si mejor el viernes?")
+    assert agente.todo_lo_recibido().count("sin responder la tarjeta pendiente") == 1

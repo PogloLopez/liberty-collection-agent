@@ -41,6 +41,7 @@ class Sesion(BaseModel):
     cedula_pedida: bool = False
     intentos_cedula: int = 0
     strikes: int = 0
+    sin_sentido: int = 0  # mensajes sin sentido seguidos (D40)
     cerrada: bool = False
     motivo_cierre: str | None = None
     valores: dict[str, str] = Field(default_factory=dict)  # placeholder → cifra ya formateada

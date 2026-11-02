@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from agil.dominio.harness.intenciones import Boton, pide_no_contacto
+from agil.dominio.harness.intenciones import Boton, pide_no_contacto, sin_sentido
 from agil.dominio.repositorio.memoria import DATOS_MOCK
 
 
@@ -132,3 +132,25 @@ def test_preguntas_van_al_agente(mensaje):
 def test_vacio_o_solo_cortesia_no_pausa(mensaje):
     """Sin ninguna oración explícita no hay no-contacto."""
     assert not pide_no_contacto(mensaje)
+
+
+@pytest.mark.parametrize(
+    ("mensaje", "esperado"),
+    [
+        ("oipuhwegpubqwpiugbw", True),
+        ("weoinphpiuwebnhw", True),
+        ("keloke", False),
+        ("instrucciones", False),
+        ("sí, el miércoles", False),
+        ("2291", False),
+        ("???", False),
+        ("hola sdfghjkl", False),  # trae una palabra frecuente
+        ("pfff", False),
+        ("mmmm", False),
+        ("Hmmm entiendo", False),
+        ("le paso el comprobante https://www.facebook.com/foto", False),
+        ("electroencefalografistas", False),
+    ],
+)
+def test_sin_sentido(mensaje, esperado):
+    assert sin_sentido(mensaje) is esperado
