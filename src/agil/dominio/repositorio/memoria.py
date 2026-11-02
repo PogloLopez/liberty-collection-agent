@@ -87,6 +87,10 @@ class RepositorioMemoria:
     def ofertas(self) -> list[Oferta]:
         return list(self._ofertas)
 
+    def escrituras(self, clave: str) -> list:
+        """Lo que escribió el agente ("handoffs", "promesas"...), en orden de escritura."""
+        return list(getattr(self, clave))
+
     def guardar_contacto(self, contacto: Contacto) -> None:
         self._contactos.append(contacto)
 

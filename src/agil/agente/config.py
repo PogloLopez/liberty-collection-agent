@@ -1,18 +1,19 @@
 """Modelos del agente según `config.yaml` y `.env` (D7, D26, D36).
 
-Solo el proveedor local (Groq, vía su API compatible con OpenAI): el de la nube (Bedrock) lo
-configura Pablo en el hito 4 y no cambia tools, hooks ni prompts. Las variables de entorno pisan al
-`.env`.
+En local, Groq vía su API compatible con OpenAI; en la nube, Bedrock con Guardrails (D46). Cambiar
+de proveedor no cambia tools, hooks ni prompts. Las variables de entorno pisan al `.env`.
 """
 
 import logging
 from dataclasses import dataclass
 from typing import Literal, Self
 
+from botocore.config import Config
 from opentelemetry import trace
 from pydantic import BaseModel, Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict, YamlConfigSettingsSource
 from strands.models import Model
+from strands.models.bedrock import BedrockModel
 from strands.models.openai import OpenAIModel
 from strands.types.exceptions import ContextWindowOverflowException, ModelThrottledException
 
@@ -29,6 +30,7 @@ class Rol(BaseModel):
 class Entorno(BaseModel):
     proveedor: Literal["groq", "bedrock"]
     url: str | None = None
+    region: str | None = None
     timeout_s: float
     agente: Rol
     estratega: Rol | None = None
@@ -43,6 +45,8 @@ class Configuracion(BaseSettings):
     llm_provider: Literal["groq", "bedrock"] = "groq"
     groq_api_key: SecretStr | None = None
     modo_demo: bool = False  # sin el tope de un contacto por día (D38)
+    guardrail_id: str | None = None  # los pone el stack en la nube (D4, D24, D46)
+    guardrail_version: str | None = None
     dev: Entorno
     prod: Entorno
 
@@ -154,20 +158,44 @@ def _groq(cfg: Configuracion, entorno: Entorno, model_id: str, max_tokens: int) 
     )
 
 
+def _bedrock(
+    cfg: Configuracion, entorno: Entorno, model_id: str, max_tokens: int, guardia: bool
+) -> BedrockModel:
+    """Guardrails solo en el agente y solo sobre el mensaje nuevo (`guardContent`, D24)."""
+    extra = {}
+    if guardia and cfg.guardrail_id:
+        extra = {
+            "guardrail_id": cfg.guardrail_id,
+            "guardrail_version": cfg.guardrail_version,
+            "guardrail_latest_message": True,
+        }
+    # Como en Groq: timeout de config.yaml y pocos reintentos, para que el turno quepa en los 55 s
+    # que la Lambda espera al Runtime.
+    tiempos = Config(read_timeout=entorno.timeout_s, connect_timeout=5, retries={"max_attempts": 2})
+    return BedrockModel(
+        model_id=model_id,
+        region_name=entorno.region,
+        boto_client_config=tiempos,
+        max_tokens=max_tokens,
+        **extra,
+    )
+
+
 def crear_modelos(cfg: Configuracion | None = None) -> Modelos:
     cfg = cfg or Configuracion()
     entorno = cfg.entorno
-    if entorno.proveedor != "groq":
-        raise NotImplementedError(f"Proveedor {entorno.proveedor!r}: en local solo existe 'groq'.")
 
-    def rol(r: Rol | None) -> Model | None:
+    def rol(r: Rol | None, guardia: bool = False) -> Model | None:
         if r is None:
             return None
-        modelos = [_groq(cfg, entorno, m, r.max_tokens) for m in r.modelos]
+        if entorno.proveedor == "bedrock":
+            modelos = [_bedrock(cfg, entorno, m, r.max_tokens, guardia) for m in r.modelos]
+        else:
+            modelos = [_groq(cfg, entorno, m, r.max_tokens) for m in r.modelos]
         return modelos[0] if len(modelos) == 1 else ConRespaldo(modelos)
 
     return Modelos(
-        agente=rol(entorno.agente),
+        agente=rol(entorno.agente, guardia=True),
         estratega=rol(entorno.estratega),
         moderador=rol(entorno.moderador),
     )
