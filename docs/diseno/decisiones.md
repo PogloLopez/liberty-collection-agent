@@ -304,10 +304,10 @@ queda ningún día, la oferta no es elegible; la ventana de la promesa usa los m
 tiene tope de 30 días y OF-103 de 15. Trade-off: la mayoría de reincidentes pierde la prórroga.
 
 ### D33 Perfiles del prototipo
-**Cinco perfiles, tres detallados** (Pablo, 1-nov): olvidadizo, dificultad temporal y mora avanzada (los de
-la demo, [[decisiones#D20 Formato de la demo]]) con prompt y tarjetas completas; reincidente y valioso con
-churn con un prompt corto que dice que se dejó así a propósito para la demo. Trade-off: esos dos segmentos
-no se demuestran con calidad.
+**Cinco perfiles al mismo nivel** (Pablo, 1-nov; completados el 2-nov, D47): olvidadizo, dificultad
+temporal, mora avanzada, reincidente y valioso con churn, cada uno con tono, presión y cómo abrir, sin
+ofertas. Trade-off: la demo guiada sigue mostrando tres ([[decisiones#D20 Formato de la demo]]); los otros
+dos se prueban igual desde el selector.
 
 ### D34 Resumen al cierre
 **En el hito 2** (Pablo, 1-nov): al cerrar la conversación, gpt-oss-20b (en la nube, Nova Micro) escribe una nota de origen
@@ -455,6 +455,25 @@ datos mock se cargan con un botón "Reiniciar demo" de la consola de cartera, qu
 tabla: sirve para la primera carga y para que el evaluador repita pruebas. Pablo ejecuta los comandos de
 [[guia_despliegue]]. Trade-off: menos fiel al diseño completo de D9 y D21, a cambio de menos rondas de
 despliegue.
+
+### D47 Revisión de Pablo antes del despliegue
+**Ajustes de prompts, hora y región** (Pablo, 2-nov):
+1. `resumen.md` dice quién lee el resumen (el agente de la próxima conversación), qué incluir y qué no
+   (hechos, sin cifras ni cédula), el JSON exacto y el criterio de cada flag.
+2. Los prompts de segmento solo dan tono, presión y cómo abrir: las ofertas y su orden salen únicamente de
+   `consultar_ofertas_elegibles` (`ofertas.json` es la fuente de verdad; si cartera la edita, ningún prompt
+   queda desactualizado). Reincidente y valioso con churn quedan al nivel de los demás (D33).
+3. La hora sale del system prompt y va en el `[contexto]` del final del mensaje: Groq (gpt-oss) y Nova
+   cachean por prefijo exacto (automático en Groq, implícito en Nova; guías de cada uno, 2-nov), y la hora
+   cambiaba el prefijo cada minuto. La demo arranca a las 9:00 (`reloj_demo`: la hora del botón "Que
+   sean las 9 AM" más lo que lleva vivo el proceso): saludo, filtro de horario y plantilla no dependen
+   de la hora de quien prueba, y el tiempo sigue avanzando. Las tarjetas de estrategia tampoco nombran
+   ofertas.
+4. La región se define solo en `prod.region` de `config.yaml`; los stacks la leen de ahí (también los
+   perfiles de Nova para el permiso de invocar) y la guía usa `<REGION>`. Los ids `us.` quedan atados a
+   regiones de EE. UU. (anotado junto a la región).
+Trade-off: en producción habría que pasar el reloj real al orquestador; en la demo la vigencia de 12 h
+de la verificación no se alcanza (la cubren los tests con un reloj propio).
 
 ## Pendientes
 
