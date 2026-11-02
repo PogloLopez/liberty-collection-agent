@@ -24,6 +24,8 @@ decidir). Lo decidido y lo pendiente vive solo en [[decisiones]]; las notas enla
 - [[framework_strands]]: cómo funciona el framework del agente y por qué se eligió.
 - [[infraestructura_como_codigo]]: qué es IaC y cómo se aplicaría aquí con CDK.
 - [[despliegue_demo]]: qué se despliega para la evaluación, cuándo se enciende y cuánto cuesta.
+- [[guia_despliegue]] (`docs/despliegue/`): paso a paso para desplegar, probar y apagar la demo, con los
+  conceptos de AWS que hacen falta.
 - Documento de arquitectura para el evaluador: el mapa de bajo nivel (flujo + servicios) en
   `docs/documento_arquitectura.html`, publicado en https://claude.ai/artifact/2M7xQgMLm1MioFVa9TBBmL
   ([[decisiones#D25 Documento de arquitectura]]).

@@ -440,6 +440,22 @@ la demo con las cifras actuales (Pablo, 2-nov).
    "dos" o `{{opciones}}` sin que existiera, el validador lo rechazaba tres veces y salía "¿me lo puede
    repetir?".
 
+### D46 Alcance del hito 4
+**Lambda + AgentCore Runtime** (Pablo, 2-nov): la Lambda router (FastAPI + Mangum) corre el orquestador y
+lo determinista; el turno del agente corre en AgentCore Runtime como imagen Docker linux/arm64 en ECR
+(Pablo, 2-nov: "como debe ser", no con el zip en S3). La imagen es un FastAPI con `POST /invocations` y
+`GET /ping` en el puerto 8080 (contrato verificado en la guía de AgentCore el 2-nov), sin el SDK de
+AgentCore. CDK construye y sube la imagen al desplegar, así que Pablo necesita Docker con buildx. Las tools
+van dentro del agente (plan B de D21), sin AgentCore Gateway ni Memory. DynamoDB para datos y sesiones, Bedrock Nova en us-east-1 (perfiles
+`us.`), Step Functions para la campaña y el frontend en S3 + CloudFront. El documento de arquitectura
+explica cómo sería en producción (Gateway con una Lambda por tool, Memory, WhatsApp, SQS FIFO) y por qué la
+demo lo simplifica. El adaptador de DynamoDB se prueba con `moto` en pytest (cambia el trade-off de D26).
+Dependencias nuevas: `aws-cdk-lib`, `constructs`, `boto3`, `mangum` y `moto` (dev). Los
+datos mock se cargan con un botón "Reiniciar demo" de la consola de cartera, que borra y vuelve a sembrar la
+tabla: sirve para la primera carga y para que el evaluador repita pruebas. Pablo ejecuta los comandos de
+[[guia_despliegue]]. Trade-off: menos fiel al diseño completo de D9 y D21, a cambio de menos rondas de
+despliegue.
+
 ## Pendientes
 
 - **V1 (asumido, D44):** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
