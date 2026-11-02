@@ -22,6 +22,7 @@ Colombia), a Santiago Quiroz.
 - `uv sync` — dependencias (incluye grupo dev).
 - `uv run pytest -q` — tests, siempre offline.
 - `uv run ruff check . && uv run ruff format --check .` — lint y formato.
+- `uv run uvicorn --factory agil.app.api:crear_app --app-dir src --port 8765` — demo local (Groq).
 - `uv run python scripts/humo_agente.py CL-1171492 "se me pasó" <4 dígitos> "!confirmar"` — humo del agente
   contra Groq (free tier; necesita `GROQ_API_KEY`).
 

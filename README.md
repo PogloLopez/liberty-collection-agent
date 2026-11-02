@@ -16,3 +16,10 @@ uv sync
 ```bash
 uv run pytest -q
 ```
+
+Demo local en http://localhost:8765 (chat, panel del pipeline y consola de cartera; usa Groq, con
+`GROQ_API_KEY` en `.env`):
+
+```bash
+uv run uvicorn --factory agil.app.api:crear_app --app-dir src --port 8765
+```
