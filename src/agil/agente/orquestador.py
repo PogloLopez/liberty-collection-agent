@@ -34,6 +34,7 @@ from agil.dominio.modelos import (
     PromesaPago,
     Segmento,
     SolicitudNoContacto,
+    Validacion,
 )
 from agil.dominio.reglas.calendario import ZONA
 from agil.dominio.reglas.segmentacion import segmentar
@@ -53,7 +54,24 @@ TEXTOS = {
     "pasos": RESPUESTA_TOPE,
 }
 _PIDE_CEDULA = re.compile(r"\bcedula\b|\bcuatro digitos\b", re.I)
+# Preguntas que piden confirmar en texto lo que confirma una tarjeta ("¿Confirma…?",
+# "¿Lo registro?"); no "¿Ya registró su pago?" ni la de los cuatro dígitos de la cédula.
+_PREGUNTA = re.compile(r"[^.!?]*\?")
+_CONFIRMA = re.compile(
+    r"\b(?:confirma(?:mos)?|confirmo|l[ao] registr(?:o|amos)|registramos|procedo|procedemos)\b",
+    re.I,
+)
+_USA_LA_TARJETA = (
+    "No pidas confirmación en texto. Si el cliente ya eligió una oferta o un día, llama a "
+    "aceptar_oferta o registrar_promesa_pago: la tarjeta con botones es la confirmación. Si aún no "
+    "eligió, propón la opción sin pedirle que confirme."
+)
 _tracer = trace.get_tracer("agil.orquestador")
+
+
+def _pide_confirmacion(texto: str) -> bool:
+    preguntas = _PREGUNTA.findall(sin_tildes(texto))
+    return any(_CONFIRMA.search(p) and not _PIDE_CEDULA.search(p) for p in preguntas)
 
 
 class Orquestador:
@@ -137,6 +155,12 @@ class Orquestador:
                 "[sistema] La verificación venció (12 horas): pide de nuevo los cuatro dígitos "
                 "antes de dar datos de la cuenta."
             )
+        if sesion.tarjeta:  # T2: escribió en vez de tocar un botón; la tarjeta sigue vigente
+            trace.get_current_span().add_event("tarjeta_pendiente")
+            sesion.eventos.append(
+                "[sistema] El cliente escribió sin responder la tarjeta pendiente "
+                f"({sesion.tarjeta.descripcion})."
+            )
 
         # Ninguna cédula llega a un modelo; sin verificar, ningún dígito (D24). Solo cuenta como
         # intento si el agente la pidió ("1500" es ambiguo).
@@ -172,11 +196,14 @@ class Orquestador:
             self._handoff_fallo(sesion)  # fallo nuestro: humano (D15)
             return self._cierre_fijo(sesion, "fallo", TEXTOS["fallo"])
 
+        tarjeta = sesion.tarjeta if sesion.tarjeta is not tarjeta_previa else None
+        if texto == "" and tarjeta is not None:  # la tarjeta se basta sola (T1)
+            sesion.transcripcion.append(("agente", f"[tarjeta] {tarjeta.texto}"))
+            return Respuesta(tarjeta=tarjeta)
         if _PIDE_CEDULA.search(sin_tildes(texto)) and not sesion.verificada:
             sesion.cedula_pedida = True
         final = renderizar(texto, sesion.valores)
         sesion.transcripcion.append(("agente", texto))
-        tarjeta = sesion.tarjeta if sesion.tarjeta is not tarjeta_previa else None
         if sesion.cerrada:
             self.cerrar(sesion, sesion.motivo_cierre or "agente")
         return Respuesta(mensajes=[final], tarjeta=tarjeta, cerrada=sesion.cerrada)
@@ -195,27 +222,62 @@ class Orquestador:
         return lineas
 
     def _invocar(self, sesion: Sesion, mensaje: str) -> str | None:
-        """Respuesta validada del agente, o None si falla dos veces (D4, D15)."""
+        """Respuesta validada del agente; "" si el turno terminó con una tarjeta (T1) y None si
+        falla dos veces (D4, D15)."""
         agente, controles = self._agente(sesion)
         texto = str(agente(mensaje)).strip()
         if controles.agotado:  # el modelo siguió pidiendo tools tras el tope (K1)
             trace.get_current_span().add_event("tope_pasos", {"pasos": controles.pasos})
             sesion.historial = list(agente.messages)
             return None if sesion.cerrada else TEXTOS["pasos"]
-        v = validar_salida(texto, set(sesion.valores), sesion.max_caracteres)
+        if controles.tarjeta_enviada:
+            sesion.historial = list(agente.messages)
+            return self._fin_con_tarjeta(sesion)
+        v = self._validar(texto, sesion)
         trace.get_current_span().add_event("validador", {"ok": v.ok, "motivo": v.motivo or ""})
         if not v.ok and not sesion.cerrada:
-            fallido = agente.messages[-1]
-            sesion.contexto = []
-            texto = str(agente(f"[sistema] Tu respuesta no se envió: {v.motivo} Reescríbela."))
-            texto = texto.strip()
-            v = validar_salida(texto, set(sesion.valores), sesion.max_caracteres)
-            # El intento fallido y la corrección no quedan en el historial.
-            i = next((i for i, m in enumerate(agente.messages) if m is fallido), None)
-            if i is not None:
-                del agente.messages[i : i + 2]
+            texto, v = self._corregir(agente, controles, sesion, f"{v.motivo} Reescríbela.")
+        elif _pide_confirmacion(texto) and not sesion.cerrada:
+            # Un aviso, no un bloqueo: si la corrección no sirve, se envía la respuesta original.
+            trace.get_current_span().add_event("confirma_en_texto")
+            original, historial = texto, list(agente.messages)
+            texto, v = self._corregir(agente, controles, sesion, _USA_LA_TARJETA)
+            if not v.ok:
+                texto, v = original, Validacion(ok=True)
+                agente.messages[:] = historial
         sesion.historial = list(agente.messages)
+        if controles.tarjeta_enviada:
+            return self._fin_con_tarjeta(sesion)
         return texto if v.ok else None
+
+    @staticmethod
+    def _validar(texto: str, sesion: Sesion) -> Validacion:
+        if not texto:
+            return Validacion(ok=False, motivo="La respuesta está vacía.")
+        return validar_salida(texto, set(sesion.valores), sesion.max_caracteres)
+
+    @staticmethod
+    def _fin_con_tarjeta(sesion: Sesion) -> str | None:
+        """ "" si la tarjeta es el mensaje del turno; None si una tool también cerró la sesión: la
+        tarjeta se descarta y se usa el texto fijo del cierre."""
+        if sesion.cerrada:
+            sesion.tarjeta = None
+            return None
+        return ""
+
+    def _corregir(
+        self, agente: Agent, controles: Controles, sesion: Sesion, motivo: str
+    ) -> tuple[str, Validacion]:
+        """Un reintento con el motivo; el intento fallido y el aviso no quedan en el historial."""
+        fallido = agente.messages[-1]
+        sesion.contexto = []
+        texto = str(agente(f"[sistema] Tu respuesta no se envió: {motivo}")).strip()
+        i = next((i for i, m in enumerate(agente.messages) if m is fallido), None)
+        if i is not None:
+            del agente.messages[i : i + 2]
+        if controles.tarjeta_enviada:  # lo decide _fin_con_tarjeta
+            return "", Validacion(ok=True)
+        return texto, self._validar(texto, sesion)
 
     def _agente(self, sesion: Sesion) -> tuple[Agent, Controles]:
         cliente = self.repo.cliente(sesion.customer_id)
@@ -267,7 +329,7 @@ class Orquestador:
         sesion.tarjeta = None
         if tarjeta is None:
             return Respuesta(mensajes=[TEXTOS["sin_tarjeta"]])
-        que = f"oferta {tarjeta.oferta_id}" if tarjeta.tipo == "oferta" else "promesa de pago"
+        que = tarjeta.descripcion
         if boton is Boton.confirmar:
             self._registrar(sesion, tarjeta)
             sesion.eventos.append(f"[sistema] El cliente confirmó la tarjeta ({que}): registrada.")

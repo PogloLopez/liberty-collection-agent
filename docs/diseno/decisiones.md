@@ -274,7 +274,10 @@ contactar, abuso, tope, fallo, handoff) viven en el código y en producción ser
 Revisión de Pablo (1-nov): la verificación dura 12 horas o hasta el cierre; el contexto va después del texto
 del cliente para no cortar el caché por prefijo (Groq y el caché implícito de Nova en Bedrock comparan el
 prefijo exacto); el tope de pasos le dice al agente qué resumir y, si insiste en llamar tools, el código corta
-el bucle y responde un texto fijo.
+el bucle y responde un texto fijo. La tarjeta se basta sola: dice qué se confirma y qué tocar, y con
+ella termina el turno, sin otra llamada al modelo (`agent.cancel`). Si el cliente escribe con una tarjeta
+pendiente, el agente recibe un aviso [sistema] y la tarjeta sigue vigente. Si el agente pide confirmar en
+texto, el código le pide una vez usar la tool; si la corrección no sirve, se envía la respuesta original.
 
 ### D32 Fecha de la promesa
 **El LLM propone, el código valida** (Pablo, 1-nov): `registrar_promesa_pago` recibe el día acordado con

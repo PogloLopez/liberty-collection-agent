@@ -7,6 +7,7 @@ from conftest import ModeloGuionado
 from agil.agente.config import Modelos
 from agil.agente.orquestador import TEXTOS, Orquestador
 from agil.agente.sesion import Sesion
+from agil.agente.tools import CONFIRMA_PROMESA
 from agil.dominio.harness.identidad import ultimos_cuatro
 from agil.dominio.harness.intenciones import Boton
 
@@ -86,14 +87,16 @@ def test_no_contactar_explicito_sin_llm(repo, ahora):
 def test_tarjeta_y_boton_confirmar_registra(repo, ahora):
     agente = ModeloGuionado(
         ("registrar_promesa_pago", {"fecha": "2026-11-11"}),
-        "Confirme con el botón, por favor.",
         "Listo, quedó registrada para el {{fecha_promesa}}.",
     )
     orq = _orq(repo, ahora, agente)
     sesion = orq.iniciar(CID, "CV-1")
     sesion.verificada = True
     r1 = orq.atender(sesion, "le pago el miércoles")
-    assert r1.tarjeta.texto == "Promesa de pago de $76.40 para el miércoles 11 de noviembre."
+    assert r1.tarjeta.texto == (
+        f"Promesa de pago de $76.40 para el miércoles 11 de noviembre. {CONFIRMA_PROMESA}"
+    )
+    assert r1.mensajes == [] and len(agente.recibido) == 1  # T1: la tarjeta cierra el turno
     assert repo.promesas == []
     r2 = orq.atender(sesion, boton=Boton.confirmar)
     assert r2.mensajes == ["Listo, quedó registrada para el miércoles 11 de noviembre."]
@@ -104,7 +107,7 @@ def test_tarjeta_y_boton_confirmar_registra(repo, ahora):
 
 
 def test_boton_cancelar_no_registra(repo, ahora):
-    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-102"}), "Confirme.", "Entendido.")
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-102"}), "Entendido.")
     orq = _orq(repo, ahora, agente)
     sesion = orq.iniciar(CID, "CV-1")
     sesion.verificada = True
@@ -349,3 +352,103 @@ def test_tope_de_pasos_tras_un_cierre_usa_el_texto_del_cierre(repo, ahora):
     sesion = orq.iniciar(CID, "CV-1")
     r = orq.atender(sesion, "quiero un asesor")
     assert r.cerrada and r.mensajes == [TEXTOS["handoff"]]
+
+
+def _verificada(repo, ahora, agente):
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar(CID, "CV-1")
+    sesion.verificada = True
+    return orq, sesion
+
+
+def test_texto_con_tarjeta_pendiente_avisa_al_agente(repo, ahora):
+    agente = ModeloGuionado(("registrar_promesa_pago", {"fecha": "mañana"}), "Elija en la tarjeta.")
+    orq, sesion = _verificada(repo, ahora, agente)
+    orq.atender(sesion, "le pago mañana")
+    r = orq.atender(sesion, "¿y si mejor el viernes?")
+    assert "sin responder la tarjeta pendiente (promesa de pago)" in agente.todo_lo_recibido()
+    assert sesion.tarjeta is not None and r.mensajes == ["Elija en la tarjeta."]
+
+
+def test_pedir_confirmacion_en_texto_se_corrige_con_la_tarjeta(repo, ahora):
+    agente = ModeloGuionado(
+        "¿Confirma que le registro la promesa para mañana?",
+        ("registrar_promesa_pago", {"fecha": "mañana"}),
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    r = orq.atender(sesion, "le pago mañana")
+    assert r.mensajes == [] and r.tarjeta is not None
+    assert "No pidas confirmación en texto" in agente.todo_lo_recibido()
+    historial = json.dumps(sesion.historial, ensure_ascii=False)
+    assert "¿Confirma" not in historial and "No pidas confirmación" not in historial
+
+
+def test_si_la_correccion_falla_se_envia_la_respuesta_original(repo, ahora):
+    agente = ModeloGuionado(
+        "¿Procedo con el registro?", "Son 50 dólares."
+    )  # el reintento es inválido
+    orq, sesion = _verificada(repo, ahora, agente)
+    r = orq.atender(sesion, "sí")
+    assert r.mensajes == ["¿Procedo con el registro?"] and not r.cerrada
+    assert "dólares" not in json.dumps(sesion.historial, ensure_ascii=False)
+
+
+def test_pedir_los_cuatro_digitos_no_cuenta_como_confirmacion(repo, ahora):
+    agente = ModeloGuionado("¿Me confirma los últimos cuatro dígitos de su cédula?")
+    orq = _orq(repo, ahora, agente)
+    r = orq.atender(orq.iniciar(CID, "CV-1"), "hola")
+    assert len(agente.recibido) == 1 and "cuatro dígitos" in r.mensajes[0]
+
+
+@pytest.mark.parametrize(
+    "texto",
+    ["¿Ya registró su pago?", "¿Desea proceder con el link?", "¿Le sirve esta opción?"],
+)
+def test_preguntas_legitimas_no_se_corrigen(repo, ahora, texto):
+    agente = ModeloGuionado(texto)
+    orq, sesion = _verificada(repo, ahora, agente)
+    assert orq.atender(sesion, "hola").mensajes == [texto] and len(agente.recibido) == 1
+
+
+def test_respuesta_vacia_sin_tarjeta_se_reintenta(repo, ahora):
+    agente = ModeloGuionado("", "Hola, ¿en qué le ayudo?")
+    orq, sesion = _verificada(repo, ahora, agente)
+    assert orq.atender(sesion, "hola").mensajes == ["Hola, ¿en qué le ayudo?"]
+
+
+def test_tarjeta_y_escalamiento_en_el_mismo_lote_cierran_con_el_texto_fijo(repo, ahora):
+    agente = ModeloGuionado(
+        ("escalar_a_humano", {"motivo": "pide_humano", "resumen": "x"}),
+        ("registrar_promesa_pago", {"fecha": "mañana"}),
+    )
+    orq, sesion = _verificada(repo, ahora, agente)
+    r = orq.atender(sesion, "le pago mañana, pero quiero un asesor")
+    assert r.cerrada and r.tarjeta is None and r.mensajes == [TEXTOS["handoff"]]
+    assert repo.handoffs[0].motivo == "pide_humano"  # no un fallo nuestro
+
+
+def test_el_historial_no_guarda_las_cifras_de_la_tarjeta(repo, ahora):
+    agente = ModeloGuionado(("registrar_promesa_pago", {"fecha": "mañana"}))
+    orq, sesion = _verificada(repo, ahora, agente)
+    r = orq.atender(sesion, "le pago mañana")
+    assert "$" in r.tarjeta.texto
+    final = sesion.historial[-1]
+    assert final["role"] == "assistant" and "$" not in json.dumps(final, ensure_ascii=False)
+    assert "tarjeta enviada: promesa de pago" in final["content"][0]["text"]
+
+
+def test_tarjeta_de_oferta_cierra_el_turno_sin_cifras_en_el_historial(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-102"}))
+    orq, sesion = _verificada(repo, ahora, agente)
+    r = orq.atender(sesion, "quiero la prórroga")
+    assert r.mensajes == [] and r.tarjeta.oferta_id == "OF-102" and len(agente.recibido) == 1
+    assert "tarjeta enviada: oferta OF-102" in sesion.historial[-1]["content"][0]["text"]
+    assert sesion.transcripcion[-1] == ("agente", f"[tarjeta] {r.tarjeta.texto}")
+
+
+def test_reintento_por_salida_invalida_puede_terminar_con_tarjeta(repo, ahora):
+    agente = ModeloGuionado("Son 50 dólares.", ("registrar_promesa_pago", {"fecha": "mañana"}))
+    orq, sesion = _verificada(repo, ahora, agente)
+    r = orq.atender(sesion, "le pago mañana")
+    assert r.mensajes == [] and r.tarjeta is not None and not r.cerrada
+    assert "dólares" not in json.dumps(sesion.historial, ensure_ascii=False)

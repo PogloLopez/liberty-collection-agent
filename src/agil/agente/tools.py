@@ -42,7 +42,9 @@ SENSIBLES = frozenset(
 )
 URL_PAGOS = "https://pagos.liberty.example/l/"
 _ESCRIBE = "Escribe los placeholders tal cual; nunca las cifras."
-_TARJETA = "Tarjeta enviada. Dile en una frase que confirme con el botón; no repitas cifras."
+_TARJETA = "Tarjeta enviada: el cliente la confirma con los botones. El turno termina aquí."
+CONFIRMA_OFERTA = "Toque Confirmar para aceptarla o Cancelar para ver otras opciones."
+CONFIRMA_PROMESA = "Toque Confirmar para registrarla o Cancelar para elegir otra fecha."
 
 
 class MotivoEscalamiento(StrEnum):
@@ -93,6 +95,7 @@ def texto_tarjeta_oferta(oferta: Oferta, c: CondicionesOferta) -> str:
         partes.append(f"Total a pagar: {formato.dinero(c.monto_a_pagar)}.")
     if c.fecha_limite:
         partes.append(f"Fecha límite: {formato.fecha(c.fecha_limite)}.")
+    partes.append(CONFIRMA_OFERTA)
     return " ".join(partes)
 
 
@@ -178,8 +181,8 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
 
     @tool
     def aceptar_oferta(oferta_id: str) -> str:
-        """Envía al cliente una tarjeta con botones para confirmar la oferta; el sistema la registra
-        solo si confirma. Úsala cuando el cliente ya eligió una oferta."""
+        """Envía al cliente una tarjeta con botones para confirmar la oferta: la tarjeta es la
+        pregunta y el sistema la registra solo si confirma. Úsala apenas el cliente elija una."""
         o, c = oferta(oferta_id)
         sesion.tarjeta = Tarjeta(
             tipo="oferta",
@@ -191,7 +194,8 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
 
     @tool
     def registrar_promesa_pago(fecha: str, oferta_id: str | None = None) -> str:
-        """Envía una tarjeta con botones para confirmar una promesa de pago.
+        """Envía una tarjeta con botones para confirmar una promesa de pago; úsala apenas el cliente
+        diga el día.
 
         Args:
             fecha: el día tal como lo dijo el cliente ("el miércoles", "mañana", "el 15",
@@ -216,7 +220,8 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
         sesion.valores["fecha_promesa"] = formato.fecha(dia)
         sesion.tarjeta = Tarjeta(
             tipo="promesa",
-            texto=f"Promesa de pago de {formato.dinero(monto)} para el {formato.fecha(dia)}.",
+            texto=f"Promesa de pago de {formato.dinero(monto)} para el {formato.fecha(dia)}. "
+            + CONFIRMA_PROMESA,
             monto=monto,
             oferta_id=oferta_id,
             fecha=dia,

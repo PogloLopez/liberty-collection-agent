@@ -22,6 +22,11 @@ class Tarjeta(BaseModel):
     oferta_id: str | None = None
     fecha: date | None = None
 
+    @property
+    def descripcion(self) -> str:
+        """Qué confirma, sin cifras: va al agente y al historial."""
+        return f"oferta {self.oferta_id}" if self.tipo == "oferta" else "promesa de pago"
+
 
 class Sesion(BaseModel):
     conversacion_id: str

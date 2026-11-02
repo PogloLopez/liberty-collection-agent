@@ -6,8 +6,10 @@ Cada bloqueo explica el motivo: el modelo lo recibe como resultado de la tool y 
 from collections.abc import Callable
 from datetime import datetime
 
+from opentelemetry import trace
 from strands.hooks import (
     AfterInvocationEvent,
+    AfterToolCallEvent,
     BeforeInvocationEvent,
     BeforeToolCallEvent,
     HookProvider,
@@ -55,11 +57,14 @@ class Controles(HookProvider):
         self.max_pasos = max_pasos
         self.pasos = 0
         self.agotado = False  # el modelo insistió tras el tope: el orquestador usa su texto fijo
+        self.tarjeta_enviada = False  # una tool creó tarjeta: el turno termina con ella (T1)
         self.bloque: dict | None = None
+        self._tarjeta_previa = None
 
     def register_hooks(self, registry: HookRegistry, **kwargs) -> None:
         registry.add_callback(BeforeInvocationEvent, self.inyectar_contexto)
         registry.add_callback(BeforeToolCallEvent, self.antes_de_tool)
+        registry.add_callback(AfterToolCallEvent, self.despues_de_tool)
         registry.add_callback(AfterInvocationEvent, self.quitar_contexto)
 
     def inyectar_contexto(self, event: BeforeInvocationEvent) -> None:
@@ -67,6 +72,8 @@ class Controles(HookProvider):
         el mensaje queda igual al quitarlo y el caché por prefijo del proveedor no se corta."""
         self.pasos = 0
         self.agotado = False
+        self.tarjeta_enviada = False
+        self._tarjeta_previa = self.sesion.tarjeta
         self.bloque = None
         if not self.sesion.contexto or not event.messages:
             return
@@ -100,3 +107,13 @@ class Controles(HookProvider):
             v = validar_oferta(self.repo, s.customer_id, s.segmento, oferta_id)
             if not v.ok:
                 event.cancel_tool = v.motivo
+
+    def despues_de_tool(self, event: AfterToolCallEvent) -> None:
+        """La tarjeta se basta sola (T1): con ella termina el turno, sin otra llamada al modelo. El
+        historial guarda qué se envió, sin cifras (el texto completo queda en la transcripción)."""
+        tarjeta = self.sesion.tarjeta
+        if tarjeta is not None and tarjeta is not self._tarjeta_previa:
+            self.tarjeta_enviada = True
+            trace.get_current_span().add_event("tarjeta_enviada", {"tipo": tarjeta.tipo})
+            aviso = f"[tarjeta enviada: {tarjeta.descripcion}; espera el botón del cliente]"
+            event.agent.cancel(message=aviso, after_current_tools=True)

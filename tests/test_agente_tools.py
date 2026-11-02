@@ -5,7 +5,13 @@ import pytest
 
 from agil.agente import tools as tools_mod
 from agil.agente.sesion import Sesion
-from agil.agente.tools import cifras_oferta, crear_tools, prefijo, texto_tarjeta_oferta
+from agil.agente.tools import (
+    CONFIRMA_OFERTA,
+    cifras_oferta,
+    crear_tools,
+    prefijo,
+    texto_tarjeta_oferta,
+)
 from agil.dominio.modelos import Cola, EtiquetaFeedback, FlagMemoria, Segmento, Validacion
 from agil.dominio.reglas.ofertas import condiciones
 
@@ -176,7 +182,7 @@ def test_promesa_con_oferta_en_su_fecha_limite(repo, ahora):
 def test_texto_tarjeta_por_tipo_de_oferta(repo, oferta_id, esperado):
     oferta = next(o for o in repo.ofertas() if o.oferta_id == oferta_id)
     texto = texto_tarjeta_oferta(oferta, condiciones(repo, "CL-1140215", oferta))
-    assert texto.startswith(f"{oferta.nombre}.") and texto.endswith(esperado)
+    assert texto.startswith(f"{oferta.nombre}.") and texto.endswith(f"{esperado} {CONFIRMA_OFERTA}")
     if oferta.tipo == "cambio_fecha_corte":
         assert "$" not in texto
 
