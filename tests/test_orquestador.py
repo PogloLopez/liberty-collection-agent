@@ -188,7 +188,7 @@ def test_estratega_inyecta_su_tarjeta(repo, ahora):
     sesion = orq.iniciar(CID, "CV-1")
     sesion.verificada = True
     orq.atender(sesion, "ya pagué")
-    assert "[estrategia: pago_reciente]" in agente.todo_lo_recibido()
+    assert "[estrategia sugerida: pago_reciente] Si encaja" in agente.todo_lo_recibido()
 
 
 def test_sin_verificar_no_hay_estratega(repo, ahora):
@@ -263,14 +263,14 @@ class ModeloRoto(ModeloGuionado):
 
 def test_cedula_no_llega_al_estratega_ni_al_resumen(repo, ahora):
     agente = ModeloGuionado("¿Me confirma los últimos cuatro dígitos de su cédula?", "Gracias.")
-    estratega = ModeloGuionado("duda", '{"texto": "Verificó.", "flags": []}')
+    estratega = ModeloGuionado('{"texto": "Verificó.", "flags": []}')
     orq = _orq(repo, ahora, agente, estratega=estratega)
     sesion = orq.iniciar(CID, "CV-1")
     orq.atender(sesion, "hola")
     orq.atender(sesion, _digitos(repo))
     assert sesion.verificada
     orq.cerrar(sesion, "fin")
-    assert len(estratega.recibido) == 2  # la estrategia tras verificar y el resumen
+    assert len(estratega.recibido) == 1  # solo el resumen: tras verificar no hay estrategia (D41)
     assert _digitos(repo) not in estratega.todo_lo_recibido()
     assert _digitos(repo) not in str(sesion.transcripcion)
 
@@ -1045,3 +1045,27 @@ def test_tool_que_cierra_durante_los_reintentos_usa_el_texto_del_cierre(repo, ah
     assert len(agente.recibido) == 3  # sin un tercer intento tras el cierre
     assert len(repo.handoffs) == 1 and repo.handoffs[0].motivo == "pide_humano"
     assert sesion.fallos_seguidos == 0
+
+
+def test_tras_verificar_retoma_lo_pedido_sin_estratega(repo, ahora):
+    agente, estratega = (
+        ModeloGuionado("¿Me da los cuatro dígitos de su cédula?", "Ok."),
+        ModeloGuionado(),
+    )
+    orq = _orq(repo, ahora, agente, estratega=estratega)
+    sesion = orq.iniciar(CID, "CV-1")
+    orq.atender(sesion, "quiero una prórroga")
+    r = orq.atender(sesion, _digitos(repo))
+    assert "Retoma lo que el cliente pidió" in str(agente.recibido[-1][1])
+    assert dict(r.pasos)["Estratega"].startswith("omitido: recién verificado")
+    assert estratega.recibido == []
+
+
+def test_al_cancelar_el_aviso_dice_que_queda(repo, ahora):
+    agente = ModeloGuionado(("aceptar_oferta", {"oferta_id": "OF-110"}), "Entendido.")
+    orq = _orq(repo, ahora, agente)
+    sesion = orq.iniciar("CL-1152549", "CV-1")
+    sesion.verificada = True
+    orq.atender(sesion, "cuotas")
+    orq.atender(sesion, boton=Boton.cancelar)
+    assert "Queda por ofrecer, en orden: OF-111. No vuelvas al link" in str(agente.recibido[-1][1])

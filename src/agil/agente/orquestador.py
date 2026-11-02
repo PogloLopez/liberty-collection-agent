@@ -28,7 +28,14 @@ from agil.agente.sesion import (
     Respuesta,
     Sesion,
 )
-from agil.agente.tools import cifras_oferta, cifras_saldo, crear_tools, link_pago, prefijo
+from agil.agente.tools import (
+    cifras_oferta,
+    cifras_saldo,
+    crear_tools,
+    escalera,
+    link_pago,
+    prefijo,
+)
 from agil.dominio.harness.identidad import enmascarar, extraer_digitos, verificar
 from agil.dominio.harness.intenciones import Boton, pide_no_contacto, sin_sentido
 from agil.dominio.harness.placeholders import renderizar
@@ -285,14 +292,19 @@ class Orquestador:
                 f"[contexto] Ya registrado en esta conversación: {'; '.join(sesion.acuerdos)}. "
                 "No lo vuelvas a ofrecer ni pidas confirmarlo."
             )
-        if self.modelos.estratega and sesion.verificada:  # sin verificar no hay táctica (D40)
+        recien, sesion.recien_verificada = sesion.recien_verificada, False
+        if self.modelos.estratega and sesion.verificada and not recien:  # D40, D41
             momento = clasificar_momento(self.modelos.estratega, sesion.transcripcion)
             tarjeta = momento and tarjeta_estrategia(momento)
-            sesion.paso("Estratega", momento.value if momento else "sin clasificar")
-            if tarjeta:
-                lineas.append(f"[estrategia: {momento.value}] {tarjeta}")
+            nombre = momento.value if momento else "sin clasificar"
+            sesion.paso("Estratega", f"{nombre}: {tarjeta}" if tarjeta else nombre)
+            if tarjeta:  # una sugerencia, no una orden (D41)
+                lineas.append(
+                    f"[estrategia sugerida: {nombre}] Si encaja con lo que dijo: {tarjeta}"
+                )
         elif self.modelos.estratega:
-            sesion.paso("Estratega", "omitido: sin verificar")
+            motivo = "recién verificado: retoma lo pedido" if recien else "sin verificar"
+            sesion.paso("Estratega", f"omitido: {motivo}")
         return lineas
 
     def _invocar(self, sesion: Sesion, mensaje: str) -> str | None:
@@ -464,7 +476,11 @@ class Orquestador:
             sesion.verificada_en = self.ahora()
             sesion.cedula_pedida = False
             sesion.intentos_cedula = 0  # si vence a las 12 h, vuelve a tener tres intentos
-            evento = "[sistema] Verificación de cédula correcta."
+            sesion.recien_verificada = True
+            evento = (
+                "[sistema] Verificación de cédula correcta. Retoma lo que el cliente pidió antes "
+                "de verificar; si ya eligió una opción, usa la tool."
+            )
             notas = self.repo.notas(sesion.customer_id)[-3:]
             if notas:
                 evento += " Notas de conversaciones anteriores: " + " | ".join(
@@ -508,9 +524,21 @@ class Orquestador:
         sesion.paso("Botón", f"{boton.name}: {que}")
         sesion.transcripcion.append(("cliente", f"[botón {boton.name}: {que}]"))
         if boton is Boton.cancelar:
+            evento = f"[sistema] El cliente canceló la tarjeta ({que})."
             if tarjeta.tipo == "oferta":
                 sesion.rechazadas.append(tarjeta.oferta_id)
-            sesion.eventos.append(f"[sistema] El cliente canceló la tarjeta ({que}).")
+                quedan = [
+                    o.oferta_id
+                    for o in escalera(self.repo, sesion)
+                    if o.tipo != "cambio_fecha_corte"
+                ]
+                evento += (
+                    f" Queda por ofrecer, en orden: {', '.join(quedan)}. No vuelvas al link de "
+                    "pago inmediato ni a lo ya rechazado."
+                    if quedan
+                    else " No quedan opciones más generosas: dilo y ofrece un asesor."
+                )
+            sesion.eventos.append(evento)
             return self._turno_agente(sesion, f"Cliente: [tocó «{boton.name}»]")
         self._registrar(sesion, tarjeta)
         texto, url = self._confirmacion(sesion, tarjeta)

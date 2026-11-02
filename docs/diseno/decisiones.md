@@ -393,9 +393,9 @@ persona.
 2. Tras verificar, el aviso pide retomar lo que el cliente ya pidió y en ese turno no corre el estratega.
 3. Al cancelar una oferta, el aviso dice qué queda por ofrecer y prohíbe volver al pago total o a lo
    rechazado. El agente solo menciona el link después de generarlo.
-4. consultar_ofertas_elegibles dice si hay descuentos y cuántas opciones quedan; si pide descuento y no
-   hay, el agente lo dice. Las ofertas siguen de a una (D3), pero si pregunta si hay más, dice cuántas
-   quedan y, si no quedan, que es todo.
+4. consultar_ofertas_elegibles dice si hay descuentos y cuántas opciones hay en total; si pide descuento y
+   no hay, el agente lo dice. Las ofertas siguen de a una (D3), pero si pregunta si hay más, dice cuántas
+   hay; sin más escalones tras un rechazo, que es todo y un asesor.
 5. Estratega más estricto: clasifica solo el último mensaje y, si no es claro, "otro" (no inyecta nada);
    sus tarjetas son sugerencias, no órdenes, y el panel muestra la táctica. Nuevo momento: se niega a pagar.
 6. Objeciones ("no voy a pagar", "no puedo", enojo): reconocer, preguntar qué le pasa o qué le serviría y

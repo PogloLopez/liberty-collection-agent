@@ -140,6 +140,12 @@ def en_la_escalera(repo: Repositorio, sesion: Sesion, o: Oferta) -> bool:
     return _generosidad(o) > max(_generosidad(r) for r in rechazadas)
 
 
+def escalera(repo: Repositorio, sesion: Sesion, e: EstadoCuenta | None = None) -> list[Oferta]:
+    """Las ofertas que aún se pueden ofrecer, de menos a más generosa (D40, D41)."""
+    elegibles = ofertas_elegibles(repo, sesion.customer_id, sesion.segmento, e)
+    return [o for o in sorted(elegibles, key=_generosidad) if en_la_escalera(repo, sesion, o)]
+
+
 def _con_llaves(valores: dict[str, str]) -> dict[str, str]:
     return {f"{{{{{k}}}}}": v for k, v in valores.items()}
 
@@ -215,9 +221,8 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
         Las que el cliente rechazó y las menos generosas que esas ya no aparecen."""
         resultado = []
         e = estado_cuenta(repo, cid)
-        for o in sorted(ofertas_elegibles(repo, cid, sesion.segmento, e), key=_generosidad):
-            if not en_la_escalera(repo, sesion, o):
-                continue
+        disponibles = escalera(repo, sesion, e)
+        for o in disponibles:
             _, c = oferta(o.oferta_id, e)
             resultado.append(
                 {
@@ -228,13 +233,26 @@ def crear_tools(repo: Repositorio, sesion: Sesion, ahora: Callable[[], datetime]
                     "cifras": _con_llaves(cifras_oferta(c)),
                 }
             )
-        instruccion = _ESCRIBE + " Ofrece la primera; sube a la siguiente solo si la rechaza."
-        if sesion.rechazadas and not any(o["tipo"] != "cambio_fecha_corte" for o in resultado):
+        # Opciones que el agente ofrece él mismo: sin cambio de corte ni las de aprobación.
+        opciones = sum(
+            o.tipo != "cambio_fecha_corte" and not o.requiere_aprobacion_humana for o in disponibles
+        )
+        instruccion = (
+            _ESCRIBE + " Ofrece la primera; sube a la siguiente solo si la rechaza. Si pregunta si "
+            "hay más, dile cuántas opciones hay en total (opciones)."
+        )
+        if sesion.rechazadas and not opciones:
             instruccion = (
                 "No quedan opciones más generosas: dilo con claridad, sin inventar otra, y ofrece "
                 "un asesor (escalar_a_humano, motivo fuera_de_tabla)."
             )
-        return {"ofertas": resultado, "instruccion": instruccion}
+        hay_descuento = any(o.parametros.porcentaje_descuento for o in disponibles)
+        return {
+            "ofertas": resultado,
+            "opciones": opciones,
+            "hay_descuento": hay_descuento,
+            "instruccion": instruccion,
+        }
 
     @tool
     def aceptar_oferta(oferta_id: str) -> str:

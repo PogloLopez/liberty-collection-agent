@@ -362,3 +362,13 @@ def test_en_la_escalera_sube_y_no_filtra_el_cambio_de_corte(repo, sesion):
     assert not tools_mod.en_la_escalera(repo, sesion, por_id["OF-110"])
     assert tools_mod.en_la_escalera(repo, sesion, por_id["OF-111"])
     assert tools_mod.en_la_escalera(repo, sesion, por_id["OF-120"])
+
+
+def test_ofertas_dicen_cuantas_quedan_y_si_hay_descuento(repo, ahora):
+    sesion = _sesion("CL-1152549", Segmento.dificultad_temporal, Cola.basica)
+    sesion.verificada = True
+    t = {x.tool_name: x for x in crear_tools(repo, sesion, ahora)}
+    r = t["consultar_ofertas_elegibles"]()
+    assert r["hay_descuento"] is False and r["opciones"] == 3  # OF-101, OF-110, OF-111 (+ OF-120)
+    mora = {x.tool_name: x for x in crear_tools(repo, _sesion(), ahora)}  # mora avanzada
+    assert mora["consultar_ofertas_elegibles"]()["hay_descuento"] is True

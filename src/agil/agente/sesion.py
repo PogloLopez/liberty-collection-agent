@@ -60,6 +60,7 @@ class Sesion(BaseModel):
     historial: list[dict[str, Any]] = Field(default_factory=list)  # mensajes del agente Strands
     # Pasos del turno en curso para el panel del pipeline (D38); no se guardan con la sesión.
     pasos: list[tuple[str, str]] = Field(default_factory=list, exclude=True)
+    recien_verificada: bool = Field(default=False, exclude=True)  # ese turno va sin estratega (D41)
 
     def paso(self, nombre: str, detalle: str = "") -> None:
         self.pasos.append((nombre, detalle))

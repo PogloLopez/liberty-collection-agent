@@ -28,6 +28,7 @@ class Momento(StrEnum):
     dificultad_economica = "dificultad_economica"
     pide_mas_descuento = "pide_mas_descuento"
     promesa_vaga = "promesa_vaga"
+    se_niega_a_pagar = "se_niega_a_pagar"
     evasion = "evasion"
     enojo = "enojo"
     disputa = "disputa"
