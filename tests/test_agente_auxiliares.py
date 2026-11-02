@@ -11,7 +11,7 @@ from agil.agente.auxiliares import (
     resumir,
     tarjeta_estrategia,
 )
-from agil.agente.perfiles import PROMPTS, cargar_perfil, prompt_sistema
+from agil.agente.perfiles import PROMPTS, cargar_perfil, linea_hora, prompt_sistema
 from agil.dominio.harness.validador import validar_salida
 from agil.dominio.modelos import FlagMemoria, Segmento
 
@@ -26,9 +26,14 @@ def test_cada_segmento_contactable_tiene_perfil(segmento):
     assert "placeholder" in perfil.prompt
 
 
-@pytest.mark.parametrize("segmento", [Segmento.reincidente, Segmento.valioso_churn])
-def test_perfiles_cortos_lo_dicen(segmento):
-    assert "a propósito" in cargar_perfil(segmento).prompt  # D33
+@pytest.mark.parametrize("segmento", CONTACTABLES)
+def test_perfiles_completos_y_sin_ofertas(segmento):
+    """D33: los cinco al mismo nivel. D47: el segmento da tono y presión; las ofertas y su orden
+    vienen solo de consultar_ofertas_elegibles."""
+    prompt = (PROMPTS / "segmentos" / f"{segmento.value}.md").read_text(encoding="utf-8")
+    assert "a propósito" not in prompt and "Presión:" in prompt
+    for oferta in ("prórroga", "cuotas", "descuento", "liquidación", "link"):
+        assert oferta not in prompt.lower()
 
 
 def test_prompt_de_sistema_sin_datos_de_la_cuenta(repo, ahora):
@@ -37,7 +42,7 @@ def test_prompt_de_sistema_sin_datos_de_la_cuenta(repo, ahora):
     assert "Euclides" in texto and cliente.nombre not in texto
     assert cliente.cedula not in texto and "427" not in texto
     assert "viernes 6 de noviembre de 2026" in texto
-    assert '"buenas tardes"' in texto
+    assert not re.search(r"\d{2}:\d{2}", texto)  # la hora va en el [contexto] (D47)
 
 
 @pytest.mark.parametrize("segmento", CONTACTABLES)
@@ -69,6 +74,13 @@ def test_tarjetas_pasan_el_validador():
     """Si el agente copiara una tarjeta, no traería cifras."""
     for texto in json.loads((PROMPTS / "estrategias.json").read_text(encoding="utf-8")).values():
         assert validar_salida(texto, set(), 400).ok, texto
+
+
+def test_tarjetas_no_nombran_ofertas():
+    """D47: las ofertas y su orden vienen solo de consultar_ofertas_elegibles."""
+    for texto in json.loads((PROMPTS / "estrategias.json").read_text(encoding="utf-8")).values():
+        for oferta in ("prórroga", "cuotas", "descuento"):
+            assert oferta not in texto.lower(), texto
 
 
 @pytest.mark.parametrize(
@@ -136,10 +148,9 @@ def test_estratega_solo_ve_las_ultimas_lineas():
         (22, 30, "buenas noches"),
     ],
 )
-def test_saludo_segun_la_hora(repo, ahora, hora, minuto, saludo):
-    momento = ahora().replace(hour=hora, minute=minuto)
-    texto = prompt_sistema(cargar_perfil(Segmento.olvidadizo), repo.cliente("CL-1140215"), momento)
-    assert f'"{saludo}"' in texto and f"{hora:02d}:{minuto:02d}" in texto
+def test_saludo_segun_la_hora(ahora, hora, minuto, saludo):
+    linea = linea_hora(ahora().replace(hour=hora, minute=minuto))
+    assert f'"{saludo}"' in linea and f"{hora:02d}:{minuto:02d}" in linea
 
 
 def test_perfiles_json_solo_contactables():
