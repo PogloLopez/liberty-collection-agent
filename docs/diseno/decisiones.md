@@ -327,7 +327,7 @@ secciones `dev` (Groq) y `prod` (Bedrock, la completa Pablo en el hito 4) con UR
 rol, una lista ordenada de modelos y su `max_tokens`; `LLM_PROVIDER` sigue eligiendo la sección (D7). La key
 es `SecretStr` y, si falta, la configuración no se construye. Alternativas (Claude, 1-nov): si un modelo
 falla (error de la API, tiempo de espera o respuesta vacía) se pasa al siguiente sin reintentarlo (la cuota por minuto la reintenta Strands con el mismo modelo, D41; la diaria pasa al siguiente, D42);
-si fallan todos, Strands reintenta solo si fue por cuota y, si no, es un fallo que va a un asesor (D15). En dev el agente cae de gpt-oss-120b a llama-3.3-70b-versatile (D42); el estratega y el moderador no tienen alternativa. Trade-off: cada
+si fallan todos, Strands reintenta solo si fue por cuota y, si no, es un fallo que va a un asesor (D15). En dev el agente cae al respaldo de D42; el estratega y el moderador no tienen alternativa. Trade-off: cada
 alternativa obliga a correr los evals con ella.
 
 ### D37 Cambio de fecha de corte y varias solicitudes
@@ -404,10 +404,13 @@ persona.
 ### D42 Cuota diaria de Groq
 **Ante un límite diario se pasa al siguiente modelo** (Pablo, 2-nov): la repetición agotó los 200.000
 tokens diarios de gpt-oss-120b y esperar no servía. Un 429 "per day" cae al siguiente modelo; uno por
-minuto sigue esperando al mismo (D41). El agente en dev cae a `llama-3.3-70b-versatile` (producción en
-Groq, con tools, verificado en su documentación el 2-nov) en vez de gpt-oss-20b, que rompía las tools;
-`reasoning_effort` solo va a los gpt-oss. Trade-off: otro modelo con otro tono; sus límites gratuitos se
-ven en la consola de Groq.
+minuto sigue esperando al mismo (D41). El agente en dev cae a `qwen/qwen3.8-27b` (con tools según la
+página de deprecaciones de Groq y disponible para la key según `GET /models`, 2-nov) en vez de
+gpt-oss-20b, que rompía las tools. Sustituye a `llama-3.3-70b-versatile`, retirado del free tier el
+16-ago-2026 (su página de modelos aún lo lista, pero la API da 404). `reasoning_effort: low` solo va a los
+gpt-oss; qwen lleva `reasoning_format: hidden` para que su razonamiento no salga en el texto. Trade-off:
+qwen está en preview (puede retirarse sin aviso) y tiene otro tono; sus límites gratuitos se ven en la
+consola de Groq.
 
 ### D43 Retomar lo pedido al verificar
 **El aviso de verificación pide releer, no cita** (Pablo, 2-nov): el historial ya llega completo al modelo

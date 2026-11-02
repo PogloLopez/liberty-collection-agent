@@ -8,7 +8,7 @@ dev:
   url: https://api.groq.com/openai/v1
   timeout_s: 30
   agente:
-    modelos: [openai/gpt-oss-120b, llama-3.3-70b-versatile]  # D42: el 20b rompía las tools
+    modelos: [openai/gpt-oss-120b, qwen/qwen3.8-27b]  # D42: el 20b rompía las tools
     max_tokens: 1500
   estratega: # también escribe el resumen al cierre (D34)
     modelos: [openai/gpt-oss-20b]

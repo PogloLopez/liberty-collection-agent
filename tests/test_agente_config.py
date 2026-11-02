@@ -60,7 +60,7 @@ def test_crear_modelos_desde_el_yaml_sin_llamar(env, monkeypatch):
     assert isinstance(m.agente, config.ConRespaldo)
     assert [x.get_config()["model_id"] for x in m.agente.modelos] == [
         "openai/gpt-oss-120b",
-        "llama-3.3-70b-versatile",
+        "qwen/qwen3.8-27b",
     ]
     assert m.estratega.get_config()["model_id"] == "openai/gpt-oss-20b"  # uno solo: sin envoltorio
     assert m.moderador.get_config()["model_id"] == "openai/gpt-oss-safeguard-20b"
@@ -171,8 +171,16 @@ def test_cuota_diaria_pasa_al_siguiente_modelo():
     assert _texto(config.ConRespaldo([_Falla(diaria), siguiente])) == "Hola."
 
 
-def test_reasoning_effort_solo_para_gpt_oss(env, monkeypatch):
+def test_razonamiento_por_familia_de_modelo(env, monkeypatch):
     monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
     m = config.crear_modelos(_cfg(env)).agente.modelos
     assert m[0].get_config()["params"]["reasoning_effort"] == "low"
-    assert "reasoning_effort" not in m[1].get_config()["params"]
+    qwen = m[1].get_config()["params"]
+    assert qwen["reasoning_format"] == "hidden" and "reasoning_effort" not in qwen
+
+
+def test_modelo_sin_familia_conocida_no_recibe_razonamiento(env, monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    cfg = _cfg(env)
+    params = config._groq(cfg, cfg.entorno, "llama-3.3-70b-versatile", 64).get_config()["params"]
+    assert params == {"max_completion_tokens": 64}

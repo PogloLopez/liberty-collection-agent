@@ -134,7 +134,15 @@ class ConRespaldo(Model):
         raise error
 
 
+# Razonamiento corto en gpt-oss; en qwen, fuera del texto: por defecto va en `content` (D42).
+_RAZONAMIENTO = {
+    "openai/gpt-oss": {"reasoning_effort": "low"},
+    "qwen/": {"reasoning_format": "hidden"},
+}
+
+
 def _groq(cfg: Configuracion, entorno: Entorno, model_id: str, max_tokens: int) -> OpenAIModel:
+    extra = next((p for pre, p in _RAZONAMIENTO.items() if model_id.startswith(pre)), {})
     return OpenAIModel(
         client_args={
             "api_key": cfg.groq_api_key.get_secret_value(),
@@ -142,8 +150,7 @@ def _groq(cfg: Configuracion, entorno: Entorno, model_id: str, max_tokens: int) 
             "timeout": entorno.timeout_s,
         },
         model_id=model_id,
-        params={"max_completion_tokens": max_tokens}
-        | ({"reasoning_effort": "low"} if model_id.startswith("openai/gpt-oss") else {}),
+        params={"max_completion_tokens": max_tokens} | extra,
     )
 
 
