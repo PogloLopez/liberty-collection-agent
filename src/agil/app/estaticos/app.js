@@ -61,9 +61,9 @@ function globo(visible) {
   const g = $("#globo");
   if (visible && c?.cedula_demo) {
     g.innerHTML = `Solo demo: la cédula de ${escapar(c.nombre.split(" ")[0])} termina en<b>${escapar(c.cedula_demo)}</b>`;
-    g.classList.remove("oculta");
+    g.classList.remove("apagado");
   } else {
-    g.classList.add("oculta");
+    g.classList.add("apagado");
   }
 }
 

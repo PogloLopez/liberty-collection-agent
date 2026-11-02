@@ -33,7 +33,7 @@ body { margin: 0; font: 15px/1.45 system-ui, sans-serif; background: var(--fondo
 .barra h1 span { font-weight: 400; color: var(--suave); font-size: 14px; margin-left: 6px; }
 .pestana { background: none; border: 0; padding: 8px 12px; color: var(--suave); cursor: pointer; font: inherit; }
 .pestana.activa { color: var(--texto); border-bottom: 2px solid var(--acento); }
-.vista { padding: 16px; max-width: 1200px; margin: 0 auto; }
+.vista { padding: 16px; max-width: 1500px; margin: 0 auto; }
 .oculta { display: none; }
 .controles { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-bottom: 16px; }
 .controles label { display: grid; gap: 4px; font-size: 13px; color: var(--suave); }
@@ -47,7 +47,7 @@ button:disabled { opacity: .5; cursor: default; }
 .hoy { background: #ffd400; color: #111; font-weight: 700; padding: 8px 12px; border-radius: 8px;
   border: 2px solid #111; }
 .hoy:empty { display: none; }
-.paneles { display: grid; grid-template-columns: 170px minmax(0, 420px) minmax(0, 1fr); gap: 16px; }
+.paneles { display: grid; grid-template-columns: 190px minmax(0, 480px) minmax(0, 1fr); gap: 20px; }
 @media (max-width: 1000px) { .paneles { grid-template-columns: 1fr; } }
 .globo { align-self: end; margin-bottom: 90px; position: relative; background: var(--superficie);
   border: 2px solid var(--texto); border-radius: 18px; padding: 12px 14px; font-size: 14px;
@@ -55,9 +55,9 @@ button:disabled { opacity: .5; cursor: default; }
 .globo::after { content: ""; position: absolute; right: -14px; bottom: 18px; border: 7px solid transparent;
   border-left-color: var(--texto); }
 .globo b { font-size: 22px; letter-spacing: 3px; display: block; margin-top: 4px; }
-.globo.oculta { visibility: hidden; }
-@media (max-width: 1000px) { .globo { margin: 0; } .globo.oculta { display: none; } .globo::after { display: none; } }
-.telefono { display: flex; flex-direction: column; height: 70vh; min-height: 420px; border-radius: 16px;
+.globo.apagado { visibility: hidden; }  /* conserva su columna: el chat no se mueve */
+@media (max-width: 1000px) { .globo { margin: 0; } .globo.apagado { display: none; } .globo::after { display: none; } }
+.telefono { display: flex; flex-direction: column; height: 78vh; min-height: 520px; border-radius: 16px;
   overflow: hidden; border: 1px solid var(--borde); background: var(--chat); }
 .cabecera-chat { padding: 10px 14px; background: #075e54; color: #fff; font-weight: 600; }
 .chat { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
@@ -75,7 +75,7 @@ button:disabled { opacity: .5; cursor: default; }
 .entrada { display: flex; gap: 8px; padding: 10px; background: var(--superficie); }
 .entrada input { flex: 1; min-width: 0; }
 .pipeline { background: var(--superficie); border: 1px solid var(--borde); border-radius: 12px; padding: 14px;
-  max-height: 70vh; overflow-y: auto; }
+  max-height: 78vh; overflow-y: auto; }
 .pipeline h2 { margin: 0 0 4px; font-size: 16px; }
 .nota { color: var(--suave); font-size: 13px; font-weight: 400; }
 .pasos { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 12px; }
