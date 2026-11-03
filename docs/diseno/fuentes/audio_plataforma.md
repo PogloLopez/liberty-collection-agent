@@ -2,9 +2,10 @@
 
 Transcripción automática (Whisper `small`, local) del archivo `platform_design.mp4` (7:32, solo audio).
 Corregidos solo errores evidentes del reconocimiento: "carotera" → cartera, "una gente" → un agente,
-"promes" → prompts, "clodo" → Claude, "híbrida". Resumen y feedback en [[plataforma_de_gestion]].
+"promes" → prompts, "clodo" → Claude, "híbrida",
+"invocada" → enfocado, "lo hable desde un Claude" → le hable desde Claude. Resumen y feedback en [[plataforma_de_gestion]].
 
-> [00:00] Entonces yo, como agente de cartera, invocada precisamente en las facturas que se han dejado de pagar,
+> [00:00] Entonces yo, como agente de cartera, enfocado precisamente en las facturas que se han dejado de pagar,
 > ¿qué necesito ver? Número uno, según lo que estoy diseñando, necesito la plataforma o el módulo de creación
 > de agentes específicos para cada tipo de cliente, y también necesito una forma de poder evaluar o revisar qué
 > es lo que se está haciendo y cómo están siendo las conversaciones con los clientes con quienes ya desplegamos
@@ -46,7 +47,7 @@ Corregidos solo errores evidentes del reconocimiento: "carotera" → cartera, "u
 > recuperado la cartera. Todo esto tiene que hacer parte del módulo de evaluación de la historia y el panel
 > en el cual el agente de cartera puede ver datos.
 >
-> [05:48] Y adicional se le podría crear un MCP a esto para que lo hable desde un Claude o desde un ChatGPT
+> [05:48] Y adicional se le podría crear un MCP a esto para que le hable desde Claude o desde ChatGPT
 > empresarial, por ejemplo. Como no se va a construir un MCP para todo esto, simplemente se añade un módulo o
 > un campo adicional en una tabla que tenga el dato de recomendaciones agénticas, donde un agente entra a
 > evaluar la data histórica (o por cluster, o por cliente, o por mes, o por algún tipo de partición) y

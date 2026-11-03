@@ -24,11 +24,12 @@ expone cada tool, siempre filtradas por el cliente de la sesión.
 
 | Necesidad | Servicio | Por qué este |
 |---|---|---|
-| Canal WhatsApp | AWS End User Messaging Social | Nativo de AWS, cumple el 100% AWS; entrega los mensajes entrantes por SNS |
+| Canal WhatsApp | AWS End User Messaging Social | Nativo de AWS, cumple el 100% AWS; entrega los mensajes entrantes por SNS estándar |
+| Orden por cliente | Lambda de ingesta + SQS FIFO | Un cliente a la vez y en orden ([[decisiones#D23 Entrada ordenada por cliente]]) |
 | Triggers y secuencias | EventBridge Scheduler + Step Functions | Esperas largas sin pagar cómputo y reintentos declarativos |
 | Runtime del agente | Bedrock AgentCore Runtime | Sesiones aisladas, escala a cero y observabilidad integrada |
 | Modelos | Amazon Bedrock | Modelos administrados con IAM, sin llaves |
-| Exponer las tools | AgentCore Gateway o Lambdas | Convierte APIs en tools con autenticación |
+| Exponer las tools | AgentCore Gateway + Lambdas | Convierte APIs en tools con autenticación; esquemas sin montos libres ([[decisiones#D3 Negociación]]) |
 | Memoria | AgentCore Memory | Ver [[memoria]] |
 | Estado de negocio | DynamoDB | Promesas, acuerdos, flags y elegibilidad |
 | Guardrails | Amazon Bedrock Guardrails | Ver [[riesgos]] |

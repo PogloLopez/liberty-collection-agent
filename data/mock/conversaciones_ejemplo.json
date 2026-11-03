@@ -1,0 +1,1270 @@
+[
+  {
+    "conversacion_id": "CV-2605-59400",
+    "customer_id": "CL-1181514",
+    "contacto_id": "CT-827887",
+    "segmento": "dificultad_temporal",
+    "fecha": "2026-05-20T17:02:00-05:00",
+    "plantilla": "aviso_saldo_opciones_v1",
+    "resultado": "pagó",
+    "cola_escalamiento": null,
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-101"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-05-20T12:51:00-05:00",
+        "texto": "Hola Nodier, su cuenta tiene un saldo pendiente. Tenemos opciones para ayudarle a ponerse al día; responda este mensaje y lo vemos juntos."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-05-20T17:02:00-05:00",
+        "texto": "chuleta, se me paso por completo"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-05-20T17:02:00-05:00",
+        "texto": "como hago pa pagar"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-05-20T17:03:00-05:00",
+        "texto": "Buenas tardes, Nodier. Le ayudo. ¿Me confirma los últimos cuatro dígitos de su cédula?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-05-20T17:04:00-05:00",
+        "texto": "1844"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-05-20T17:04:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-05-20T17:04:00-05:00",
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}}. Puede pagarlo aquí: {{link_pago}}"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-05-20T17:08:00-05:00",
+        "texto": "ya esta, pague por la app"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-05-20T17:08:00-05:00",
+        "texto": "Recibido, gracias. Que tenga buena tarde."
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2607-35401",
+    "customer_id": "CL-1080054",
+    "contacto_id": "CT-832991",
+    "segmento": "valioso_churn",
+    "fecha": "2026-07-01T10:15:00-05:00",
+    "plantilla": "aviso_cliente_preferente_v1",
+    "resultado": "pagó",
+    "cola_escalamiento": null,
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-130"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-07-01T08:12:00-05:00",
+        "texto": "Hola Gloria, como cliente preferente le recordamos que su factura quedó pendiente. Responda este mensaje si podemos ayudarle."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-01T10:15:00-05:00",
+        "texto": "Hola. Sí, se me pasó, he estado de viaje"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-07-01T10:16:00-05:00",
+        "texto": "Hola, Gloria. No se preocupe. ¿Me confirma los últimos cuatro dígitos de su cédula para revisar su cuenta?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-01T10:17:00-05:00",
+        "texto": "1883"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-07-01T10:17:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-07-01T10:17:00-05:00",
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}}. Como cliente preferente tiene un beneficio: {{porcentaje_descuento}} de bonificación sobre esta factura, que se acredita en la próxima, si la paga hoy."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-01T10:19:00-05:00",
+        "texto": "ah bueno, eso sí me sirve"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-01T10:19:00-05:00",
+        "texto": "mándame el link"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-07-01T10:20:00-05:00",
+        "texto": "Aquí está: {{link_pago}}. La bonificación se verá en su próxima factura."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-01T10:24:00-05:00",
+        "texto": "listo, pagado"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-07-01T10:24:00-05:00",
+        "texto": "Confirmado, gracias Gloria. Que tenga buen día."
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2607-48102",
+    "customer_id": "CL-1145774",
+    "contacto_id": "CT-834981",
+    "segmento": "dificultad_temporal",
+    "fecha": "2026-07-14T12:22:00-05:00",
+    "plantilla": "aviso_saldo_opciones_v1",
+    "resultado": "acuerdo",
+    "cola_escalamiento": null,
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-120"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-07-14T08:39:00-05:00",
+        "texto": "Hola Aracelly, su cuenta tiene un saldo pendiente. Tenemos opciones para ayudarle a ponerse al día; responda este mensaje y lo vemos juntos."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-14T12:22:00-05:00",
+        "texto": "hola buenas, si ya se q me pase"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-14T12:23:00-05:00",
+        "texto": "lo q pasa es q a mi me pagan el 15 y el 30 y la factura me vence el 26, nunca me cuadra"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-07-14T12:24:00-05:00",
+        "texto": "Hola, Aracelly. Gracias por contarme. Para revisar su cuenta, ¿me da los últimos cuatro dígitos de su cédula?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-14T12:24:00-05:00",
+        "texto": "1650"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-07-14T12:24:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-07-14T12:25:00-05:00",
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}}. Por lo que me cuenta, puedo cambiar su fecha de corte para que el vencimiento le quede después de la quincena."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-14T12:26:00-05:00",
+        "texto": "eso se puede?? ay si porfa"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-07-14T12:27:00-05:00",
+        "texto": "Sí. Con corte el día {{dia_corte}}, su factura vencería alrededor del día {{dia_vencimiento}} de cada mes. El primer mes llega un cobro proporcional por los días del cambio."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-14T12:28:00-05:00",
+        "texto": "perfecto. y lo de ahora lo pago mañana 15 que me cae la quincena"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-07-14T12:29:00-05:00",
+        "texto": "Listo: queda solicitado el cambio de corte y su compromiso de pago para el {{fecha_promesa}}. Le dejo el link: {{link_pago}}"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-14T12:29:00-05:00",
+        "texto": "mil gracias!!"
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2607-41303",
+    "customer_id": "CL-1220088",
+    "contacto_id": "CT-837029",
+    "segmento": "reincidente",
+    "fecha": "2026-07-27T11:04:00-05:00",
+    "plantilla": "aviso_vencimiento_firme_v3",
+    "resultado": "pagó",
+    "cola_escalamiento": null,
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-101"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-07-27T08:17:00-05:00",
+        "texto": "Jhon Fredy, su cuenta presenta un saldo vencido. Para evitar la suspensión del servicio, regularícelo hoy con el botón de pago o respóndanos."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-27T11:04:00-05:00",
+        "texto": "bueno dias cuanto e lo q debo"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-07-27T11:05:00-05:00",
+        "texto": "Buenos días, Jhon Fredy. Para darle el detalle necesito los últimos cuatro dígitos de su cédula."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-27T11:06:00-05:00",
+        "texto": "4298"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-07-27T11:06:00-05:00",
+        "texto": "Los dígitos no coinciden. Revise los últimos cuatro números de su cédula, contando todos los que van después de la E."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-27T11:08:00-05:00",
+        "texto": "a perdon 2908"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-07-27T11:08:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-07-27T11:08:00-05:00",
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}}. Aquí tiene el link de pago: {{link_pago}}"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-27T11:13:00-05:00",
+        "texto": "listo ya pague con la billetera del cel"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-07-27T11:14:00-05:00",
+        "texto": "Recibido, gracias. El pago se refleja en su cuenta en {{plazo_aplicacion}}."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-07-27T11:14:00-05:00",
+        "texto": "grax"
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2609-92704",
+    "customer_id": "CL-1126269",
+    "contacto_id": "CT-843994",
+    "segmento": "mora_avanzada",
+    "fecha": "2026-09-18T09:12:00-05:00",
+    "plantilla": "aviso_mora_avanzada_v2",
+    "resultado": "abono",
+    "cola_escalamiento": null,
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-140"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-09-18T08:03:00-05:00",
+        "texto": "Elida, su cuenta tiene varias facturas vencidas. Queremos ayudarle a resolverlo; responda este mensaje."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-09-18T09:12:00-05:00",
+        "texto": "Buenos dias"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-09-18T09:12:00-05:00",
+        "texto": "mire yo ahorita solo puedo dar 20"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-09-18T09:13:00-05:00",
+        "texto": "Buenos días, Elida. Gracias por escribir. ¿Me confirma los últimos cuatro dígitos de su cédula para revisar su cuenta?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-09-18T09:16:00-05:00",
+        "texto": "1093"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-09-18T09:16:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-09-18T09:17:00-05:00",
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}}. Tengo una opción de liquidación con descuento si se paga en un solo pago: {{monto_liquidacion}}."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-09-18T09:19:00-05:00",
+        "texto": "no señor eso no lo tengo. yo trabajo por dia"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-09-18T09:20:00-05:00",
+        "texto": "Entiendo. Cualquier abono reduce su saldo, aunque la cuenta sigue en mora. El link que puedo generar es por el saldo completo; para abonar una parte puede usar la app o cualquier punto de pago."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-09-18T09:22:00-05:00",
+        "texto": "ok voy al punto de pago del super aqui cerca"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-09-18T09:22:00-05:00",
+        "texto": "Perfecto. Cuando se aplique lo verá en su cuenta. Más adelante le escribimos con opciones para el resto."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-09-18T09:23:00-05:00",
+        "texto": "gracias, no me presionen mucho porfa"
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2610-11405",
+    "customer_id": "CL-1201205",
+    "contacto_id": "CT-855297",
+    "segmento": "reincidente",
+    "fecha": "2026-10-14T11:16:00-05:00",
+    "plantilla": "recordatorio_compromiso_v1",
+    "resultado": "no_contactar",
+    "cola_escalamiento": null,
+    "identidad_verificada": false,
+    "ofertas_presentadas": [],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-10-14T10:09:00-05:00",
+        "texto": "Edilsa, le recordamos que su factura sigue pendiente. Pague con el botón o respóndanos para buscar una opción."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-14T11:16:00-05:00",
+        "texto": "ya dejen de escribirme todos los dias"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-14T11:17:00-05:00",
+        "texto": "Disculpe la molestia, Edilsa. ¿Quiere que dejemos de contactarla por WhatsApp?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-14T11:18:00-05:00",
+        "texto": "NO ME ESCRIBAN MAS. yo se que debo y voy a pagar cuando pueda"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-14T11:18:00-05:00",
+        "texto": "Frase de no contacto detectada por el router (sin LLM). Respuesta fija y derivar_solicitud_contacto."
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-14T11:18:00-05:00",
+        "texto": "Entendido. Registramos su solicitud: dejaremos de escribirle por este medio y el área de atención al cliente la revisará. Puede pagar cuando quiera en la app o en cualquier punto de pago."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-14T11:19:00-05:00",
+        "texto": "ok"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-14T11:19:00-05:00",
+        "texto": "Gracias por avisarnos. Que tenga buen día."
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2610-59206",
+    "customer_id": "CL-1019515",
+    "contacto_id": "CT-857261",
+    "segmento": "dificultad_temporal",
+    "fecha": "2026-10-16T15:28:00-05:00",
+    "plantilla": "aviso_saldo_opciones_v1",
+    "resultado": "escaló",
+    "cola_escalamiento": "especializada",
+    "identidad_verificada": false,
+    "ofertas_presentadas": [],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-10-16T12:30:00-05:00",
+        "texto": "Hola Aurelia, su cuenta tiene un saldo pendiente. Tenemos opciones para ayudarle a ponerse al día; responda este mensaje y lo vemos juntos."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-16T15:28:00-05:00",
+        "texto": "Buenas tardes. Le escribe la hija de la señora Aurelia"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-16T15:29:00-05:00",
+        "texto": "mi mamá está hospitalizada en el Santo Tomás desde hace 3 semanas, ella es la que paga eso"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-16T15:30:00-05:00",
+        "texto": "Buenas tardes. Lamento mucho lo de su mamá, espero que se recupere pronto. Por seguridad no puedo dar detalles de la cuenta a otra persona, pero sí puedo pasar el caso a un asesor especializado que las oriente."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-16T15:32:00-05:00",
+        "texto": "si por favor, no queremos que le corten la tele que es lo unico que ella ve cuando vuelva a la casa"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-16T15:33:00-05:00",
+        "texto": "Entendido. Dejo el caso con un asesor especializado, con la nota de la hospitalización, y no le llegarán más mensajes automáticos mientras lo revisan."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-16T15:34:00-05:00",
+        "texto": "muchas gracias de verdad"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-16T15:34:00-05:00",
+        "texto": "Con gusto. El asesor le escribirá por aquí en horario de atención."
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-16T15:34:00-05:00",
+        "texto": "Conversación escalada a la cola especializada. Motivo: posible cliente vulnerable."
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2610-88507",
+    "customer_id": "CL-1131469",
+    "contacto_id": "CT-860813",
+    "segmento": "valioso_churn",
+    "fecha": "2026-10-19T19:08:00-05:00",
+    "plantilla": "beneficio_retencion_v1",
+    "resultado": "escaló",
+    "cola_escalamiento": "negociacion",
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-130"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-10-19T17:14:00-05:00",
+        "texto": "Arturo, usted es cliente preferente. Tenemos un beneficio para ayudarle con su factura pendiente; responda este mensaje para conocerlo."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-19T19:08:00-05:00",
+        "texto": "ustedes si tienen cara de estar cobrando"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-19T19:08:00-05:00",
+        "texto": "llevo desde septiembre con el internet cayendose todas las noches y nadie viene"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-19T19:09:00-05:00",
+        "texto": "Buenas noches, Arturo. Lamento lo del servicio, eso no debería pasar. Para revisar su cuenta, ¿me confirma los últimos cuatro dígitos de su cédula?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-19T19:10:00-05:00",
+        "texto": "2041"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-19T19:10:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-19T19:11:00-05:00",
+        "texto": "Gracias. Dejo registrada su queja por las caídas para el área técnica. Por su antigüedad con nosotros tiene un beneficio: {{porcentaje_descuento}} de descuento en su factura vencida si la paga esta semana."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-19T19:13:00-05:00",
+        "texto": "no es el descuento, es que pago 140 dolares por un servicio que no sirve"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-19T19:13:00-05:00",
+        "texto": "quiero hablar con un supervisor o me paso a la competencia 😡"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-19T19:14:00-05:00",
+        "texto": "Entiendo. Lo paso con un asesor del equipo de negociación, que puede revisar su caso completo, incluido el servicio. Le dejo el resumen para que no tenga que repetirlo."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-19T19:15:00-05:00",
+        "texto": "ok"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-19T19:15:00-05:00",
+        "texto": "Conversación escalada a la cola negociacion. Motivo: pide supervisor, riesgo de baja."
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2610-13708",
+    "customer_id": "CL-1161090",
+    "contacto_id": "CT-861066",
+    "segmento": "olvidadizo",
+    "fecha": "2026-10-20T09:51:00-05:00",
+    "plantilla": "recordatorio_amable_v2",
+    "resultado": "escaló",
+    "cola_escalamiento": "reclamos",
+    "identidad_verificada": true,
+    "ofertas_presentadas": [],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-10-20T08:18:00-05:00",
+        "texto": "Hola Kathia, ¿cómo está? Su factura de este mes ya venció. Puede pagarla con el botón o responder este mensaje si tiene alguna duda."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T09:51:00-05:00",
+        "texto": "Buenas, me llegó una factura de mas de 200 dolares, eso esta mal"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-20T09:52:00-05:00",
+        "texto": "Buenos días, Kathia. Lo revisamos. ¿Me confirma los últimos cuatro dígitos de su cédula?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T09:52:00-05:00",
+        "texto": "1193"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-20T09:52:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-20T09:53:00-05:00",
+        "texto": "Gracias. En su factura de {{periodo_factura}} aparece un cargo de roaming de datos en Colombia por {{monto_cargo}}."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T09:54:00-05:00",
+        "texto": "yo no he salido de panamá en todo el año!! eso no es mio"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T09:54:00-05:00",
+        "texto": "no voy a pagar eso"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-20T09:55:00-05:00",
+        "texto": "Entiendo su molestia. Como no reconoce el cargo, abro un reclamo para que lo revise el área de reclamos. Mientras esté en revisión no le enviaremos recordatorios por esa factura."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T09:56:00-05:00",
+        "texto": "y el resto? yo siempre pago a tiempo"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-20T09:57:00-05:00",
+        "texto": "Sus facturas anteriores están pagadas. Un asesor de reclamos le escribirá en {{plazo_respuesta_reclamo}} con el resultado."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T09:58:00-05:00",
+        "texto": "ok gracias, ojala lo arreglen"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-20T09:58:00-05:00",
+        "texto": "Conversación escalada a la cola reclamos. Motivo: disputa de factura."
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2610-49409",
+    "customer_id": "CL-1152549",
+    "contacto_id": "CT-861238",
+    "segmento": "dificultad_temporal",
+    "fecha": "2026-10-20T13:05:00-05:00",
+    "plantilla": "ofrecimiento_plan_pagos_v2",
+    "resultado": "sin_acuerdo",
+    "cola_escalamiento": null,
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-110",
+      "OF-111"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-10-20T09:56:00-05:00",
+        "texto": "Hola Yariela, notamos que su factura quedó pendiente. Si lo necesita, podemos ofrecerle opciones de pago. Responda este mensaje."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T13:05:00-05:00",
+        "texto": "Buenas tardes"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T13:05:00-05:00",
+        "texto": "si ya se que estoy atrasada, este mes ha estado dificil"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-20T13:06:00-05:00",
+        "texto": "Buenas tardes, Yariela. Gracias por responder. Para ver las opciones de su cuenta, ¿me confirma los últimos cuatro dígitos de su cédula?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T13:07:00-05:00",
+        "texto": "1385"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-20T13:07:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-20T13:07:00-05:00",
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}}. Como siempre ha pagado a tiempo, tengo opciones: dividirlo en {{numero_cuotas}} cuotas, o mover su fecha de pago."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T13:10:00-05:00",
+        "texto": "me bajaron las horas en el call center y ahorita estoy cobrando la mitad"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T13:10:00-05:00",
+        "texto": "lo de las cuotas como seria"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-20T13:11:00-05:00",
+        "texto": "En {{numero_cuotas}} cuotas serían {{monto_cuota}} cada una, junto con su factura de cada mes. La primera se paga al aceptar."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T13:14:00-05:00",
+        "texto": "dejame ver como me queda la quincena y te aviso"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-20T13:14:00-05:00",
+        "texto": "Claro. La opción queda disponible esta semana. Cuando quiera retomarlo, me escribe por aquí."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-20T13:15:00-05:00",
+        "texto": "ok gracias"
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2610-18410",
+    "customer_id": "CL-1191572",
+    "contacto_id": "CT-862708",
+    "segmento": "reincidente",
+    "fecha": "2026-10-21T14:37:00-05:00",
+    "plantilla": "aviso_vencimiento_firme_v3",
+    "resultado": "promesa",
+    "cola_escalamiento": null,
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-103"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-10-21T13:13:00-05:00",
+        "texto": "Abdiel, su cuenta presenta un saldo vencido. Para evitar la suspensión del servicio, regularícelo hoy con el botón de pago o respóndanos."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-21T14:37:00-05:00",
+        "texto": "si si ya se"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-21T14:38:00-05:00",
+        "texto": "Buenas tardes, Abdiel. ¿Lo dejamos resuelto hoy? Para ver el detalle necesito los últimos cuatro dígitos de su cédula."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-21T14:40:00-05:00",
+        "texto": "ahorita estoy manejando"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-21T14:40:00-05:00",
+        "texto": "Entiendo, maneje con cuidado. Cuando pueda me escribe los dígitos y lo dejamos listo."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-21T15:21:00-05:00",
+        "texto": "1027"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-21T15:21:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-21T15:21:00-05:00",
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}}. Puede pagarlo aquí: {{link_pago}}. ¿Lo puede cubrir hoy?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-21T15:23:00-05:00",
+        "texto": "hoy no, el sabado me pagan. el 24 pago todo"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-21T15:24:00-05:00",
+        "texto": "Registro su compromiso de pago por {{saldo_vencido}} para el {{fecha_promesa}}. Le recuerdo que ya tuvo otro compromiso este año; si no se cumple, la cuenta pasa a revisión."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-21T15:26:00-05:00",
+        "texto": "ya ok"
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2610-47611",
+    "customer_id": "CL-1193431",
+    "contacto_id": "CT-863395",
+    "segmento": "dificultad_temporal",
+    "fecha": "2026-10-22T08:47:00-05:00",
+    "plantilla": "seguimiento_opciones_v1",
+    "resultado": "promesa",
+    "cola_escalamiento": null,
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-102"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-10-22T08:03:00-05:00",
+        "texto": "Hola Ana Gabriela, su factura aún tiene un saldo pendiente. Responda este mensaje si quiere ver opciones."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-22T08:47:00-05:00",
+        "texto": "buen dia, ayer abone una parte por la app"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-22T08:48:00-05:00",
+        "texto": "Buenos días, Ana Gabriela. Gracias por avisar. ¿Me confirma los últimos cuatro dígitos de su cédula?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-22T08:49:00-05:00",
+        "texto": "1445"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-22T08:49:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-22T08:49:00-05:00",
+        "texto": "Gracias. Sí, veo su abono de {{monto_abonado}} aplicado. Le queda pendiente {{saldo_vencido}}."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-22T08:51:00-05:00",
+        "texto": "si el resto lo pago el viernes de la otra semana que me pagan"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-22T08:51:00-05:00",
+        "texto": "Perfecto. ¿Le registro el compromiso para el {{fecha_promesa}}?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-22T08:52:00-05:00",
+        "texto": "si"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-22T08:52:00-05:00",
+        "texto": "Listo, queda registrado. Ese día le llega un recordatorio con el link de pago."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-22T08:53:00-05:00",
+        "texto": "👍"
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2610-96512",
+    "customer_id": "CL-1140215",
+    "contacto_id": "CT-865499",
+    "segmento": "mora_avanzada",
+    "fecha": "2026-10-23T17:40:00-05:00",
+    "plantilla": "oferta_liquidacion_v1",
+    "resultado": "escaló",
+    "cola_escalamiento": "especializada",
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-140",
+      "OF-112"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-10-23T15:15:00-05:00",
+        "texto": "Euclides, tenemos una propuesta para que ponga su cuenta al día. Responda este mensaje para conocerla."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-23T17:40:00-05:00",
+        "texto": "buenas. se que debo bastante"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-23T17:41:00-05:00",
+        "texto": "Buenas tardes, Euclides. Gracias por responder. Para ver su propuesta necesito los últimos cuatro dígitos de su cédula."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-23T17:43:00-05:00",
+        "texto": "1455"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-23T17:43:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-23T17:43:00-05:00",
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}}, con {{facturas_vencidas}} facturas pendientes. Si paga {{monto_liquidacion}} en un solo pago, se cancela todo el saldo vencido."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-23T17:46:00-05:00",
+        "texto": "no tengo todo eso junto. estoy trabajando por mi cuenta desde que me botaron"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-23T17:46:00-05:00",
+        "texto": "le puedo dar algo mensual"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-23T17:47:00-05:00",
+        "texto": "Le entiendo. Un plan de {{numero_cuotas}} cuotas mensuales lo tiene que aprobar un asesor de cartera; le paso su caso con lo que me contó para que lo contacten con una propuesta."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-23T17:49:00-05:00",
+        "texto": "ok pero que no me corten el internet que lo necesito pa trabajar"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-23T17:49:00-05:00",
+        "texto": "Lo dejo anotado en el caso. El asesor le escribirá en horario de atención."
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-23T17:49:00-05:00",
+        "texto": "Conversación escalada a la cola especializada. Motivo: oferta que requiere aprobación humana (OF-112)."
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2610-52113",
+    "customer_id": "CL-1187267",
+    "contacto_id": "CT-868531",
+    "segmento": "reincidente",
+    "fecha": "2026-10-26T16:02:00-05:00",
+    "plantilla": "aviso_suspension_v2",
+    "resultado": "escaló",
+    "cola_escalamiento": "negociacion",
+    "identidad_verificada": false,
+    "ofertas_presentadas": [],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-10-26T12:06:00-05:00",
+        "texto": "Jhonatan, su cuenta tiene facturas vencidas y el servicio podría suspenderse. Responda este mensaje para ver opciones o pague con el botón."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-26T16:02:00-05:00",
+        "texto": "buenas quiero hablar con una persona"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-26T16:03:00-05:00",
+        "texto": "Buenas tardes, Jhonatan. Con gusto lo ayudo yo y, si lo prefiere, lo paso con un asesor. ¿Es sobre su saldo pendiente?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-26T16:04:00-05:00",
+        "texto": "no quiero hablar con un robot, paseme con alguien"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-26T16:04:00-05:00",
+        "texto": "Entendido. Lo transfiero con un asesor del equipo de negociación y le dejo el resumen para que no tenga que repetir nada."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-26T16:05:00-05:00",
+        "texto": "y cuanto se demora"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-26T16:05:00-05:00",
+        "texto": "El horario de atención es {{horario_atencion}} y el tiempo de respuesta habitual es {{tiempo_respuesta_asesor}}."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-26T16:06:00-05:00",
+        "texto": "ok"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-26T16:06:00-05:00",
+        "texto": "Conversación escalada a la cola negociacion. Motivo: el cliente pide un humano."
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2610-92914",
+    "customer_id": "CL-1262023",
+    "contacto_id": "CT-872650",
+    "segmento": "mora_avanzada",
+    "fecha": "2026-10-28T18:31:00-05:00",
+    "plantilla": "aviso_mora_avanzada_v2",
+    "resultado": "promesa",
+    "cola_escalamiento": null,
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-101"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-10-28T17:16:00-05:00",
+        "texto": "Cristian, su cuenta tiene facturas vencidas. Queremos ayudarle a resolverlo; responda este mensaje."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-28T18:31:00-05:00",
+        "texto": "porque me sale tanto?? mi plan es de 65"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-28T18:32:00-05:00",
+        "texto": "Buenas tardes, Cristian. Lo reviso con usted. ¿Me confirma los últimos cuatro dígitos de su cédula?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-28T18:33:00-05:00",
+        "texto": "2286"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-28T18:33:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-28T18:33:00-05:00",
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}} y suma {{facturas_vencidas}} facturas. La de {{periodo_factura}} incluye roaming de datos en Estados Unidos por {{monto_cargo}}, además de la cuota del equipo."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-28T18:35:00-05:00",
+        "texto": "ahh lo del viaje a orlando"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-28T18:35:00-05:00",
+        "texto": "nadie me dijo q era tan caro"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-28T18:36:00-05:00",
+        "texto": "Entiendo la sorpresa. Si quiere, para el próximo viaje le explico los paquetes de roaming. ¿Cómo le queda ponerse al día con lo pendiente?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-28T18:38:00-05:00",
+        "texto": "la de septiembre la pago el viernes y la otra a fin de mes"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-28T18:39:00-05:00",
+        "texto": "Registro su compromiso: {{monto_promesa}} el {{fecha_promesa}}. Para la factura de {{periodo_factura_siguiente}} le escribimos más adelante."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-28T18:39:00-05:00",
+        "texto": "dale"
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2610-99415",
+    "customer_id": "CL-1226407",
+    "contacto_id": "CT-876405",
+    "segmento": "dificultad_temporal",
+    "fecha": "2026-10-31T10:33:00-05:00",
+    "plantilla": "aviso_saldo_opciones_v1",
+    "resultado": "escaló",
+    "cola_escalamiento": "basica",
+    "identidad_verificada": false,
+    "ofertas_presentadas": [],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-10-31T08:22:00-05:00",
+        "texto": "Hola Yorlenis, su cuenta tiene un saldo pendiente. Tenemos opciones para ayudarle a ponerse al día; responda este mensaje y lo vemos juntos."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-31T10:33:00-05:00",
+        "texto": "quien es?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-31T10:33:00-05:00",
+        "texto": "yo no me llamo asi"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-31T10:34:00-05:00",
+        "texto": "Buenos días. Le escribimos por una cuenta de servicios registrada con este número. Para dar cualquier información necesito confirmar la identidad del titular: ¿me indica los últimos cuatro dígitos de la cédula?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-31T10:36:00-05:00",
+        "texto": "no voy a dar mi cedula, este numero lo tengo hace como 2 meses, me lo dieron nuevo"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-31T10:37:00-05:00",
+        "texto": "Entiendo, disculpe la molestia. No compartiré datos de la cuenta. Paso el caso a un asesor para que actualice el número de contacto del titular."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-10-31T10:38:00-05:00",
+        "texto": "ok, que no se repita"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-10-31T10:38:00-05:00",
+        "texto": "Así será. Gracias por avisarnos y buen fin de semana."
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-10-31T10:38:00-05:00",
+        "texto": "Conversación escalada a la cola basica. Motivo: el número no corresponde al titular."
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2611-18016",
+    "customer_id": "CL-1210081",
+    "contacto_id": "CT-879584",
+    "segmento": "olvidadizo",
+    "fecha": "2026-11-04T10:20:00-05:00",
+    "plantilla": "recordatorio_amable_v2",
+    "resultado": "promesa",
+    "cola_escalamiento": null,
+    "identidad_verificada": true,
+    "ofertas_presentadas": [
+      "OF-102"
+    ],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-11-04T09:30:00-05:00",
+        "texto": "Hola Rubén, ¿cómo está? Su factura de este mes ya venció. Puede pagarla con el botón o responder este mensaje si tiene alguna duda."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-11-04T10:20:00-05:00",
+        "texto": "Buenos días disculpe, a mi no me llego la factura este mes al correo por eso no he pagado"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-11-04T10:21:00-05:00",
+        "texto": "Buenos días, Rubén. Lo reviso con gusto. Primero, ¿me confirma los últimos cuatro dígitos de su cédula?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-11-04T10:22:00-05:00",
+        "texto": "982"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-11-04T10:22:00-05:00",
+        "texto": "Formato inválido: se esperan cuatro dígitos, sin guiones."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-11-04T10:23:00-05:00",
+        "texto": "ah ok 2982"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-11-04T10:23:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-11-04T10:23:00-05:00",
+        "texto": "Gracias. Su saldo vencido es {{saldo_vencido}}, con vencimiento el {{fecha_vencimiento}}. Le comparto el link para pagar: {{link_pago}}"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-11-04T10:26:00-05:00",
+        "texto": "ahorita no tengo la tarjeta conmigo, el viernes le pago sin falta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-11-04T10:26:00-05:00",
+        "texto": "Perfecto, dejo registrado su compromiso de pago para el {{fecha_promesa}}. El link sigue activo hasta esa fecha."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-11-04T10:27:00-05:00",
+        "texto": "y lo del correo?"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-11-04T10:28:00-05:00",
+        "texto": "La factura se envía al correo registrado en su cuenta. Si quiere cambiarlo, lo puede hacer en la app, en Perfil > Facturación."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-11-04T10:29:00-05:00",
+        "texto": "ok gracias"
+      }
+    ]
+  },
+  {
+    "conversacion_id": "CV-2611-99017",
+    "customer_id": "CL-1190560",
+    "contacto_id": "CT-884931",
+    "segmento": "olvidadizo",
+    "fecha": "2026-11-04T20:05:00-05:00",
+    "plantilla": "recordatorio_boton_pago_v1",
+    "resultado": "pagó",
+    "cola_escalamiento": null,
+    "identidad_verificada": true,
+    "ofertas_presentadas": [],
+    "mensajes": [
+      {
+        "rol": "plantilla",
+        "hora": "2026-11-04T17:22:00-05:00",
+        "texto": "Hola Yessenia 👋 Le recordamos que su factura tiene un saldo pendiente. Puede pagar con el botón de abajo o escribirnos si necesita ayuda."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-11-04T20:05:00-05:00",
+        "texto": "buenas noches"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-11-04T20:05:00-05:00",
+        "texto": "ya yo pague eso hoy mismo por la banca en linea"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-11-04T20:06:00-05:00",
+        "texto": "Buenas noches, gracias por avisar. Para revisar su cuenta necesito confirmar su identidad: ¿me indica los últimos cuatro dígitos de su cédula?"
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-11-04T20:07:00-05:00",
+        "texto": "1186"
+      },
+      {
+        "rol": "sistema",
+        "hora": "2026-11-04T20:07:00-05:00",
+        "texto": "Verificación correcta"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-11-04T20:07:00-05:00",
+        "texto": "Gracias, Yessenia. Veo un pago de {{monto_en_transito}} registrado hoy por banca en línea. Está en tránsito: los pagos bancarios se aplican en {{plazo_aplicacion}}."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-11-04T20:09:00-05:00",
+        "texto": "ok pero no me van a cortar verdad? mañana es feriado"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-11-04T20:09:00-05:00",
+        "texto": "No se preocupe. Con ese pago su factura queda cubierta cuando se aplique, y no le enviaremos más recordatorios por ella."
+      },
+      {
+        "rol": "cliente",
+        "hora": "2026-11-04T20:10:00-05:00",
+        "texto": "perfecto gracias 🙏"
+      },
+      {
+        "rol": "agente",
+        "hora": "2026-11-04T20:10:00-05:00",
+        "texto": "A usted. Que tenga buena noche."
+      }
+    ]
+  }
+]

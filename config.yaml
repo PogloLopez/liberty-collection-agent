@@ -1,0 +1,36 @@
+# Demo: la campaña puede repetirse con el mismo cliente el mismo día (D38). En producción, false.
+modo_demo: true
+
+# Modelos por entorno (D7, D36). `LLM_PROVIDER` elige la sección por su `proveedor` (por defecto
+# openrouter). Cada rol lista modelos en orden: los siguientes son alternativas si el anterior falla.
+# OpenRouter (D51): una key y saldo prepagado. Para volver a Groq gratis: proveedor groq, url
+# https://api.groq.com/openai/v1, agente [openai/gpt-oss-120b, qwen/qwen3.8-27b] y GROQ_API_KEY.
+dev:
+  proveedor: openrouter
+  url: https://openrouter.ai/api/v1
+  timeout_s: 20 # dos modelos sin reintentos caben en los 55 s que la Lambda espera al Runtime (D50)
+  agente:
+    modelos: [anthropic/claude-haiku-5.5, openai/gpt-oss-120b]  # D42: el 20b rompía las tools
+    max_tokens: 1500
+  estratega: # también escribe el resumen al cierre (D34)
+    modelos: [openai/gpt-oss-20b]
+    max_tokens: 600
+  moderador: # D35; si falla, el mensaje pasa
+    modelos: [openai/gpt-oss-safeguard-20b]
+    max_tokens: 300
+
+# Nube (D46). `region` es el único lugar donde se define: la usan el agente, las Lambdas y los stacks
+# (infra/app.py) y la guía de despliegue (D47). Los ids `us.` son perfiles de inferencia de EE. UU.:
+# si se cambia a una región fuera de EE. UU., hay que cambiar también el prefijo (p. ej. `eu.`).
+# El guardrail lo crea el stack y llega por GUARDRAIL_ID y GUARDRAIL_VERSION.
+prod:
+  proveedor: bedrock
+  region: us-east-1
+  timeout_s: 30
+  agente:
+    modelos: [us.amazon.nova-lite-v1:0]
+    max_tokens: 1500
+  estratega:
+    modelos: [us.amazon.nova-micro-v1:0]
+    max_tokens: 600
+  # sin moderador: en la nube lo reemplaza Guardrails (D4)
