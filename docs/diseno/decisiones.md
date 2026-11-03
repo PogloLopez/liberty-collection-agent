@@ -304,10 +304,10 @@ queda ningún día, la oferta no es elegible; la ventana de la promesa usa los m
 tiene tope de 30 días y OF-103 de 15. Trade-off: la mayoría de reincidentes pierde la prórroga.
 
 ### D33 Perfiles del prototipo
-**Cinco perfiles, tres detallados** (Pablo, 1-nov): olvidadizo, dificultad temporal y mora avanzada (los de
-la demo, [[decisiones#D20 Formato de la demo]]) con prompt y tarjetas completas; reincidente y valioso con
-churn con un prompt corto que dice que se dejó así a propósito para la demo. Trade-off: esos dos segmentos
-no se demuestran con calidad.
+**Cinco perfiles al mismo nivel** (Pablo, 1-nov; completados el 2-nov, D47): olvidadizo, dificultad
+temporal, mora avanzada, reincidente y valioso con churn, cada uno con tono, presión y cómo abrir, sin
+ofertas. Trade-off: la demo guiada sigue mostrando tres ([[decisiones#D20 Formato de la demo]]); los otros
+dos se prueban igual desde el selector.
 
 ### D34 Resumen al cierre
 **En el hito 2** (Pablo, 1-nov): al cerrar la conversación, gpt-oss-20b (en la nube, Nova Micro) escribe una nota de origen
@@ -440,15 +440,64 @@ la demo con las cifras actuales (Pablo, 2-nov).
    "dos" o `{{opciones}}` sin que existiera, el validador lo rechazaba tres veces y salía "¿me lo puede
    repetir?".
 
+### D46 Alcance del hito 4
+**Lambda + AgentCore Runtime** (Pablo, 2-nov): la Lambda router (FastAPI + Mangum) corre el orquestador y
+lo determinista; el turno del agente corre en AgentCore Runtime como imagen Docker linux/arm64 en ECR
+(Pablo, 2-nov: "como debe ser", no con el zip en S3). La imagen es un FastAPI con `POST /invocations` y
+`GET /ping` en el puerto 8080 (contrato verificado en la guía de AgentCore el 2-nov), sin el SDK de
+AgentCore. CDK construye y sube la imagen al desplegar, así que Pablo necesita Docker con buildx. Las tools
+van dentro del agente (plan B de D21), sin AgentCore Gateway ni Memory. DynamoDB para datos y sesiones, Bedrock Nova en us-east-1 (perfiles
+`us.`), Step Functions para la campaña y el frontend en S3 + CloudFront. El documento de arquitectura
+explica cómo sería en producción (Gateway con una Lambda por tool, Memory, WhatsApp, SQS FIFO) y por qué la
+demo lo simplifica. El adaptador de DynamoDB se prueba con `moto` en pytest (cambia el trade-off de D26).
+Dependencias nuevas: `aws-cdk-lib`, `constructs`, `boto3`, `mangum` y `moto` (dev). Los
+datos mock se cargan con un botón "Reiniciar demo" de la consola de cartera, que borra y vuelve a sembrar la
+tabla: sirve para la primera carga y para que el evaluador repita pruebas. Pablo ejecuta los comandos de
+[[guia_despliegue]]. Trade-off: menos fiel al diseño completo de D9 y D21, a cambio de menos rondas de
+despliegue.
+
+### D47 Revisión de Pablo antes del despliegue
+**Ajustes de prompts, hora y región** (Pablo, 2-nov):
+1. `resumen.md` dice quién lee el resumen (el agente de la próxima conversación), qué incluir y qué no
+   (hechos, sin cifras ni cédula), el JSON exacto y el criterio de cada flag.
+2. Los prompts de segmento solo dan tono, presión y cómo abrir: las ofertas y su orden salen únicamente de
+   `consultar_ofertas_elegibles` (`ofertas.json` es la fuente de verdad; si cartera la edita, ningún prompt
+   queda desactualizado). Reincidente y valioso con churn quedan al nivel de los demás (D33).
+3. La hora sale del system prompt y va en el `[contexto]` del final del mensaje: Groq (gpt-oss) y Nova
+   cachean por prefijo exacto (automático en Groq, implícito en Nova; guías de cada uno, 2-nov), y la hora
+   cambiaba el prefijo cada minuto. La demo arranca a las 9:00 (`reloj_demo`: la hora del botón "Que
+   sean las 9 AM" más lo que lleva vivo el proceso): saludo, filtro de horario y plantilla no dependen
+   de la hora de quien prueba, y el tiempo sigue avanzando. Las tarjetas de estrategia tampoco nombran
+   ofertas.
+4. La región se define solo en `prod.region` de `config.yaml`; los stacks la leen de ahí (también los
+   perfiles de Nova para el permiso de invocar) y la guía usa `<REGION>`. Los ids `us.` quedan atados a
+   regiones de EE. UU. (anotado junto a la región).
+Trade-off: en producción habría que pasar el reloj real al orquestador; en la demo la vigencia de 12 h
+de la verificación no se alcanza (la cubren los tests con un reloj propio).
+
+### D48 Imágenes con uv
+**Las dos imágenes instalan con uv desde `uv.lock`, en dos etapas** (Pablo, 2-nov): la primera trae `uv`
+fijado (`ghcr.io/astral-sh/uv:0.8.14`, la versión de desarrollo) e instala las dependencias congeladas sin
+los grupos `dev` ni `infra`; la final copia solo el resultado y el código. Ya no existe un
+`requirements` exportado que pudiera desactualizarse. Antes de desplegar, la guía prueba los dos builds en
+local. Trade-off: la imagen de Lambda exporta del lock e instala con `--target`, porque Lambda busca los
+paquetes en `${LAMBDA_TASK_ROOT}` y no en un entorno virtual.
+
+### D49 Concurrencia de la API
+**Sin concurrencia reservada** (Pablo, 2-nov): la cuenta tiene una cuota de 10 ejecuciones
+concurrentes (`get-account-settings`), y Lambda solo deja reservar si quedan al menos 100 sin reservar
+(guía de Lambda, 2-nov). Esa cuota ya es el tope: nunca hay más de 10 Lambdas a la vez en toda la cuenta.
+Junto con el código de acceso, acota el costo de un abuso del link. Trade-off: la API comparte la cuota
+con los pasos de la campaña; con el tráfico de una evaluación sobra.
+
 ## Pendientes
 
-- **V1 (asumido, D44):** precios de WhatsApp desde octubre de 2026 (página oficial de Meta).
-- **V2 (asumido, D44):** saber si el Proyecto de Ley 306 se sancionó. Mientras tanto se adopta como política interna.
-- **V3 (asumido, D44):** precios vigentes de Nova Lite y Micro. La tabla oficial no se pudo leer; las cifras usadas
-  vienen de un blog de AWS.
-- **P1:** perfiles de los segmentos: plantillas, prompts de tono y tarjetas de estrategia. Se redactan
-  durante el desarrollo y Pablo los revisa antes de desplegar.
 - **P2:** diagrama Mermaid del paso a paso de `orquestador.py` (bifurcaciones y procesos destino) en
-  `docs/diseno/`, enlazado desde el documento de arquitectura (pedido de Pablo, 1-nov).
+  `docs/diseno/`, enlazado desde el documento de arquitectura (pedido de Pablo, 1-nov). Se hace junto con
+  el README del proyecto.
+
+Cerrados (Pablo, 2-nov): V1 (precios de WhatsApp) y V3 (precios de Nova) no interesan para la demo; V2
+(Proyecto de Ley 306) se adopta como política interna sin seguir su estado; P1 (perfiles de los
+segmentos) quedó aprobado a lo largo del desarrollo (D40, D41, D47).
 
 Las ideas de [[feedback_estudio]] quedaron en D22, D23 y D24.

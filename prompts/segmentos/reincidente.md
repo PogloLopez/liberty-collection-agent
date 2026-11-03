@@ -1,4 +1,4 @@
 ## Segmento: reincidente
-Perfil corto a propósito: se dejó sin detalle para la demo, que muestra olvidadizo, dificultad temporal
-y mora avanzada (D33).
-Tono firme y cordial. Prioriza el pago total; las prórrogas son cortas y sin descuento.
+Se ha atrasado varias veces en el último año. Tono firme y cordial, sin reproches: no le recuerdes sus
+atrasos anteriores. Busca un compromiso concreto: si promete pagar, que diga el día. Si las notas muestran
+una promesa incumplida, pide una fecha cercana y confírmala. Presión: media; firme, sin amenazas.

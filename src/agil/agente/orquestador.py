@@ -9,7 +9,7 @@ sin LLM entra al agente como evento resumido en su siguiente turno (D22).
 import logging
 import re
 from collections.abc import Callable
-from datetime import datetime
+from datetime import date, datetime, time
 from decimal import Decimal
 
 from opentelemetry import trace
@@ -20,7 +20,7 @@ from agil.agente import formato
 from agil.agente.auxiliares import clasificar_momento, es_abusivo, resumir, tarjeta_estrategia
 from agil.agente.config import Modelos
 from agil.agente.hooks import RESPUESTA_TOPE, Controles
-from agil.agente.perfiles import cargar_perfil, prompt_sistema
+from agil.agente.perfiles import cargar_perfil, linea_hora, prompt_sistema
 from agil.agente.sesion import (
     MAX_FALLOS_SEGUIDOS,
     MAX_INTENTOS_CEDULA,
@@ -99,6 +99,17 @@ _USA_LA_TARJETA = (
     "eligió, propón la opción sin pedirle que confirme."
 )
 REINTENTOS = 2
+HORA_DEMO = time(9)  # la del botón "Que sean las 9 AM" (D47)
+_ARRANQUE = datetime.now(ZONA)
+
+
+def reloj_demo(fecha: date) -> datetime:
+    """La fecha del mock a las 9:00 más lo que lleva vivo el proceso: el saludo y el filtro de
+    horario no dependen de quien prueba, y el tiempo sigue avanzando (D47). En producción se
+    pasaría el reloj real."""
+    return datetime.combine(fecha, HORA_DEMO, ZONA) + (datetime.now(ZONA) - _ARRANQUE)
+
+
 _tracer = trace.get_tracer("agil.orquestador")
 
 
@@ -116,10 +127,7 @@ class Orquestador:
     ) -> None:
         self.repo = repo
         self.modelos = modelos
-        # El mundo del mock vive en su fecha de referencia; la hora es la real.
-        self.ahora = ahora or (
-            lambda: datetime.combine(repo.fecha_referencia, datetime.now(ZONA).time(), ZONA)
-        )
+        self.ahora = ahora or (lambda: reloj_demo(repo.fecha_referencia))
 
     # --- Ciclo de vida ---
 
@@ -285,7 +293,10 @@ class Orquestador:
         return Respuesta(mensajes=[final], tarjeta=tarjeta, cerrada=sesion.cerrada)
 
     def _contexto(self, sesion: Sesion) -> list[str]:
-        lineas = [f"[contexto] Turno {sesion.turno} de {sesion.max_turnos}."]
+        lineas = [
+            linea_hora(self.ahora()),
+            f"[contexto] Turno {sesion.turno} de {sesion.max_turnos}.",
+        ]
         if sesion.max_turnos - sesion.turno < 3:
             lineas.append(
                 "[contexto] Quedan pocos turnos: propone cerrar (link, promesa o asesor)."

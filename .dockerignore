@@ -1,0 +1,11 @@
+# Solo entra lo que usan las imágenes; nunca .env ni .venv.
+*
+!infra/docker/
+!pyproject.toml
+!uv.lock
+!config.yaml
+!prompts/
+!data/mock/
+!src/
+**/__pycache__
+data/mock/etiquetas_esperadas.json

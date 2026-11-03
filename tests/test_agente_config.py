@@ -46,10 +46,20 @@ def test_yaml_sin_una_seccion_por_proveedor_falla(env, monkeypatch):
         config.Configuracion(_env_file=env, dev=dev, prod=dev)
 
 
-def test_proveedor_de_la_nube_no_implementado(env, monkeypatch):
+def test_nube_con_guardrails_solo_en_el_agente(env, monkeypatch):
+    """Sin red: el modelo de Bedrock se sustituye por uno que solo guarda sus argumentos."""
+    creados = []
+    monkeypatch.setattr(config, "BedrockModel", lambda **kw: creados.append(kw) or kw)
     monkeypatch.setenv("LLM_PROVIDER", "bedrock")
-    with pytest.raises(NotImplementedError):
-        config.crear_modelos(_cfg(env))
+    monkeypatch.setenv("GUARDRAIL_ID", "gr-1")
+    monkeypatch.setenv("GUARDRAIL_VERSION", "1")
+    m = config.crear_modelos(_cfg(env))
+    assert m.agente["model_id"] == "us.amazon.nova-lite-v1:0"
+    assert m.agente["region_name"] == "us-east-1"
+    assert m.agente["guardrail_id"] == "gr-1" and m.agente["guardrail_latest_message"] is True
+    assert m.estratega["model_id"] == "us.amazon.nova-micro-v1:0"
+    assert "guardrail_id" not in m.estratega and m.moderador is None
+    assert len(creados) == 2
 
 
 def test_crear_modelos_desde_el_yaml_sin_llamar(env, monkeypatch):

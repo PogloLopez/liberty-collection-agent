@@ -7,7 +7,9 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "boto3>=1.40",
     "fastapi>=0.162.0",
+    "mangum>=0.19",
     "pydantic>=2",
     "pydantic-settings[yaml]>=2.16",
     "strands-agents[openai]==1.63.0",
@@ -16,12 +18,19 @@ dependencies = [
 
 [tool.uv]
 package = false
+default-groups = ["dev", "infra"]
 
 [dependency-groups]
 dev = [
     "httpx>=0.28.1",
+    "moto[dynamodb]>=5.1",
     "pytest>=9.2.0",
     "ruff>=0.17.3",
+]
+# Solo para sintetizar y probar los stacks; no entra en la imagen ni en la Lambda (D46).
+infra = [
+    "aws-cdk-lib>=2.220",
+    "constructs>=10.4",
 ]
 
 [tool.pytest.ini_options]

@@ -5,12 +5,22 @@ let ocupado = false;
 let clientes = [];
 let clienteActivo = null; // el de la conversación abierta, no el del selector
 
-const api = async (ruta, cuerpo) => {
-  const r = await fetch(`/api/${ruta}`, cuerpo === undefined ? {} : {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(cuerpo),
+// En la nube la API pide un código de acceso (D46): se pregunta una vez y queda en el navegador.
+const leerCodigo = () => { try { return localStorage.getItem("codigo") || ""; } catch { return ""; } };
+const guardarCodigo = (c) => { try { localStorage.setItem("codigo", c); } catch {} };
+
+const api = async (ruta, cuerpo, reintento = true) => {
+  const headers = { "x-codigo-acceso": leerCodigo() };
+  if (cuerpo !== undefined) headers["Content-Type"] = "application/json";
+  const r = await fetch(`/api/${ruta}`, {
+    method: cuerpo === undefined ? "GET" : "POST",
+    headers,
+    body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
   });
+  if (r.status === 401 && reintento) {
+    guardarCodigo(prompt("Código de acceso a la demo:") || "");
+    return api(ruta, cuerpo, false);
+  }
   if (!r.ok) throw new Error(`${r.status} ${await r.text()}`);
   return r.json();
 };
@@ -228,6 +238,12 @@ $("#formulario").onsubmit = (e) => {
   enviar({ texto }, `Mensaje: «${texto}»`);
 };
 $("#nueve").onclick = campana;
+$("#reiniciar").onclick = async () => {
+  if (!confirm("¿Borrar conversaciones y escrituras y recargar los datos de ejemplo?")) return;
+  $("#reiniciar").disabled = true;
+  try { await api("reiniciar", {}); location.reload(); }
+  catch (e) { alert(`No se pudo reiniciar: ${e.message}`); $("#reiniciar").disabled = false; }
+};
 
 api("demo").then((d) => {
   clientes = d.clientes;

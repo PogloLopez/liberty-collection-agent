@@ -17,14 +17,18 @@ dev:
     modelos: [openai/gpt-oss-safeguard-20b]
     max_tokens: 300
 
-# Demo y producción: lo activa y verifica Pablo en el hito 4 (IDs y perfiles de inferencia por región).
+# Nube (D46). `region` es el único lugar donde se define: la usan el agente, las Lambdas y los stacks
+# (infra/app.py) y la guía de despliegue (D47). Los ids `us.` son perfiles de inferencia de EE. UU.:
+# si se cambia a una región fuera de EE. UU., hay que cambiar también el prefijo (p. ej. `eu.`).
+# El guardrail lo crea el stack y llega por GUARDRAIL_ID y GUARDRAIL_VERSION.
 prod:
   proveedor: bedrock
+  region: us-east-1
   timeout_s: 30
   agente:
-    modelos: [amazon.nova-lite-v1:0]
+    modelos: [us.amazon.nova-lite-v1:0]
     max_tokens: 1500
   estratega:
-    modelos: [amazon.nova-micro-v1:0]
+    modelos: [us.amazon.nova-micro-v1:0]
     max_tokens: 600
   # sin moderador: en la nube lo reemplaza Guardrails (D4)

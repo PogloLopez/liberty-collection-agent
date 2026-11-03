@@ -2,18 +2,19 @@
 nube hará el flujo programado: filtro de contacto, segmento, plantilla del segmento y envío."""
 
 import json
-from datetime import date, datetime, time
+from datetime import date, datetime
 
 from opentelemetry import trace
 from pydantic import BaseModel, Field
 
-from agil.agente.orquestador import Orquestador
+from agil.agente.orquestador import HORA_DEMO, Orquestador
 from agil.agente.perfiles import PROMPTS
 from agil.agente.sesion import Sesion
 from agil.dominio.modelos import Contacto
 from agil.dominio.reglas.calendario import ZONA
 from agil.dominio.reglas.elegibilidad import puede_enviar_ahora
 from agil.dominio.reglas.segmentacion import segmentar
+from agil.dominio.repositorio.interfaz import Repositorio
 
 CAMPANA_ID = "CP-DEMO"
 _tracer = trace.get_tracer("agil.campana")
@@ -46,13 +47,30 @@ def que_sean_las_9(
 def _enviar(
     orq: Orquestador, customer_id: str, conversacion_id: str, hoy: date, modo_demo: bool
 ) -> Envio:
-    repo = orq.repo
-    momento = datetime.combine(hoy, time(9), ZONA)
+    ok, pasos = filtrar(orq.repo, customer_id, hoy, modo_demo)
+    return enviar(orq, customer_id, conversacion_id, hoy, pasos) if ok else Envio(pasos=pasos)
+
+
+def filtrar(
+    repo: Repositorio, customer_id: str, hoy: date, modo_demo: bool
+) -> tuple[bool, list[tuple[str, str]]]:
+    """Primer paso del flujo (en la nube, un estado de Step Functions): ¿se le puede escribir?"""
+    momento = datetime.combine(hoy, HORA_DEMO, ZONA)
     v = puede_enviar_ahora(repo, customer_id, momento, tope_diario=not modo_demo)
     filtro = v.motivo or ("aprobado (modo demo: sin tope diario)" if modo_demo else "aprobado")
-    pasos = [("Disparador", "las 9 AM (simulado)"), ("Filtro de contacto", filtro)]
-    if not v.ok:
-        return Envio(pasos=pasos)
+    return v.ok, [("Disparador", "las 9 AM (simulado)"), ("Filtro de contacto", filtro)]
+
+
+def enviar(
+    orq: Orquestador,
+    customer_id: str,
+    conversacion_id: str,
+    hoy: date,
+    pasos: list[tuple[str, str]],
+) -> Envio:
+    """Segundo paso: plantilla del segmento, sesión nueva y contacto registrado."""
+    repo = orq.repo
+    momento = datetime.combine(hoy, HORA_DEMO, ZONA)
     seg = segmentar(repo, customer_id)
     plantilla_id, texto = plantilla(seg.segmento.value, repo.cliente(customer_id).nombre)
     pasos += [("Segmento", f"{seg.segmento.value}: {seg.motivo}"), ("Plantilla", plantilla_id)]

@@ -7,7 +7,7 @@ import pytest
 from conftest import ModeloGuionado
 
 from agil.agente.config import Modelos
-from agil.agente.orquestador import TEXTOS, Orquestador
+from agil.agente.orquestador import TEXTOS, Orquestador, reloj_demo
 from agil.agente.sesion import Sesion
 from agil.agente.tools import CONFIRMA_PROMESA
 from agil.dominio.harness.identidad import ultimos_cuatro
@@ -1145,3 +1145,27 @@ def test_pedido_de_asesor_abusivo_cuenta_como_strike_y_no_como_pedido(repo, ahor
     r = orq.atender(sesion, "quiero un asesor, insulto")
     assert r.mensajes == [TEXTOS["abuso"]] and sesion.strikes == 1
     assert sesion.pedidos_humano == 0 and agente.recibido == [] and repo.handoffs == []
+
+
+def test_la_hora_va_en_el_contexto_y_no_en_el_system_prompt(repo, ahora):
+    """D47: la hora cambia cada minuto; en el system prompt rompería el caché por prefijo."""
+    agente = ModeloGuionado()
+    orq = _orq(repo, ahora, agente)
+    orq.atender(orq.iniciar(CID, "CV-1"), "hola")
+    sistema, mensajes = agente.recibido[0]
+    assert "15:00" not in sistema
+    assert '[contexto] Son las 15:00: si saludas, \\"buenas tardes\\"' in json.dumps(
+        mensajes, ensure_ascii=False
+    )
+
+
+def test_reloj_demo_arranca_a_las_9_y_avanza(repo):
+    primero = reloj_demo(repo.fecha_referencia)
+    segundo = reloj_demo(repo.fecha_referencia)
+    assert primero.date() == repo.fecha_referencia and primero.hour == 9
+    assert segundo >= primero
+
+
+def test_sin_reloj_usa_la_fecha_del_mock_a_las_9(repo):
+    momento = Orquestador(repo, Modelos(ModeloGuionado(), None, None)).ahora()
+    assert momento.date() == repo.fecha_referencia and momento.hour == 9

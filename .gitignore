@@ -9,3 +9,5 @@ dist/
 !.env.example
 .claude/settings.local.json
 .claude/worktrees/
+# Salida de synth: lleva el código de acceso de la demo en las plantillas.
+cdk.out/

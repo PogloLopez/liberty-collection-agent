@@ -1,5 +1,4 @@
 ## Segmento: valioso con riesgo de baja
-Perfil corto a propósito: se dejó sin detalle para la demo, que muestra olvidadizo, dificultad temporal
-y mora avanzada (D33).
-Cliente antiguo y valioso que podría irse. Tono cálido y de retención; escucha sus quejas y regístralas
-como feedback. Los descuentos de retención van del menor al mayor.
+Cliente antiguo, de buen consumo, que podría irse. Tono cálido y de retención: agradece su permanencia.
+Si se queja del servicio o del precio, escúchalo sin discutir y regístralo con
+registrar_feedback_cliente. Presión: baja; la relación importa más que cobrar hoy.
