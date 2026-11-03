@@ -136,6 +136,48 @@ Todos los comandos llevan `-c codigo=<CODIGO>`: es el código de acceso que pedi
 una palabra y cuatro números) y usa siempre el mismo; no se guarda en el repo. En los ejemplos va como
 `ProyectoAgil2026`.
 
+## Modelo: Bedrock o Groq
+
+Por defecto el agente usa Bedrock (Nova). Mientras la cuenta tenga Bedrock bloqueado ("Access to Bedrock
+models is not allowed for this account"), se usa Groq: el resto de la infraestructura no cambia
+([[decisiones#D50 Groq como modelo en la nube (plan B)]]).
+
+**Importante:** con Groq, **todos** los `deploy` llevan también `-c proveedor=groq`. Si un deploy lo olvida,
+el agente y las Lambdas vuelven a Bedrock y las conversaciones fallan.
+
+**G.1 Guardar la key de Groq cifrada en la cuenta (una sola vez).** Desde la raíz del repo (donde está
+`.env`). El comando la toma de tu `.env`, así no la escribes ni queda en el historial de la terminal:
+
+```powershell
+$k = (Select-String -Path .env -Pattern '^GROQ_API_KEY=(.+)$').Matches[0].Groups[1].Value.Trim('"')
+aws ssm put-parameter --name /agil/groq-api-key --type SecureString --value $k --region <REGION>
+Remove-Variable k
+```
+
+- Qué hace: crea un parámetro cifrado en SSM Parameter Store (servicio de AWS para configuración y
+  secretos). Se cifra con la llave `aws/ssm`, que AWS administra. El agente y las Lambdas solo tienen
+  permiso para leer ese parámetro; la key no queda en el repo, ni en la plantilla, ni en la configuración
+  visible de las funciones.
+- Qué ver: un JSON con `"Version": 1`. Si dice que ya existe, agrega `--overwrite` para reemplazarla.
+- Cobra: nada (parámetro estándar).
+- Deshacer: `aws ssm delete-parameter --name /agil/groq-api-key --region <REGION>`.
+
+**G.2 Redesplegar el agente y la API con Groq.**
+
+```powershell
+cdk deploy AgilAgente AgilApi -c codigo=ProyectoAgil2026 -c proveedor=groq
+```
+
+- Qué hace: reconstruye las dos imágenes y cambia las variables del agente y de las Lambdas a Groq (con
+  el nombre del parámetro de la key y el permiso para leerlo). La tabla, la web y los datos no se tocan.
+- Qué ver: los dos stacks en `UPDATE_COMPLETE`. CDK muestra el permiso nuevo `ssm:GetParameter` y pregunta:
+  `y`.
+- Volver a Bedrock: el mismo comando sin `-c proveedor=groq`.
+
+**Límites del plan gratuito de Groq:** unas 6-8 conversaciones al día y ~1 turno por minuto por modelo
+(si el primero se agota, el agente pasa a qwen). Espacia las pruebas: un minuto entre turnos evita los
+límites.
+
 ## Paso 1. Sintetizar (no crea nada)
 
 ```powershell
@@ -223,6 +265,9 @@ Sube los archivos e invalida la caché de CloudFront: 2-5 minutos, sin tocar el 
 | Stack en `ROLLBACK_COMPLETE` | Falló la creación y CloudFormation lo deshizo | Pegarme el evento que falló (pestaña Events); después de arreglar, `cdk destroy <stack>` y desplegar de nuevo |
 | La página carga pero dice `401` o vuelve a pedir el código | Código distinto al de `-c codigo=` | Usar el mismo; si se guardó uno errado, abrir la página en una ventana privada |
 | La conversación da error al primer mensaje | Lo más común: permisos del agente con Bedrock | Logs del agente (paso 3) y pegármelos |
+| `Access to Bedrock models is not allowed for this account` | La cuenta tiene Bedrock bloqueado | Usar Groq: sección "Modelo: Bedrock o Groq" |
+| `ParameterNotFound` o `Falta GROQ_API_KEY` en los logs | El deploy es con Groq pero falta el parámetro de la key | Paso G.1 y repetir el mensaje |
+| El agente responde "¿me lo puede repetir?" varias veces seguidas | Se agotó el límite por minuto o por día de Groq en los dos modelos | Esperar un minuto; si persiste, es el límite diario |
 
 ## Paso 5. Apagar todo al terminar la evaluación
 

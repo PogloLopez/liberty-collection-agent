@@ -31,6 +31,10 @@ Para métricas agregadas se exportaría a S3 + Athena; en la demo no hace falta.
 
 ## Costo estimado
 
+**Con Groq como modelo** ([[decisiones#D50 Groq como modelo en la nube (plan B)]]): los modelos salen gratis
+(plan gratuito de Groq) y desaparecen las filas de Nova y Guardrails; queda el resto de AWS, menos de
+USD 0.0001 por turno. El límite pasa a ser la cuota de Groq (unas 6-8 conversaciones al día), no el costo.
+
 Precios de lista de us-east-1 consultados el 31-oct-2026, sin free tier ni créditos. Los de Nova vienen de un
 blog de AWS porque la tabla vigente no se pudo leer; para la demo basta esa estimación (Pablo, 2-nov).
 

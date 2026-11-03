@@ -326,7 +326,7 @@ Trade-off: su límite gratuito es de 2.000 tokens por minuto (cabeceras de Groq,
 secciones `dev` (Groq) y `prod` (Bedrock, la completa Pablo en el hito 4) con URL, tiempo de espera y, por
 rol, una lista ordenada de modelos y su `max_tokens`; `LLM_PROVIDER` sigue eligiendo la sección (D7). La key
 es `SecretStr` y, si falta, la configuración no se construye. Alternativas (Claude, 1-nov): si un modelo
-falla (error de la API, tiempo de espera o respuesta vacía) se pasa al siguiente sin reintentarlo (la cuota por minuto la reintenta Strands con el mismo modelo, D41; la diaria pasa al siguiente, D42);
+falla (error de la API, tiempo de espera o respuesta vacía) se pasa al siguiente sin reintentarlo (una cuota agotada, por minuto o diaria, también pasa al siguiente: D42 y D50);
 si fallan todos, Strands reintenta solo si fue por cuota y, si no, es un fallo que va a un asesor (D15). En dev el agente cae al respaldo de D42; el estratega y el moderador no tienen alternativa. Trade-off: cada
 alternativa obliga a correr los evals con ella.
 
@@ -389,6 +389,7 @@ persona.
 1. Ante un 429 de Groq el respaldo no cambia de modelo: Strands espera y reintenta el mismo (el 20b rompía
    las llamadas a tools y daba "¿me lo puede repetir?"). El respaldo queda para errores reales y la cuota diaria (D42).
    Trade-off: hasta ~1 min de espera en el peor caso; si se agota la cuota diaria, el turno falla igual.
+   Reemplazado por D50: el respaldo ya es qwen (D42), así que ahora el 429 por minuto pasa al siguiente.
 2. Tras verificar, el aviso pide retomar lo que el cliente ya pidió (redacción en D43) y en ese turno no
    corre el estratega.
 3. Al cancelar una oferta, el aviso dice qué queda por ofrecer y prohíbe volver al pago total o a lo
@@ -403,8 +404,8 @@ persona.
 
 ### D42 Cuota diaria de Groq
 **Ante un límite diario se pasa al siguiente modelo** (Pablo, 2-nov): la repetición agotó los 200.000
-tokens diarios de gpt-oss-120b y esperar no servía. Un 429 "per day" cae al siguiente modelo; uno por
-minuto sigue esperando al mismo (D41). El agente en dev cae a `qwen/qwen3.8-27b` (con tools según la
+tokens diarios de gpt-oss-120b y esperar no servía. Un 429 "per day" cae al siguiente modelo (desde D50,
+también el de por minuto). El agente en dev cae a `qwen/qwen3.8-27b` (con tools según la
 página de deprecaciones de Groq y disponible para la key según `GET /models`, 2-nov) en vez de
 gpt-oss-20b, que rompía las tools. Sustituye a `llama-3.3-70b-versatile`, retirado del free tier el
 16-ago-2026 (su página de modelos aún lo lista, pero la API da 404). `reasoning_effort: low` solo va a los
@@ -489,6 +490,31 @@ concurrentes (`get-account-settings`), y Lambda solo deja reservar si quedan al 
 (guía de Lambda, 2-nov). Esa cuota ya es el tope: nunca hay más de 10 Lambdas a la vez en toda la cuenta.
 Junto con el código de acceso, acota el costo de un abuso del link. Trade-off: la API comparte la cuota
 con los pasos de la campaña; con el tráfico de una evaluación sobra.
+
+### D50 Groq como modelo en la nube (plan B)
+**La demo desplegada usa Groq mientras Bedrock esté bloqueado** (Pablo, 2-nov): la cuenta recibe
+`Access to Bedrock models is not allowed for this account` con cualquier modelo, también en el Playground y
+ya en plan de pago; el caso de Soporte no responderá antes de la entrega. La infraestructura de AWS se
+queda (cuatro stacks); solo cambia el proveedor del modelo:
+1. **Un valor elige el proveedor:** `-c proveedor=groq` en el deploy (por defecto, `bedrock`). Con Groq,
+   el agente y las Lambdas usan la sección `dev` de `config.yaml` (gpt-oss-120b con respaldo en qwen,
+   estratega gpt-oss-20b y el moderador en lugar de Guardrails) y no reciben las variables del guardrail.
+   Volver a Bedrock es redesplegar `AgilAgente` y `AgilApi` sin ese valor; el guardrail sigue creado.
+2. **La key no pasa por el repo, el chat ni la plantilla:** Pablo la guarda como SecureString en SSM
+   Parameter Store (`/agil/groq-api-key`, gratis con la llave `aws/ssm`); el stack pasa solo el nombre
+   (`GROQ_API_KEY_PARAM`), el código la lee al arrancar y los roles solo pueden leer ese parámetro.
+3. **Plan gratuito de Groq** (Pablo): ~8K tokens por minuto y 200K por día por modelo; alcanza para unas
+   6-8 conversaciones al día. El turno tiene que caber en los 55 s que la Lambda espera al Runtime:
+   - ante un límite por minuto el agente pasa al modelo siguiente, que tiene su propia cuota (antes
+     esperaba al mismo, D41); solo el último modelo espera;
+   - el estratega y el moderador fallan al instante si se agota su cuota (`SinEspera`): el turno sigue sin
+     tarjeta o sin moderar (D35). El moderador tiene 3 peticiones por minuto;
+   - el cliente de Groq no reintenta por su cuenta (`max_retries: 0`) y cada llamada corta a los 20 s.
+4. **Salida a internet:** el Runtime tiene red `PUBLIC` y las Lambdas no están en una VPC, así que llegan a
+   la API de Groq sin NAT (se confirma en la prueba de humo).
+Trade-off: se aparta del "100 % AWS" de la consigna y los mensajes de los clientes (sintéticos en la demo)
+van a un tercero; los límites del plan gratuito no aguantan muchas pruebas seguidas. Se declara así en el
+documento de arquitectura.
 
 ## Pendientes
 
