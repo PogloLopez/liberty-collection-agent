@@ -1,6 +1,6 @@
 [project]
 name = "liberty-collection-agent"
-version = "0.1.0"
+version = "0.1.1"
 description = "Proyecto Ágil: agentes de IA que gestionan por WhatsApp a clientes con facturas vencidas (prueba técnica LLA)."
 authors = [
     { name = "poglolopez", email = "poglolopez@gmail.com" }
