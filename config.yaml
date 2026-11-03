@@ -6,7 +6,7 @@ modo_demo: true
 dev:
   proveedor: groq
   url: https://api.groq.com/openai/v1
-  timeout_s: 30
+  timeout_s: 20 # dos modelos sin reintentos caben en los 55 s que la Lambda espera al Runtime (D50)
   agente:
     modelos: [openai/gpt-oss-120b, qwen/qwen3.8-27b]  # D42: el 20b rompía las tools
     max_tokens: 1500

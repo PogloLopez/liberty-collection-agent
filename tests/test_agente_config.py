@@ -12,7 +12,7 @@ from agil.agente import config
 
 @pytest.fixture
 def env(tmp_path, monkeypatch):
-    for var in ("GROQ_API_KEY", "LLM_PROVIDER"):
+    for var in ("GROQ_API_KEY", "GROQ_API_KEY_PARAM", "LLM_PROVIDER"):
         monkeypatch.delenv(var, raising=False)
     return tmp_path / ".env"
 
@@ -57,8 +57,9 @@ def test_nube_con_guardrails_solo_en_el_agente(env, monkeypatch):
     assert m.agente["model_id"] == "us.amazon.nova-lite-v1:0"
     assert m.agente["region_name"] == "us-east-1"
     assert m.agente["guardrail_id"] == "gr-1" and m.agente["guardrail_latest_message"] is True
-    assert m.estratega["model_id"] == "us.amazon.nova-micro-v1:0"
-    assert "guardrail_id" not in m.estratega and m.moderador is None
+    assert isinstance(m.estratega, config.SinEspera)  # D50: el auxiliar no espera cuotas
+    assert m.estratega.modelo["model_id"] == "us.amazon.nova-micro-v1:0"
+    assert "guardrail_id" not in m.estratega.modelo and m.moderador is None
     assert len(creados) == 2
 
 
@@ -108,19 +109,19 @@ def test_respaldo_relanza_el_ultimo_error_si_fallan_todos():
         _texto(config.ConRespaldo([ModeloGuionado(""), _Falla()]))
 
 
-@pytest.mark.parametrize(
-    "error",
-    [
-        ContextWindowOverflowException,
-        ModelThrottledException("429"),
-        ModelThrottledException("429 Rate limit reached on tokens per minute (TPM)"),
-    ],
-)
-def test_respaldo_no_cambia_de_modelo_si_se_excede_la_ventana_o_la_cuota(error):
+def test_respaldo_no_cambia_de_modelo_si_se_excede_la_ventana():
     siguiente = ModeloGuionado("Hola.")
-    with pytest.raises(type(error) if isinstance(error, Exception) else error):
-        _texto(config.ConRespaldo([_Falla(error), siguiente]))
+    with pytest.raises(ContextWindowOverflowException):
+        _texto(config.ConRespaldo([_Falla(ContextWindowOverflowException), siguiente]))
     assert siguiente.recibido == []
+
+
+def test_cuota_por_minuto_pasa_al_siguiente_y_en_el_ultimo_se_espera():  # D50, D41
+    error = ModelThrottledException("429 Rate limit reached on tokens per minute (TPM)")
+    siguiente = ModeloGuionado("Hola.")
+    assert _texto(config.ConRespaldo([_Falla(error), siguiente])) == "Hola."
+    with pytest.raises(ModelThrottledException):
+        _texto(config.ConRespaldo([ModeloGuionado(""), _Falla(error)]))
 
 
 def test_respaldo_acepta_una_tool_sin_texto():
@@ -194,3 +195,45 @@ def test_modelo_sin_familia_conocida_no_recibe_razonamiento(env, monkeypatch):
     cfg = _cfg(env)
     params = config._groq(cfg, cfg.entorno, "llama-3.3-70b-versatile", 64).get_config()["params"]
     assert params == {"max_completion_tokens": 64}
+
+
+def test_en_la_nube_la_key_sale_del_parametro(env, monkeypatch):  # D50, sin red
+    leidos = []
+    monkeypatch.setattr(
+        config, "leer_parametro", lambda nombre, region: leidos.append((nombre, region)) or "k"
+    )
+    monkeypatch.setenv("LLM_PROVIDER", "groq")
+    monkeypatch.setenv("GROQ_API_KEY_PARAM", "/agil/groq-api-key")
+    cfg = _cfg(env)
+    assert cfg.groq_api_key.get_secret_value() == "k"
+    assert leidos == [("/agil/groq-api-key", cfg.prod.region)]
+
+
+def test_con_key_no_se_lee_el_parametro(env, monkeypatch):
+    monkeypatch.setattr(config, "leer_parametro", lambda *a: pytest.fail("no debía leer"))
+    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    monkeypatch.setenv("GROQ_API_KEY_PARAM", "/agil/groq-api-key")
+    assert _cfg(env).groq_api_key.get_secret_value() == "clave-falsa"
+
+
+def test_groq_sin_key_ni_parametro_falla(env, monkeypatch):
+    monkeypatch.setattr(config, "leer_parametro", lambda *a: pytest.fail("no debía leer"))
+    monkeypatch.setenv("LLM_PROVIDER", "groq")
+    with pytest.raises(ValidationError, match="GROQ_API_KEY"):
+        _cfg(env)
+
+
+def test_sin_espera_convierte_la_cuota_en_error_inmediato():  # D50
+    cuota = ModelThrottledException("429 Rate limit reached on tokens per minute (TPM)")
+    with pytest.raises(RuntimeError, match="Cuota agotada") as e:
+        _texto(config.SinEspera(_Falla(cuota)))
+    assert e.value.__cause__ is cuota
+    with pytest.raises(TimeoutError):
+        _texto(config.SinEspera(_Falla()))
+    assert _texto(config.SinEspera(ModeloGuionado("Hola."))) == "Hola."
+
+
+def test_groq_sin_reintentos_del_sdk(env, monkeypatch):  # D50
+    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    cfg = _cfg(env)
+    assert config._groq(cfg, cfg.entorno, "openai/gpt-oss-20b", 64).client_args["max_retries"] == 0

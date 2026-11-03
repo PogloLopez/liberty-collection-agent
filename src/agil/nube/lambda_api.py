@@ -3,8 +3,8 @@
 - `handler`: la API (FastAPI + Mangum) detrás de la URL de la función y de CloudFront.
 - `filtro` y `envio`: los dos pasos de la campaña en Step Functions (botón "Que sean las 9 AM").
 
-Variables que pone el stack: TABLA, RUNTIME_ARN, CAMPANA_ARN, CODIGO_ACCESO, LLM_PROVIDER=bedrock,
-GUARDRAIL_ID y GUARDRAIL_VERSION.
+Variables que pone el stack: TABLA, RUNTIME_ARN, CAMPANA_ARN, CODIGO_ACCESO, LLM_PROVIDER y, según
+el proveedor, GUARDRAIL_ID y GUARDRAIL_VERSION (bedrock) o GROQ_API_KEY_PARAM (groq, D50).
 """
 
 import json
