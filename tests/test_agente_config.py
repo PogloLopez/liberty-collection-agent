@@ -187,7 +187,27 @@ def test_razonamiento_por_familia_de_modelo(env, monkeypatch):
     m = config.crear_modelos(_cfg(env)).agente.modelos
     assert m[0].get_config()["params"]["reasoning_effort"] == "low"
     qwen = m[1].get_config()["params"]
-    assert qwen["reasoning_format"] == "hidden" and "reasoning_effort" not in qwen
+    assert qwen["extra_body"] == {"reasoning_format": "hidden"} and "reasoning_effort" not in qwen
+
+
+def test_parametros_que_acepta_el_sdk_de_openai(env, monkeypatch):
+    """D50: `reasoning_format` como argumento directo rompía `create()` con TypeError antes de
+    llamar a Groq, y el respaldo qwen nunca respondía. Todo parámetro que pasamos debe existir en
+    la firma del SDK (lo propio de Groq va en `extra_body`)."""
+    import inspect
+
+    from openai.resources.chat.completions import AsyncCompletions
+
+    aceptados = set(inspect.signature(AsyncCompletions.create).parameters)
+    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    modelos = config.crear_modelos(_cfg(env))
+    for rol in (modelos.agente, modelos.estratega, modelos.moderador):
+        if rol is None:  # estratega y moderador son opcionales
+            continue
+        rol = getattr(rol, "modelo", rol)  # SinEspera envuelve a los auxiliares
+        for m in getattr(rol, "modelos", [rol]):  # ConRespaldo trae varios
+            desconocidos = set(m.get_config()["params"]) - aceptados
+            assert not desconocidos, (m.get_config()["model_id"], desconocidos)
 
 
 def test_modelo_sin_familia_conocida_no_recibe_razonamiento(env, monkeypatch):

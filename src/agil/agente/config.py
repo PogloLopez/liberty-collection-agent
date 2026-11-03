@@ -160,9 +160,10 @@ class ConRespaldo(Model):
 
 
 # Razonamiento corto en gpt-oss; en qwen, fuera del texto: por defecto va en `content` (D42).
+# `reasoning_format` es propio de Groq: el SDK de OpenAI solo lo acepta en `extra_body` (D50).
 _RAZONAMIENTO = {
     "openai/gpt-oss": {"reasoning_effort": "low"},
-    "qwen/": {"reasoning_format": "hidden"},
+    "qwen/": {"extra_body": {"reasoning_format": "hidden"}},
 }
 
 

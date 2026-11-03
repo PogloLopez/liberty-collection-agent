@@ -512,7 +512,10 @@ queda (cuatro stacks); solo cambia el proveedor del modelo:
    - el estratega y el moderador fallan al instante si se agota su cuota (`SinEspera`): el turno sigue sin
      tarjeta o sin moderar (D35). El moderador tiene 3 peticiones por minuto;
    - el cliente de Groq no reintenta por su cuenta (`max_retries: 0`) y cada llamada corta a los 20 s.
-4. **Salida a internet:** el Runtime tiene red `PUBLIC` y las Lambdas no están en una VPC, así que llegan a
+4. **El respaldo qwen no funcionaba:** `reasoning_format` (D42) iba como argumento directo y el SDK de
+   OpenAI lo rechaza (`TypeError` antes de llamar a Groq), así que cada límite del 120b tumbaba el turno.
+   Va dentro de `extra_body`; un test compara cada parámetro con la firma del SDK (logs del 2-nov).
+5. **Salida a internet:** el Runtime tiene red `PUBLIC` y las Lambdas no están en una VPC, así que llegan a
    la API de Groq sin NAT (se confirma en la prueba de humo).
 Trade-off: se aparta del "100 % AWS" de la consigna y los mensajes de los clientes (sintéticos en la demo)
 van a un tercero; los límites del plan gratuito no aguantan muchas pruebas seguidas. Se declara así en el
