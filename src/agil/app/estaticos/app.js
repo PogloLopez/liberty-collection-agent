@@ -1,9 +1,10 @@
-// Demo local (D38): chat simulado, panel del pipeline y consola de cartera. Sin build ni dependencias.
+// Demo (D38): chat simulado, panel del pipeline y consola de cartera. Sin build ni dependencias.
 const $ = (sel) => document.querySelector(sel);
 let conversacion = null;
 let ocupado = false;
 let clientes = [];
 let clienteActivo = null; // el de la conversación abierta, no el del selector
+let inicio = 0; // cuándo empezó la conversación: el reloj del chat arranca a las 9:00
 
 // En la nube la API pide un código de acceso (D46): se pregunta una vez y queda en el navegador.
 const leerCodigo = () => { try { return localStorage.getItem("codigo") || ""; } catch { return ""; } };
@@ -28,29 +29,75 @@ const api = async (ruta, cuerpo, reintento = true) => {
 const escapar = (t) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const enlaces = (t) => escapar(t).replace(/(https?:\/\/[^\s)]+?)([.,]?(\s|$))/g, '<a href="#" title="$1">$1</a>$2');
 
+const SEGMENTOS = {
+  olvidadizo: "Olvidadizo",
+  dificultad_temporal: "Dificultad temporal",
+  mora_avanzada: "Mora avanzada",
+  reincidente: "Reincidente",
+  valioso_churn: "Valioso con riesgo de baja",
+};
+const segmento = (s) => SEGMENTOS[s] || String(s ?? "").replace(/_/g, " ");
+
+// Guía del evaluador: quién es cada cliente de la demo y qué vale la pena probar con él.
+const GUIA = {
+  "CL-1171492": ["Suele pagar a tiempo; esta vez se le pasó la fecha. Tiene pago total con link y una prórroga corta.",
+    ["Hola, perdón, se me pasó", "Quiero una prórroga", "¿Qué otras ofertas tienen?", "Ya pagué, ¿lo ven?"]],
+  "CL-1152549": ["Este mes no le alcanza. Tiene planes de cuotas y cambio de fecha de corte, pero no descuentos.",
+    ["No puedo pagar todo ahora", "¿Me pueden dar un descuento?", "Quiero pagar en cuotas", "Me pagan el 15, ¿puedo cambiar la fecha de corte?"]],
+  "CL-1140215": ["Lleva meses sin pagar. Tiene cuotas y liquidaciones con descuento; las más generosas pasan por un asesor.",
+    ["No voy a pagar nada", "Quiero hablar con una persona", "¿Qué descuento me dan si pago hoy?", "No me escriban más"]],
+  "CL-1191572": ["Se atrasa seguido y suele prometer. Tiene pago total y un plan de cuotas, pero no prórroga: si promete pagar otro día, la regla de negocio rechaza la promesa.",
+    ["Le pago todo el viernes", "Ya pagué ayer", "Esta no es mi cuenta", "¿De dónde sacaron mi número?"]],
+  "CL-1100708": ["Cliente valioso que podría irse. Tiene cuotas, cambio de fecha de corte y descuentos de retención.",
+    ["¿Cómo obtuvieron mi número?", "El servicio ha estado pésimo", "¿Me pueden esperar hasta mañana?", "Me voy a cambiar de compañía"]],
+};
+
+function ficha() {
+  const c = clientes.find((x) => x.customer_id === $("#cliente").value);
+  if (!c) return;
+  const [texto, sugerencias] = GUIA[c.customer_id] || ["", []];
+  $("#ficha").innerHTML = `<h2>${escapar(c.nombre)}</h2><span class="segmento">${escapar(segmento(c.segmento))}</span>
+    <p>${escapar(texto)}</p>
+    <h3>Para probar</h3>
+    <div class="sugerencias">${sugerencias.map((s) => `<button class="sugerencia">${escapar(s)}</button>`).join("")}</div>
+    <p class="nota" style="margin-top:12px">También puede escribir lo que quiera: el agente no sigue un guion.</p>`;
+  document.querySelectorAll(".sugerencia").forEach((b) => (b.onclick = () => {
+    if (!conversacion || c.customer_id !== clienteActivo) return estado("Primero pulse «Que sean las 9 AM».");
+    $("#texto").value = b.textContent;
+    $("#texto").focus();
+  }));
+}
+
 // --- Chat ---
+
+function hora() {
+  const min = Math.floor((Date.now() - inicio) / 60000);
+  return `${9 + Math.floor(min / 60)}:${String(min % 60).padStart(2, "0")}`;
+}
 
 function burbuja(clase, texto, etiqueta) {
   const chat = $("#chat");
   chat.querySelector(".vacio")?.remove();
   const div = document.createElement("div");
   div.className = `burbuja ${clase}`;
-  div.innerHTML = (etiqueta ? `<span class="etiqueta">${etiqueta}</span>` : "") + enlaces(texto);
-  chat.append(div);
+  const check = clase === "cliente" ? '<span class="check">✓✓</span>' : "";
+  div.innerHTML = (etiqueta ? `<span class="etiqueta">${etiqueta}</span>` : "") + enlaces(texto) +
+    `<span class="meta">${hora()}${check}</span>`;
+  $("#tecleo") ? chat.insertBefore(div, $("#tecleo")) : chat.append(div);
   chat.scrollTop = chat.scrollHeight;
   return div;
 }
 
-function aviso(texto) {
+function aviso(texto, clase = "sistema") {
   const p = document.createElement("p");
-  p.className = "sistema";
+  p.className = clase;
   p.textContent = texto;
   $("#chat").append(p);
   $("#chat").scrollTop = $("#chat").scrollHeight;
 }
 
 function tarjeta(t) {
-  const div = burbuja("agente", t.texto, "Tarjeta con botones");
+  const div = burbuja("agente", t.texto, "Mensaje con botones");
   const botones = document.createElement("div");
   botones.className = "botones";
   for (const [boton, rotulo] of [["btn_confirmar", "Confirmar"], ["btn_cancelar", "Cancelar"]]) {
@@ -58,20 +105,40 @@ function tarjeta(t) {
     b.textContent = rotulo;
     b.onclick = () => {
       document.querySelectorAll(".botones button").forEach((x) => (x.disabled = true));
-      enviar({ boton }, `[toca «${rotulo}»]`);
+      enviar({ boton }, `Botón: «${rotulo}»`);
     };
     botones.append(b);
   }
   div.append(botones);
+  $("#chat").scrollTop = $("#chat").scrollHeight;
 }
 
-// Solo demo (D40): el globo muestra los cuatro dígitos cuando el agente los pide.
+function escribiendo(si) {
+  $("#tecleo")?.remove();
+  $("#presencia").textContent = si ? "escribiendo…" : conversacion ? "en línea" : "Cuenta de empresa · simulado";
+  if (!si) return;
+  const div = document.createElement("div");
+  div.id = "tecleo";
+  div.className = "escribiendo";
+  div.setAttribute("aria-label", "El agente está escribiendo");
+  div.innerHTML = "<i></i><i></i><i></i>";
+  $("#chat").append(div);
+  $("#chat").scrollTop = $("#chat").scrollHeight;
+}
+
+// Solo demo (D40): cuando el agente pide la cédula, la guía muestra los cuatro dígitos.
 function globo(visible) {
   const c = clientes.find((x) => x.customer_id === clienteActivo);
   const g = $("#globo");
   if (visible && c?.cedula_demo) {
-    g.innerHTML = `Solo demo: la cédula de ${escapar(c.nombre.split(" ")[0])} termina en<b>${escapar(c.cedula_demo)}</b>`;
+    g.innerHTML = `Solo en la demo: la cédula de ${escapar(c.nombre.split(" ")[0])} termina en<b>${escapar(c.cedula_demo)}</b>
+      <div class="acciones-globo"><button id="usar">Escribir en el chat</button><button id="copiar">Copiar</button></div>`;
     g.classList.remove("apagado");
+    $("#usar").onclick = () => { $("#texto").value = c.cedula_demo; $("#texto").focus(); };
+    $("#copiar").onclick = async () => {
+      try { await navigator.clipboard.writeText(c.cedula_demo); $("#copiar").textContent = "Copiado"; }
+      catch { $("#copiar").textContent = "No se pudo copiar"; }
+    };
   } else {
     g.classList.add("apagado");
   }
@@ -97,8 +164,9 @@ async function enviar(cuerpo, rotulo) {
   habilitar(false);
   const ruta = cuerpo.boton ? "botones" : "mensajes";
   globo(false);
+  estado("");
   if (!cuerpo.boton) burbuja("cliente", cuerpo.texto);
-  estado("El agente está escribiendo…");
+  escribiendo(true);
   try {
     const r = await api(`conversaciones/${conversacion}/${ruta}`, cuerpo);
     grupo(rotulo, r.pasos);
@@ -109,8 +177,8 @@ async function enviar(cuerpo, rotulo) {
     if (cuerpo.boton) [...document.querySelectorAll(".botones")].pop()?.querySelectorAll("button").forEach((x) => (x.disabled = false));
   } finally {
     ocupado = false;
-    estado("");
     if (conversacion) habilitar(true);
+    escribiendo(false);
   }
 }
 
@@ -124,13 +192,18 @@ const estado = (t) => ($("#estado").textContent = t);
 
 // --- Panel del pipeline ---
 
+// Quién decide cada paso, con los mismos colores del documento de arquitectura.
+const DEL_MODELO = /^(Moderación|Estratega|Reintento|Confirmación en texto)/;
+const DE_CONTROL = /^(Validador|Filtro de contacto|Verificación|Datos enmascarados|Sin sentido|Respuesta fija|Pide un asesor|No contactar)/;
+const ALERTA = /bloquead|rechazad|abusivo|fallida|vencida|no coincide/;
+
 function grupo(titulo, pasos) {
   const li = document.createElement("li");
   li.className = "grupo";
-  li.innerHTML = `<h3>${escapar(titulo)}</h3>` + pasos.map(([nombre, detalle]) => {
-    const alerta = /bloqueada|rechazad|abusivo|fallida|vencida/.test(detalle) ? " alerta" : "";
-    return `<div class="paso${alerta}"><b>${escapar(nombre)}</b><span>${escapar(detalle)}</span></div>`;
-  }).join("");
+  li.innerHTML = `<h3>${escapar(titulo)}</h3><ol>` + pasos.map(([nombre, detalle]) => {
+    const tipo = ALERTA.test(detalle) ? "alerta" : DEL_MODELO.test(nombre) ? "llm" : DE_CONTROL.test(nombre) ? "val" : "det";
+    return `<li class="paso ${tipo}"><b>${escapar(nombre)}</b><span>${escapar(detalle)}</span></li>`;
+  }).join("") + "</ol>";
   $("#pasos").append(li);
   li.scrollIntoView({ block: "nearest" });
 }
@@ -138,12 +211,16 @@ function grupo(titulo, pasos) {
 // --- Campaña ---
 
 async function campana() {
+  if (ocupado) return; // una respuesta en curso caería en el chat recién limpiado
   const cid = $("#cliente").value;
   $("#chat").innerHTML = "";
   $("#pasos").innerHTML = "";
   conversacion = null;
+  escribiendo(false);
   habilitar(false);
   globo(false);
+  estado("");
+  inicio = Date.now();
   try {
     const datos = await api("campana", { customer_id: cid });
     grupo("Campaña saliente", datos.pasos);
@@ -153,7 +230,9 @@ async function campana() {
     }
     conversacion = datos.conversacion_id;
     clienteActivo = cid;
+    aviso("Hoy", "dia");
     burbuja("plantilla", datos.plantilla, "Plantilla aprobada");
+    escribiendo(false);
     habilitar(true);
   } catch (e) {
     aviso(`Error: ${e.message}`);
@@ -166,36 +245,58 @@ const tabla = (cabeceras, filas) =>
   filas.length
     ? `<table><tr>${cabeceras.map((c) => `<th>${c}</th>`).join("")}</tr>${filas.join("")}</table>`
     : '<p class="nota">Aún no hay registros en esta sesión de la demo.</p>';
-const fila = (celdas, extra = "") => `<tr ${extra}>${celdas.map((c) => `<td>${escapar(String(c ?? ""))}</td>`).join("")}</tr>`;
-const tarjetaConsola = (titulo, contenido) => `<article class="tarjeta"><h3>${titulo}</h3>${contenido}</article>`;
+// Las celdas llegan escapadas o como HTML propio (pastillas): nunca texto del cliente sin escapar.
+const fila = (celdas, extra = "") => `<tr ${extra}>${celdas.map((c) => `<td>${c}</td>`).join("")}</tr>`;
+const txt = (v) => escapar(String(v ?? ""));
+const pastilla = (t, clase = "") => `<span class="pastilla ${clase}">${txt(t)}</span>`;
+const tarjetaConsola = (titulo, contenido, clase = "") => `<article class="tarjeta ${clase}"><h3>${titulo}</h3>${contenido}</article>`;
+// En las tablas, el nombre del cliente de la demo en vez de su ID.
+const quien = (cid) => txt(clientes.find((c) => c.customer_id === cid)?.nombre || cid);
+const COLAS = { basica: "Básica", negociacion: "Negociación", especializada: "Especializada", reclamos: "Reclamos" };
 
 async function consola() {
   const d = await api("cartera");
-  const colas = ["basica", "negociacion", "especializada", "reclamos"];
+  const abiertas = d.conversaciones.filter((c) => !c.cerrada).length;
+  $("#indicadores").innerHTML = [
+    ["Conversaciones", d.conversaciones.length, `${abiertas} abiertas`],
+    ["Handoffs", d.handoffs.length],
+    ["Promesas de pago", d.promesas.length],
+    ["Ofertas aceptadas", d.aceptaciones.length],
+    ["Links de pago", d.links.length],
+  ].map(([t, n, extra]) => `<div class="indicador"><span>${t}</span><b>${n}</b>${extra ? `<span>${extra}</span>` : ""}</div>`).join("");
   $("#vivo").innerHTML = [
-    tarjetaConsola("Conversaciones", tabla(["ID", "Cliente", "Segmento", "Turno", "Estado"],
-      d.conversaciones.map((c, i) => fila([c.conversacion_id, c.nombre, c.segmento, c.turno,
-        c.cerrada ? `cerrada (${c.motivo_cierre})` : "abierta"], `class="clic" data-i="${i}"`)))),
-    tarjetaConsola("Bandeja de handoff", colas.map((cola) => {
+    tarjetaConsola("Conversaciones <span class=\"nota\">· toque una para ver la transcripción</span>",
+      tabla(["ID", "Cliente", "Segmento", "Turno", "Estado"],
+        d.conversaciones.map((c, i) => fila([txt(c.conversacion_id), txt(c.nombre), txt(segmento(c.segmento)),
+          txt(c.turno),
+          c.cerrada ? pastilla(`cerrada · ${c.motivo_cierre}`, "cerrada") : pastilla("abierta", "abierta")],
+          `class="clic" data-i="${i}" tabindex="0" role="button"`))), "ancha"),
+    tarjetaConsola("Bandeja de handoff", Object.entries(COLAS).map(([cola, nombre]) => {
       const casos = d.handoffs.filter((h) => h.cola === cola);
-      return `<p><b>${cola}</b> · ${casos.length}</p>` + casos.map((h) => `<p class="nota">${escapar(h.customer_id)} · ${escapar(h.motivo)}: ${escapar(h.resumen)}</p>`).join("");
+      return `<section class="cola"><header>${nombre}${pastilla(casos.length)}</header>` +
+        casos.map((h) => `<p class="caso">${quien(h.customer_id)} · ${txt(h.motivo)}: ${txt(h.resumen)}</p>`).join("") + "</section>";
     }).join("")),
     tarjetaConsola("Promesas de pago", tabla(["Cliente", "Fecha", "Monto"],
-      d.promesas.map((p) => fila([p.customer_id, p.fecha_promesa, `$${p.monto}`])))),
+      d.promesas.map((p) => fila([quien(p.customer_id), txt(p.fecha_promesa), txt(`$${p.monto}`)])))),
     tarjetaConsola("Ofertas aceptadas", tabla(["Cliente", "Oferta", "Base"],
-      d.aceptaciones.map((a) => fila([a.customer_id, a.oferta_id, `$${a.monto_base}`])))),
+      d.aceptaciones.map((a) => fila([quien(a.customer_id), txt(a.oferta_id), txt(`$${a.monto_base}`)])))),
     tarjetaConsola("Links de pago", tabla(["Cliente", "Monto", "Link"],
-      d.links.map((l) => fila([l.customer_id, `$${l.monto}`, l.link_id])))),
+      d.links.map((l) => fila([quien(l.customer_id), txt(`$${l.monto}`), txt(l.link_id)])))),
     tarjetaConsola("No contactar y feedback", tabla(["Cliente", "Tipo", "Texto"],
-      [...d.solicitudes_no_contacto.map((s) => fila([s.customer_id, "no contactar", s.texto])),
-       ...d.feedbacks.map((f) => fila([f.customer_id, f.etiquetas.join(", "), f.texto]))])),
+      [...d.solicitudes_no_contacto.map((s) => fila([quien(s.customer_id), pastilla("no contactar"), txt(s.texto)])),
+       ...d.feedbacks.map((f) => fila([quien(f.customer_id), f.etiquetas.map((e) => pastilla(e)).join(" "), txt(f.texto)]))])),
   ].join("");
-  document.querySelectorAll("#vivo tr.clic").forEach((tr) => (tr.onclick = () => transcripcion(d.conversaciones[tr.dataset.i])));
+  document.querySelectorAll("#vivo tr.clic").forEach((tr) => {
+    const abrir = () => transcripcion(d.conversaciones[tr.dataset.i]);
+    tr.onclick = abrir;
+    tr.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrir(); } };
+  });
 }
 
 function transcripcion(c) {
-  $("#dialogo-cuerpo").innerHTML = `<h3>${escapar(c.conversacion_id)} · ${escapar(c.nombre)}</h3>` +
-    c.transcripcion.map(([rol, texto]) => `<p><b>${escapar(rol)}:</b> ${escapar(texto)}</p>`).join("");
+  const burbujas = c.transcripcion.map(([rol, texto]) =>
+    `<div class="burbuja ${rol === "cliente" ? "cliente" : "agente"}">${escapar(texto)}</div>`).join("");
+  $("#dialogo-cuerpo").innerHTML = `<h3>${escapar(c.conversacion_id)} · ${escapar(c.nombre)}</h3><div class="chat">${burbujas}</div>`;
   $("#dialogo").showModal();
 }
 
@@ -238,6 +339,7 @@ $("#formulario").onsubmit = (e) => {
   enviar({ texto }, `Mensaje: «${texto}»`);
 };
 $("#nueve").onclick = campana;
+$("#cliente").onchange = ficha;
 $("#reiniciar").onclick = async () => {
   if (!confirm("¿Borrar conversaciones y escrituras y recargar los datos de ejemplo?")) return;
   $("#reiniciar").disabled = true;
@@ -247,8 +349,9 @@ $("#reiniciar").onclick = async () => {
 
 api("demo").then((d) => {
   clientes = d.clientes;
-  $("#hoy").textContent = `Hoy en la demo: ${d.hoy}`;
+  $("#hoy").textContent = `Fecha de la demo: ${d.hoy}`;
   $("#cliente").innerHTML = clientes.map((c) =>
-    `<option value="${escapar(c.customer_id)}">${escapar(c.nombre)} · ${escapar(c.segmento)}</option>`).join("");
+    `<option value="${escapar(c.customer_id)}">${escapar(c.nombre)} · ${escapar(segmento(c.segmento))}</option>`).join("");
+  ficha();
 });
 modulos();
