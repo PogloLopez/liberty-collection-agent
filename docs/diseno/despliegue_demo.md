@@ -1,8 +1,7 @@
 # Despliegue de la demo
 
-Decisión en [[decisiones#D9 Alcance del prototipo]]. Todo se define con CDK ([[infraestructura_como_codigo]])
-y se enciende solo durante la evaluación: `cdk deploy` antes de enviar el link a Santiago y `cdk destroy`
-cuando termine. Pablo ejecuta esos comandos; Claude no toca AWS.
+Decisión en [[decisiones#D9 Alcance del prototipo]]. Todo se define con CDK y se enciende solo durante la
+evaluación ([[guia_despliegue]]).
 
 ## Cómo se ve
 
@@ -31,9 +30,10 @@ Para métricas agregadas se exportaría a S3 + Athena; en la demo no hace falta.
 
 ## Costo estimado
 
-**Con Groq como modelo** ([[decisiones#D50 Groq como modelo en la nube (plan B)]]): los modelos salen gratis
-(plan gratuito de Groq) y desaparecen las filas de Nova y Guardrails; queda el resto de AWS, menos de
-USD 0.0001 por turno. El límite pasa a ser la cuota de Groq (unas 6-8 conversaciones al día), no el costo.
+**Con OpenRouter como modelo**, mientras Bedrock siga bloqueado ([[decisiones#D51 OpenRouter en vez del plan
+gratuito de Groq]]): desaparecen las filas de Nova y Guardrails y entra Claude Haiku 5.5, ~USD 0.0015 por
+turno, del saldo prepagado de OpenRouter; el resto de AWS queda en menos de USD 0.0001 por turno. La tabla de
+abajo es la de Bedrock.
 
 Precios de lista de us-east-1 consultados el 31-oct-2026, sin free tier ni créditos. Los de Nova vienen de un
 blog de AWS porque la tabla vigente no se pudo leer; para la demo basta esa estimación (Pablo, 2-nov).
@@ -52,7 +52,7 @@ Memory, Lambda, API Gateway y DynamoDB.
 | Uso | Corridas | Costo |
 |---|---|---|
 | Una corrida | 1 | ~USD 0.012-0.018 |
-| Pruebas de Santiago (3 escenarios × 10) | 30 | ~USD 0.50 |
+| Pruebas del evaluador (3 escenarios × 10) | 30 | ~USD 0.50 |
 | Pruebas de Pablo en la nube | 150 | ~USD 2.60 |
 | Fijos por 5 días (imagen en ECR, logs, S3) | — | ~USD 0.03 |
 | **Total** | | **~USD 3** |
@@ -76,5 +76,6 @@ El rango por corrida incluye la memoria de sesiones que quedan abiertas sin uso.
 La alarma de presupuesto de USD 10 sigue activa. Antes de desplegar, Pablo confirma las cifras en la
 calculadora de AWS.
 
-**Mientras se desarrolla:** todo corre en local con Groq ([[decisiones#D7 Modelo para correr el prototipo]]),
-sin costo de AWS.
+**Mientras se desarrolla:** todo corre en local con OpenRouter
+([[decisiones#D51 OpenRouter en vez del plan gratuito de Groq]]): sin costo de AWS, con centavos del saldo de
+OpenRouter.

@@ -82,7 +82,10 @@ Detalle y costos en [[despliegue_demo]]. Trade-off: más trabajo de infraestruct
 grupo control a cambio de medir la recuperación incremental. → [[metricas]]
 
 ### D12 Infraestructura como código
-**CDK en Python** (Pablo, 31-oct). → [[infraestructura_como_codigo]]
+**CDK en Python** (Pablo, 31-oct). Descartados: CloudFormation directo (YAML largo que CDK genera),
+Terraform (multinube y HCL, con una restricción 100 % AWS y un equipo que escribe Python) y SAM (no cubre
+bien AgentCore). Trade-off: una dependencia de desarrollo más (`aws-cdk-lib`), a cambio de una
+infraestructura versionada, revisable y destruible con un comando. → [[guia_despliegue]]
 
 ### D13 No contactar
 **Derivar y pausar WhatsApp** (Pablo, 31-oct). La deuda sigue exigible por contrato (Ley 81 lo permite sin
@@ -541,11 +544,7 @@ prompts, porque el modelo de Strands para OpenAI no la expone.
 
 ## Pendientes
 
-- **P2:** diagrama Mermaid del paso a paso de `orquestador.py` (bifurcaciones y procesos destino) en
-  `docs/diseno/`, enlazado desde el documento de arquitectura (pedido de Pablo, 1-nov). Se hace junto con
-  el README del proyecto.
-
-Cerrados (Pablo, 2-nov): V1 (precios de WhatsApp) y V3 (precios de Nova) no interesan para la demo; V2
+Ninguno. Cerrados (Pablo, 2-nov): P2 (diagrama del orquestador) quedó en [[flujo_orquestador]]; V1 (precios de WhatsApp) y V3 (precios de Nova) no interesan para la demo; V2
 (Proyecto de Ley 306) se adopta como política interna sin seguir su estado; P1 (perfiles de los
 segmentos) quedó aprobado a lo largo del desarrollo (D40, D41, D47).
 

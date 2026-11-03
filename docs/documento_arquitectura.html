@@ -13,6 +13,7 @@
   --llm:#6a3fc1; --llm-soft:#ece5fa;
   --val:#1f7f55; --val-soft:#dcf0e5;
   --hum:#b8561b; --hum-soft:#fbe8da;
+  --mock:#8a6a00; --mock-soft:#fbf1cf;
   --dim:.14;
   --font-ui:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
@@ -20,11 +21,11 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0f151d; --surface:#17212c; --fg:#e2e8f0; --muted:#94a2b4; --line:#2b3847; --zone:#131b25;
   --det:#73a6ef; --det-soft:#1b2c44; --llm:#b49af0; --llm-soft:#2a2142; --val:#5fc896; --val-soft:#163226;
-  --hum:#f0a06c; --hum-soft:#3a2516; color-scheme:dark;}}
+  --hum:#f0a06c; --hum-soft:#3a2516; --mock:#e3c45a; --mock-soft:#332a10; color-scheme:dark;}}
 :root[data-theme="dark"]{
   --bg:#0f151d; --surface:#17212c; --fg:#e2e8f0; --muted:#94a2b4; --line:#2b3847; --zone:#131b25;
   --det:#73a6ef; --det-soft:#1b2c44; --llm:#b49af0; --llm-soft:#2a2142; --val:#5fc896; --val-soft:#163226;
-  --hum:#f0a06c; --hum-soft:#3a2516; color-scheme:dark;}
+  --hum:#f0a06c; --hum-soft:#3a2516; --mock:#e3c45a; --mock-soft:#332a10; color-scheme:dark;}
 body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:15px;line-height:1.5}
 .wrap{max-width:1440px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:36px}
 header{display:grid;gap:8px}
@@ -40,6 +41,8 @@ h2{font-size:21px;margin:0;font-weight:700;text-wrap:balance}
 .k-hum{background:var(--hum-soft);border-color:var(--hum)!important}
 .k-ext{background:var(--bg);border-color:var(--muted)!important;border-style:dashed!important}
 .block{display:grid;gap:14px}
+/* Los dos tableros salen de la columna de texto y usan el ancho de la ventana, hasta 2000 px */
+.block.mapa{--ancho:min(calc(100vw - 48px),2000px);width:var(--ancho);margin-inline:calc((100% - var(--ancho))/2)}
 .block>p{margin:0;color:var(--muted);max-width:78ch}
 .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .controls span{font-size:13px;color:var(--muted);margin-right:4px}
@@ -50,7 +53,7 @@ h2{font-size:21px;margin:0;font-weight:700;text-wrap:balance}
 .main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
 @media (max-width:1100px){.main{grid-template-columns:minmax(0,1fr)}}
 .board{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto;min-width:0}
-.board svg{display:block;min-width:1120px;width:100%;height:auto}
+.board svg{display:block;min-width:940px;width:100%;height:auto}
 /* SVG */
 .zone{fill:var(--zone);stroke:var(--line);stroke-width:1.2}
 .zone.lane{stroke-dasharray:8 6;stroke:var(--muted)}
@@ -78,6 +81,18 @@ h2{font-size:21px;margin:0;font-weight:700;text-wrap:balance}
 .edge.attach{stroke:var(--muted);stroke-dasharray:3 3;stroke-width:1.2}
 .elabel{font-family:var(--font-mono);font-size:11px;fill:var(--muted)}
 .dimmed{opacity:var(--dim)}
+/* Vista "Demo desplegada" del tablero de servicios: el borde dice el estado; el subtítulo, qué reemplaza */
+.k-igual{background:var(--surface);border-color:var(--det)!important}
+.k-distinto{background:var(--surface);border-color:var(--det)!important;border-style:dashed!important}
+.k-mock{background:var(--mock-soft);border-color:var(--mock)!important;border-style:dashed!important}
+.k-fuera{background:var(--bg);border-color:var(--muted)!important;border-style:dotted!important;opacity:.6}
+.demo .node.d-distinto .shape{stroke-dasharray:7 4}
+.demo .node.d-mock .shape{fill:var(--mock-soft);stroke:var(--mock);stroke-dasharray:7 4}
+.demo .node.d-mock text:not(.sub){fill:var(--mock)}
+.demo .node.d-fuera{opacity:.38}
+.demo .node.d-fuera .shape{stroke-dasharray:2 4}
+.demo .edge.d-fuera,.demo .elabel.d-fuera{opacity:.18}
+.key[hidden]{display:none}
 .node,.edge,.elabel{transition:opacity .2s}
 @media (prefers-reduced-motion:reduce){.node,.edge,.elabel{transition:none}}
 /* Ficha */
@@ -106,7 +121,7 @@ code{font-family:var(--font-mono);font-size:13px}
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">liberty-collection-agent · documento de arquitectura · v3 · 2026-10-31</div>
+    <div class="eyebrow">liberty-collection-agent · documento de arquitectura · v4 · 2026-11-02</div>
     <h1>Proyecto Ágil: cobranza por WhatsApp con agentes de IA</h1>
     <p class="lead">Principio rector: lo determinista decide, el LLM conversa. Quién recibe mensaje, cuándo, con qué plantilla, qué oferta es válida y qué montos se muestran lo decide código auditable; el modelo entiende al cliente, elige la siguiente acción entre tools acotadas y redacta. Dos vistas del mismo sistema: el flujo de proceso (qué pasa con un cliente en mora, del lote diario al humano) y los servicios de AWS. Toca cualquier componente para ver qué es, por qué está ahí, cómo corre en la demo y qué decisión lo sostiene.</p>
     <div class="key" aria-label="Leyenda de colores">
@@ -118,7 +133,7 @@ code{font-family:var(--font-mono);font-size:13px}
     </div>
   </header>
 
-  <section class="block" aria-labelledby="h_flujo">
+  <section class="block mapa" aria-labelledby="h_flujo">
     <h2 id="h_flujo">1 · Flujo de proceso</h2>
     <p>Lo determinista decide quién recibe mensaje, cuándo y con qué plantilla. El LLM entra solo cuando el cliente responde, y siempre entre controles.</p>
     <div class="controls" id="c_flow" role="group" aria-label="Recorrido del flujo"></div>
@@ -128,9 +143,20 @@ code{font-family:var(--font-mono);font-size:13px}
     </div>
   </section>
 
-  <section class="block" aria-labelledby="h_svc">
+  <section class="block mapa" aria-labelledby="h_svc">
     <h2 id="h_svc">2 · Servicios y despliegue en AWS</h2>
-    <p>Arquitectura de producción propuesta. La demo se despliega de verdad con CDK, encendida solo durante la evaluación; las diferencias están en la tabla de abajo.</p>
+    <p>Arquitectura de producción propuesta. La demo se despliega de verdad con CDK, encendida solo durante la evaluación. Cambia de vista para ver qué servicio ocupa cada lugar en la demo y qué reemplaza de producción.</p>
+    <div class="controls" id="v_svc" role="group" aria-label="Vista de servicios">
+      <span>Vista</span>
+      <button class="chip" id="v_prod" aria-pressed="true">Producción</button>
+      <button class="chip" id="v_demo" aria-pressed="false">Demo desplegada</button>
+    </div>
+    <div class="key" id="k_demo" aria-label="Leyenda de la demo" hidden>
+      <span><i class="k-igual"></i>Desplegado igual</span>
+      <span><i class="k-distinto"></i>Desplegado de otra forma</span>
+      <span><i class="k-mock"></i>Simulado (mock)</span>
+      <span><i class="k-fuera"></i>No se despliega</span>
+    </div>
     <div class="controls" id="c_svc" role="group" aria-label="Recorrido de servicios"></div>
     <div class="main">
       <div class="board"><svg id="s_svc" viewBox="0 0 1500 900" role="img" aria-label="Diagrama de servicios y comunicaciones"></svg></div>
@@ -145,13 +171,14 @@ code{font-family:var(--font-mono);font-size:13px}
         <thead><tr><th>Producción</th><th>Demo en AWS (CDK, solo durante la evaluación)</th></tr></thead>
         <tbody>
           <tr><td>WhatsApp: End User Messaging Social + Meta</td><td>Chat que simula WhatsApp, con botones de confirmación</td></tr>
-          <tr><td>SNS → SQS FIFO por cliente → Lambda router</td><td>API Gateway síncrona → Lambda router; el chat bloquea el envío mientras el agente responde</td></tr>
-          <tr><td>EventBridge Scheduler con reglas</td><td>Definido sin reglas; el botón "Que sean las 9 AM" inicia Step Functions</td></tr>
-          <tr><td>Step Functions con esperas de días</td><td>Step Functions real con esperas de segundos</td></tr>
-          <tr><td>AgentCore Runtime y Gateway, Bedrock, Guardrails, Memory</td><td>Igual. En desarrollo local, Groq sin Guardrails</td></tr>
-          <tr><td>DWH, facturación, CRM</td><td>Datos sintéticos en S3 y DynamoDB, sembrados al desplegar</td></tr>
+          <tr><td>SNS → SQS FIFO por cliente → Lambda router</td><td>CloudFront → URL de la Lambda con el mismo orquestador; el chat bloquea el envío mientras el agente responde</td></tr>
+          <tr><td>EventBridge Scheduler con reglas</td><td>No se despliega; el botón "Que sean las 9 AM" inicia Step Functions</td></tr>
+          <tr><td>Step Functions con esperas de días</td><td>Step Functions Express síncrona: filtro → plantilla y envío</td></tr>
+          <tr><td>AgentCore Runtime, Bedrock, Guardrails</td><td>Runtime igual. Con Bedrock bloqueado en la cuenta, el modelo es Claude Haiku 5.5 vía OpenRouter, con un moderador en lugar de Guardrails; se vuelve a Bedrock con un deploy</td></tr>
+          <tr><td>AgentCore Gateway y Memory</td><td>Tools dentro del agente y notas en DynamoDB</td></tr>
+          <tr><td>DWH, facturación, CRM</td><td>Datos sintéticos en DynamoDB, cargados en la primera llamada</td></tr>
           <tr><td>Plataforma de cartera (Desarrollo)</td><td>Consola mock con las conversaciones reales de la demo</td></tr>
-          <tr><td>Costo continuo</td><td>~USD 3 con todas las pruebas; ~0 en reposo. Se destruye al terminar</td></tr>
+          <tr><td>Costo continuo</td><td>~USD 3 con todas las pruebas en Bedrock; con OpenRouter, menos (sin Nova ni Guardrails, ~USD 0.0015 por turno de saldo). ~0 en reposo. Se destruye al terminar</td></tr>
         </tbody>
       </table></div>
     </div>
@@ -173,7 +200,7 @@ code{font-family:var(--font-mono);font-size:13px}
     <h2>Decisiones clave y trade-offs</h2>
     <div class="tablewrap"><table id="t_dec"><thead><tr><th>Decisión</th><th>Trade-off</th></tr></thead><tbody></tbody></table></div>
   </div>
-  <p class="foot">Repo: <code>liberty-collection-agent</code>. El diseño detallado y el registro completo de decisiones están en <code>docs/diseno/</code>.</p>
+  <p class="foot">Repo: <code>liberty-collection-agent</code>. El diseño detallado y el registro completo de decisiones están en <code>docs/diseno/</code>; el paso a paso de cada mensaje, en <code>docs/diseno/flujo_orquestador.md</code>.</p>
 </div>
 
 <script>
@@ -211,7 +238,9 @@ D23:"Entrada ordenada por cliente: SNS estándar → Lambda de ingesta → SQS F
 D24:"Guardrails solo sobre el mensaje nuevo; datos personales enmascarados por la aplicación antes de loguear; la cédula la verifica el código",
 D31:"Orquestador de turno en Python puro: cédula, no contactar, botones, moderación, validador y render sin LLM; la tarjeta cierra el turno",
 D32:"La fecha de la promesa la convierte y valida el código; la prórroga cuenta desde hoy con un tope de mora por oferta",
-D37:"Cambiar la fecha de corte no es un acuerdo: oferta si es elegible o solicitud a un asesor sin cerrar la conversación; varias solicitudes, una por una"};
+D37:"Cambiar la fecha de corte no es un acuerdo: oferta si es elegible o solicitud a un asesor sin cerrar la conversación; varias solicitudes, una por una",
+D50:"Con Bedrock bloqueado en la cuenta, la demo usa un proveedor externo con la key cifrada en SSM; la infraestructura de AWS no cambia",
+D51:"OpenRouter con Claude Haiku 5.5 (respaldo gpt-oss-120b) en local y en la demo: misma API de OpenAI, cambio por configuración"};
 const TRADE=[
 ["Lo determinista decide; el LLM conversa","Menos libertad conversacional, a cambio de montos, identidad y elegibilidad auditables"],
 ["Segmentos por reglas de negocio, con los scores de ML como variables","Descubre menos patrones que un clustering, pero se explica ante cartera, legal y un regulador"],
@@ -224,7 +253,8 @@ const TRADE=[
 ["\"No me contacten\": derivar y pausar WhatsApp","Se pierde ese canal con ese cliente; protege la calidad del número y respeta que el cliente elige el canal"],
 ["SQS FIFO por cliente","Un salto más de latencia; elimina respuestas cruzadas y escrituras duplicadas"],
 ["Strands Agents sobre AgentCore","Dependencia joven con versión fijada; trae hooks y límites listos y corre nativa en AgentCore"],
-["Serverless sin VPC privada, encendido solo en la evaluación","Sin red privada en la demo; ~0 en reposo y ~USD 3 con todas las pruebas"]];
+["Serverless sin VPC privada, encendido solo en la evaluación","Sin red privada en la demo; ~0 en reposo y ~USD 3 con todas las pruebas"],
+["Proveedor del modelo por configuración: OpenRouter mientras Bedrock esté bloqueado","Un tercero en el camino de los mensajes (sintéticos en la demo); volver a Bedrock es un deploy, sin tocar código"]];
 
 /* ---------- Vista 1: flujo de proceso ---------- */
 const FLOWV={
@@ -250,11 +280,11 @@ N:[
 {id:"optend",x:830,y:165,w:200,h:40,k:"ext",t:"Derivar y pausar WhatsApp",type:"Estado final",what:"derivar_solicitud_contacto: registra la solicitud para el área de atención, cierra la conversación y pausa WhatsApp.",how:"La cobranza sigue por otros canales autorizados mientras el área resuelve.",proto:"Registro en DynamoDB y conversación cerrada.",dec:["D13"],open:[]},
 {id:"ctx",x:500,y:255,w:300,h:56,t:"Cargar perfil y contexto",s:"tono · tools · ofertas · memoria",type:"Determinista",what:"Arma el contexto: el perfil del segmento (tono, voz y personalidad; tools; ofertas; presión), los datos del cliente, la campaña y la memoria.",how:"El tono tiene dos capas versionadas: base de marca de Liberty, común a todos, y ajuste por segmento (calidez, firmeza, presión máxima). Crear un agente es editar un perfil.",proto:"Perfiles y prompts versionados en el repo.",dec:["D2","B5"],open:[]},
 {id:"loop",x:480,y:340,w:560,h:250,k:"container",cls:"llm",t:"Bucle del agente · Strands",type:"Agéntico",what:"El modelo elige la siguiente acción entre las tools permitidas, observa el resultado y responde.",how:"Bucle de tool use con máximo de pasos y de turnos por conversación.",proto:"Strands en AgentCore Runtime.",dec:["D6"],open:[]},
-{id:"model",x:500,y:385,w:240,h:56,k:"llm",t:"Modelo",s:"Bedrock Nova · Groq en local",type:"Agéntico",what:"Entiende al cliente, decide qué tool usar y redacta la respuesta.",how:"Lee las cifras para negociar de menor a mayor, pero nunca escribe montos ni fechas: usa placeholders. El proveedor cambia con una variable.",proto:"Nova Lite en Bedrock; Groq solo en desarrollo local.",dec:["D7","B4"],open:[]},
+{id:"model",x:500,y:385,w:240,h:56,k:"llm",t:"Modelo",s:"Bedrock Nova · OpenRouter en la demo",type:"Agéntico",what:"Entiende al cliente, decide qué tool usar y redacta la respuesta.",how:"Lee las cifras para negociar de menor a mayor, pero nunca escribe montos ni fechas: usa placeholders. El proveedor cambia con una variable.",proto:"Claude Haiku 5.5 vía OpenRouter, con respaldo en gpt-oss-120b, mientras Bedrock esté bloqueado en la cuenta.",dec:["D7","B4","D51"],open:[]},
 {id:"hooks",x:780,y:385,w:240,h:56,k:"val",t:"Hooks deterministas",s:"customer_id · D5 · ofertas · topes",type:"Control determinista",what:"Antes de cada tool: fija el customer_id desde la sesión, exige la verificación de cédula para montos y compromisos, valida ofertas por ID y aplica topes.",how:"BeforeToolCallEvent de Strands. Si bloquea, el modelo recibe el motivo y no lo reintenta por otra vía.",proto:"Hooks reales de Strands.",dec:["D3","D5","D6"],open:[]},
 {id:"mem",x:500,y:480,w:240,h:90,t:"Contexto del turno",s:"ventana · turno N/M · estrategia",type:"Determinista + estratega",what:"Ventana de los últimos turnos con un resumen, el contador \"turno N de M\" y la tarjeta de estrategia de cartera para este momento.",how:"Un modelo pequeño clasifica el momento (objeción, promesa vaga, evasión, enojo, listo para pagar…) y un hook inyecta la estrategia. A 3 turnos del tope, el agente ofrece cierre; la presión no sube con los turnos. Si el cliente no actúa como su segmento (un olvidadizo que negocia), el estratega cambia de táctica y las ofertas siguen acotadas por el perfil.",proto:"Hooks de Strands + clasificador con salida tipada.",dec:["B5","D16"],open:[]},
 {id:"tools",x:780,y:480,w:240,h:90,t:"Tools",s:"estado · ofertas · promesa · link",type:"Acceso a sistemas",what:"consultar_saldo, consultar_ofertas_elegibles, aceptar_oferta, registrar_promesa_pago, generar_link_pago, guardar_nota, registrar_feedback_cliente, derivar_solicitud_contacto, solicitar_cambio_fecha_corte, escalar_a_humano.",how:"Única vía hacia los sistemas, siempre filtrada por el cliente de la sesión. Las sensibles exigen la verificación de cédula. Los esquemas no aceptan montos libres: solo IDs como oferta_id y la fecha de la promesa, que el código acota (la prórroga, con un tope de mora por oferta).",proto:"Lambdas reales detrás de AgentCore Gateway, sobre DynamoDB.",dec:["D3","D5","D14","D32","D37","B5","B6"],open:[]},
-{id:"val",x:500,y:625,w:540,h:50,k:"val",t:"Validador de salida + Guardrails",s:"cifras fuera de placeholder · temas · longitud",type:"Control",what:"Revisa cada respuesta antes de enviarla: cifras o porcentajes escritos a mano, longitud, temas prohibidos y lenguaje de acoso.",how:"Validador determinista + Bedrock Guardrails, que evalúa solo el mensaje nuevo (más barato y sin reevaluar el historial). Después renderiza los placeholders con valores de la base.",proto:"Validador + Guardrails reales.",dec:["D4","B4"],open:[]},
+{id:"val",x:500,y:625,w:540,h:50,k:"val",t:"Validador de salida + Guardrails",s:"cifras fuera de placeholder · temas · longitud",type:"Control",what:"Revisa cada respuesta antes de enviarla: cifras o porcentajes escritos a mano, longitud, temas prohibidos y lenguaje de acoso.",how:"Validador determinista + Bedrock Guardrails, que evalúa solo el mensaje nuevo (más barato y sin reevaluar el historial). Después renderiza los placeholders con valores de la base.",proto:"Validador real. Con OpenRouter, la respuesta solo pasa por el validador; un moderador (gpt-oss-safeguard) revisa la entrada en lugar de Guardrails.",dec:["D4","B4","D51"],open:[]},
 {id:"pass",x:670,y:693,w:200,h:64,k:"decval",t:"¿Pasa?",type:"Decisión determinista",what:"Primer fallo de salida: reintento con el motivo. Segundo fallo: mensaje seguro y humano.",how:"Solo un fallo nuestro lleva a un humano. Una entrada abusiva recibe una respuesta fija y, tras 3 strikes, se cierra sin humano, para que provocar al guardrail no sea un atajo.",proto:"Igual que en producción.",dec:["D4","D15"],open:[]},
 {id:"send",x:645,y:800,w:250,h:44,t:"Enviar por WhatsApp",s:"la ventana sigue abierta",type:"Determinista",what:"Entrega la respuesta. El siguiente mensaje del cliente abre un nuevo turno.",how:"Con tope de turnos: al alcanzarlo, se cierra con promesa o se escala.",proto:"Impreso en el chat simulado.",dec:[],open:[]},
 {id:"btn",x:930,y:795,w:240,h:50,k:"val",t:"Confirmación con botones",s:"ID fijo · sin LLM",type:"Control determinista",what:"Para aceptar una oferta o registrar una promesa, el agente envía botones interactivos de WhatsApp (Confirmar / Cancelar). La tarjeta dice qué se confirma y cierra el turno, sin otra llamada al modelo.",how:"El toque vuelve a la Lambda router como un ID fijo y el código ejecuta la mutación, sin que el LLM reinterprete la respuesta. Confirmar responde un texto fijo con lo registrado y, si falta pagar, el link; Cancelar vuelve al agente para que proponga otra opción. Si el agente pide confirmar en texto, el código le pide usar la tarjeta; la tarjeta y el toque entran resumidos al historial del agente, para que siga la conversación sabiendo qué se envió y qué eligió el cliente. Dentro de la ventana de 24 h no requiere plantilla.",proto:"El chat dibuja los botones.",dec:["D22","D31"],open:[]},
@@ -333,8 +363,8 @@ N:[
 {id:"strands",x:410,y:545,w:380,h:56,k:"llm",t:"Agente Strands",s:"perfil · tools · hooks · estratega",type:"Agéntico",what:"El bucle de tool use con los hooks deterministas, el contador de turnos y el estratega (Nova Micro) que inyecta la estrategia de cartera.",how:"Ver el flujo de proceso: hooks, tools y límites.",proto:"Mismo código.",dec:["D2","D3","D6"],open:[]},
 {id:"valn",x:410,y:625,w:180,h:70,k:"val",t:"Validador",s:"cifras · longitud",type:"Control",what:"Validación determinista de cada respuesta y renderizado de placeholders.",how:"Código propio, sin LLM.",proto:"Mismo código.",dec:["D4","B4"],open:[]},
 {id:"ctxm",x:610,y:625,w:180,h:70,t:"Contexto",s:"ventana + resumen",type:"Determinista",what:"Gestor de conversación de Strands.",how:"Ventana de los últimos turnos + resumen; el historial completo vive en DynamoDB.",proto:"Mismo código.",dec:["B5"],open:[]},
-{id:"bed",x:840,y:500,w:250,h:56,k:"llm",t:"Amazon Bedrock",s:"modelos",type:"Servicio AWS",what:"Modelos administrados, autenticados por IAM.",how:"Sin llaves de API en producción. En desarrollo, Groq (D7).",proto:"Nova Lite (agente) y Nova Micro (estratega).",dec:["D7"],open:[]},
-{id:"grd",x:840,y:585,w:250,h:50,k:"val",t:"Bedrock Guardrails",type:"Servicio AWS",what:"Temas denegados, filtros de contenido y datos personales (enmascara cédulas y tarjetas) en la entrada y la salida.",how:"Corre fuera del prompt, así que no se diluye con el contexto. Evalúa solo el mensaje nuevo: reevaluar el historial en cada llamada multiplica su costo por ~16.",proto:"Real.",dec:["D4","D24"],open:[]},
+{id:"bed",x:840,y:500,w:250,h:56,k:"llm",t:"Amazon Bedrock",s:"modelos",type:"Servicio AWS",what:"Modelos administrados, autenticados por IAM.",how:"Sin llaves de API en producción. En la demo, OpenRouter mientras Bedrock esté bloqueado.",proto:"Nova Lite (agente) y Nova Micro (estratega).",dec:["D7","D50","D51"],open:[]},
+{id:"grd",x:840,y:585,w:250,h:50,k:"val",t:"Bedrock Guardrails",s:"contenido · temas · datos personales",type:"Servicio AWS",what:"Temas denegados, filtros de contenido y datos personales (enmascara cédulas y tarjetas) en la entrada y la salida.",how:"Corre fuera del prompt, así que no se diluye con el contexto. Evalúa solo el mensaje nuevo: reevaluar el historial en cada llamada multiplica su costo por ~16.",proto:"Real.",dec:["D4","D24","D50"],open:[]},
 {id:"mem",x:840,y:660,w:250,h:56,k:"db",t:"AgentCore Memory",s:"resúmenes por cliente",type:"Servicio AWS",what:"Memoria entre conversaciones: resúmenes y notas por cliente.",how:"Los hechos de negocio no viven aquí sino en DynamoDB.",proto:"Real, corto plazo.",dec:["B5"],open:[]},
 {id:"gw",x:390,y:770,w:420,h:56,t:"AgentCore Gateway",s:"tools como API con auth",type:"Servicio AWS",what:"Expone las Lambdas de tools al agente con autenticación.",how:"Separa el agente de los sistemas: cada tool tiene sus propios permisos IAM.",proto:"Real.",dec:["D3"],open:[]},
 {id:"tl",x:1150,y:500,w:310,h:60,t:"Lambdas de tools",s:"saldo · ofertas · promesa · link",type:"Servicio AWS",what:"Una Lambda por tool, siempre filtrada por el cliente de la sesión.",how:"Lecturas síncronas; escrituras como eventos. Esquemas estrictos: sin montos libres, solo IDs cerrados como oferta_id y una fecha acotada por el código.",proto:"Lambdas reales sobre DynamoDB.",dec:["D3","B6"],open:[]},
@@ -373,6 +403,42 @@ E:[
 {d:"M330 615 L352 615 L352 332 L390 332",a:"api",b:"state",both:true},
 {d:"M185 760 L185 645",a:"rec",b:"api",dash:true}
 ]};
+
+/* Vista "Demo desplegada": [estado, título, subtítulo (qué reemplaza), qué hay en la demo y por qué] */
+const DEMO={
+dwh:["mock","data/mock","reemplaza el DWH","65 clientes sintéticos con el mismo contrato de datos; se cargan solos en DynamoDB en la primera llamada."],
+ds:["mock","Scores mock","reemplaza a DS","Columnas de score inventadas en data/mock, con fecha de cálculo y versión, como las entregaría el equipo de datos."],
+seg:["distinto","Motor de reglas","en la Lambda, sin Glue/Athena","Las mismas reglas de segmentación en Python, calculadas al momento sobre DynamoDB. Con 65 clientes no hace falta un lote."],
+segt:["fuera","Sin tabla diaria","el segmento se calcula al enviar","No hay lote diario: la campaña segmenta al cliente justo antes de enviar."],
+sched:["mock","Botón \"9 AM\"","reemplaza al Scheduler","El evaluador decide cuándo es \"las 9 AM\". La demo vive siempre a esa hora (D47)."],
+sfn:["distinto","Step Functions Express","no Standard: sin esperas de días","Síncrona: filtro → plantilla y envío, con reintento en el filtro. La pantalla espera el resultado; las esperas de días no caben en una demo."],
+elg:["igual","Elegibilidad","Lambda","Lambda real (paso Filtro de la campaña) sobre los datos de DynamoDB."],
+wait:["fuera","Sin espera","sin reintentos","La demo no espera respuesta durante días: cada clic en \"9 AM\" es un ciclo nuevo."],
+state:["igual","DynamoDB","+ sesiones del chat","Tabla real por demanda. Además de los datos y lo que escribe el agente, guarda las sesiones de cada conversación."],
+eum:["mock","Chat web","reemplaza a WhatsApp","El frontend simula WhatsApp, con los mismos botones de confirmación (D22)."],
+sns:["fuera","SNS","no se despliega","Sin canal real, no hay mensajes entrantes que publicar."],
+sqs:["fuera","SQS FIFO","no se despliega","Con un evaluador a la vez no hay mensajes cruzados: el chat no deja escribir mientras el agente responde."],
+inl:["distinto","Lambda API","URL de función","El mismo orquestador en Python (FastAPI + Mangum). Recibe del chat por CloudFront en vez de la cola; lo determinista no despierta al agente."],
+meta:["fuera","Meta","no interviene","Sin WhatsApp real no hay plantillas que aprobar ni envíos que pagar."],
+cust:["mock","Evaluador","en el chat web","Quien prueba asume el papel de un cliente de los datos sintéticos."],
+obs:["distinto","CloudWatch Logs","trazas sin exportar","Logs de las Lambdas y del agente. El código emite spans, que en la demo no se exportan."],
+web:["mock","Consola de cartera","mock con datos reales de la demo","Muestra las conversaciones y lo que el agente escribió de verdad; los demás módulos son de ejemplo. Tiene el botón \"Reiniciar demo\"."],
+api:["distinto","CloudFront + Lambda","reemplaza a API Gateway","CloudFront sirve el frontend desde S3 y manda /api a la URL de la Lambda. Código de acceso; la cuota de 10 Lambdas de la cuenta es el tope (D49)."],
+cog:["fuera","Cognito","no se despliega","Un código de acceso protege la demo; no hay cuentas del equipo de cartera."],
+cfg:["igual","Perfiles","en la imagen","Archivos versionados en el repo, empaquetados con el código."],
+rec:["fuera","Recomendaciones","fuera de la demo","Se muestra como módulo de ejemplo en la consola."],
+rt:["igual","AgentCore Runtime","imagen arm64 en ECR","Real. La Lambda le pasa la sesión serializada y recibe el turno del agente (D46)."],
+strands:["igual","Agente Strands","perfil · tools · hooks · estratega","Mismo código que en local; el estratega es gpt-oss-20b vía OpenRouter."],
+valn:["igual","Validador","cifras · longitud","Mismo código."],
+ctxm:["igual","Contexto","ventana + resumen","Mismo código."],
+bed:["distinto","OpenRouter","Claude Haiku 5.5 · respaldo gpt-oss-120b","La cuenta tiene Bedrock bloqueado (D50): el mismo código llama a OpenRouter por su API compatible con OpenAI, con la key cifrada en SSM Parameter Store (D51). Volver a Bedrock es un deploy."],
+grd:["distinto","Moderador","gpt-oss-safeguard · reemplaza a Guardrails","El guardrail se crea pero no se usa: con OpenRouter, un modelo moderador revisa cada mensaje del cliente antes del agente."],
+mem:["fuera","AgentCore Memory","reemplazada por notas en DynamoDB","El resumen al cierre se guarda como nota del cliente y el agente la lee en la siguiente conversación."],
+gw:["fuera","AgentCore Gateway","tools dentro del agente","Plan B de D21: las tools corren en el mismo proceso que el agente, con el mismo código y los mismos hooks."],
+tl:["distinto","Tools en el agente","no son Lambdas aparte","Las mismas tools, sobre DynamoDB y filtradas por el cliente de la sesión, dentro del Runtime."],
+rules:["igual","Motor de reglas + ofertas","","Tabla de ofertas sintética y la misma validación."],
+core:["mock","data/mock","reemplaza facturación, CRM y pagos","Saldo, pagos y acuerdos sobre los datos sintéticos; el link de pago es ficticio y no cobra."],
+bus:["fuera","EventBridge","escritura directa a DynamoDB","Sin sistemas core que consumir, las escrituras van directo a la tabla."]};
 
 const ns="http://www.w3.org/2000/svg";
 const el=(t,a)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);return e};
@@ -419,19 +485,21 @@ function build(V){
     else ty=n.s?cy-3:cy+5;
     const t=el("text",{x:k==="container"?n.x+16:cx,y:ty,"text-anchor":k==="container"?"start":"middle"});t.textContent=n.t;
     if(k==="dec"||k==="decval"||k==="ext")t.setAttribute("font-size","13.5");
-    g.appendChild(t);
-    if(n.s){const s=el("text",{x:k==="container"?n.x+16:cx,y:ty+17,"text-anchor":k==="container"?"start":"middle",class:"sub"});s.textContent=n.s;g.appendChild(s)}
+    g.appendChild(t);n.tEl=t;
+    if(n.s){const s=el("text",{x:k==="container"?n.x+16:cx,y:ty+17,"text-anchor":k==="container"?"start":"middle",class:"sub"});s.textContent=n.s;g.appendChild(s);n.sEl=s}
     g.addEventListener("click",ev=>{ev.stopPropagation();select(n.id)});
     g.addEventListener("keydown",ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();select(n.id)}});
     gN.appendChild(g);n.el=g;
   });
+  V.select=id=>select(id);
   function select(id){
     const n=V.N.find(x=>x.id===id),decs=[...new Set(n.dec.concat(n.open))].filter(d=>DEC[d]);
+    const d=V===SVCV&&DEMO[id],proto=d?`<strong>${d[1]}</strong>${d[2]?" · "+d[2]:""}. ${d[3]}`:n.proto;
     V.N.forEach(x=>x.el.classList.toggle("selected",x.id===id));
     panel.innerHTML=`<div><div class="kind">${n.type}</div><h3>${n.t}</h3></div>
     <section><h4>Qué es</h4><p>${n.what}</p></section>
     <section><h4>${V.plain?"Por qué este componente":"Cómo funciona"}</h4><p>${n.how}</p></section>
-    <section><h4>En la demo desplegada</h4><p>${n.proto}</p></section>
+    <section><h4>En la demo desplegada</h4><p>${proto}</p></section>
     <section><h4>Decisiones</h4>${decs.length?li(decs):"<p>Ninguna propia.</p>"}</section>`;
     try{localStorage.setItem(V.store,id)}catch(e){}
   }
@@ -447,6 +515,27 @@ function build(V){
   select(start);
 }
 build(FLOWV);build(SVCV);
+
+/* Selector de vista del tablero de servicios: cambia el texto de cada nodo y marca su estado en la demo */
+function vista(demo){
+  SVCV.demo=demo;
+  document.getElementById("s_svc").classList.toggle("demo",demo);
+  document.getElementById("v_prod").setAttribute("aria-pressed",!demo);
+  document.getElementById("v_demo").setAttribute("aria-pressed",demo);
+  document.getElementById("k_demo").hidden=!demo;
+  const fuera=new Set();
+  SVCV.N.forEach(n=>{
+    const d=DEMO[n.id];
+    ["igual","distinto","mock","fuera"].forEach(e=>n.el.classList.toggle("d-"+e,demo&&d&&d[0]===e));
+    if(demo&&d&&d[0]==="fuera")fuera.add(n.id);
+    n.tEl.textContent=demo&&d?d[1]:n.t;
+    if(n.sEl)n.sEl.textContent=demo&&d&&d[2]?d[2]:n.s;
+  });
+  SVCV.E.forEach(e=>{const off=fuera.has(e.a)||fuera.has(e.b);e.el.classList.toggle("d-fuera",off);if(e.lel)e.lel.classList.toggle("d-fuera",off)});
+  const sel=SVCV.N.find(n=>n.el.classList.contains("selected"));if(sel)SVCV.select(sel.id);
+}
+document.getElementById("v_prod").addEventListener("click",()=>vista(false));
+document.getElementById("v_demo").addEventListener("click",()=>vista(true));
 
 const td=document.querySelector("#t_dec tbody");
 TRADE.forEach(([d,t])=>{const r=document.createElement("tr");r.innerHTML=`<td>${d}</td><td>${t}</td>`;td.appendChild(r)});
