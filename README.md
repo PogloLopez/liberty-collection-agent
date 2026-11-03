@@ -8,7 +8,8 @@ qué ofertas son válidas, qué montos se muestran y si la identidad está verif
 cliente, elige entre tools acotadas y redacta, sin escribir nunca una cifra: usa placeholders que el sistema
 llena desde la base.
 
-- **Documento de arquitectura** (flujo de proceso, servicios de AWS en producción y en la demo):
+- **Documento de arquitectura**: la respuesta corta a las seis preguntas de la prueba, los supuestos, el flujo
+  de proceso y los servicios de AWS en producción y en la demo:
   https://claude.ai/artifact/2M7xQgMLm1MioFVa9TBBmL, también en
   [docs/documento_arquitectura.html](docs/documento_arquitectura.html).
 - **Diseño y decisiones:** [docs/diseno/indice.md](docs/diseno/indice.md); cada decisión, con su trade-off,
