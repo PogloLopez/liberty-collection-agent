@@ -136,21 +136,24 @@ Todos los comandos llevan `-c codigo=<CODIGO>`: es el código de acceso que pedi
 una palabra y cuatro números) y usa siempre el mismo; no se guarda en el repo. En los ejemplos va como
 `ProyectoAgil2026`.
 
-## Modelo: Bedrock o Groq
+## Modelo: Bedrock, OpenRouter o Groq
 
 Por defecto el agente usa Bedrock (Nova). Mientras la cuenta tenga Bedrock bloqueado ("Access to Bedrock
-models is not allowed for this account"), se usa Groq: el resto de la infraestructura no cambia
-([[decisiones#D50 Groq como modelo en la nube (plan B)]]).
+models is not allowed for this account"), se usa OpenRouter (Claude Haiku 5.5, de pago). El resto de la
+infraestructura no cambia ([[decisiones#D50 Groq como modelo en la nube (plan B)]],
+[[decisiones#D51 OpenRouter en vez del plan gratuito de Groq]]). Para volver a Groq gratis, primero se
+cambia la sección `dev` de `config.yaml` (el comentario de arriba da la URL y los modelos) y después se
+despliega con `groq` en lugar de `openrouter`; sin ese cambio, el deploy rechaza `-c proveedor=groq`.
 
-**Importante:** con Groq, **todos** los `deploy` llevan también `-c proveedor=groq`. Si un deploy lo olvida,
-el agente y las Lambdas vuelven a Bedrock y las conversaciones fallan.
+**Importante:** con OpenRouter, **todos** los `deploy` llevan también `-c proveedor=openrouter`. Si un
+deploy lo olvida, el agente y las Lambdas vuelven a Bedrock y las conversaciones fallan.
 
-**G.1 Guardar la key de Groq cifrada en la cuenta (una sola vez).** Desde la raíz del repo (donde está
-`.env`). El comando la toma de tu `.env`, así no la escribes ni queda en el historial de la terminal:
+**G.1 Guardar la key de OpenRouter cifrada en la cuenta (una sola vez).** Desde la raíz del repo (donde
+está `.env`). El comando la toma de tu `.env`, así no la escribes ni queda en el historial de la terminal:
 
 ```powershell
-$k = (Select-String -Path .env -Pattern '^GROQ_API_KEY=(.+)$').Matches[0].Groups[1].Value.Trim('"')
-aws ssm put-parameter --name /agil/groq-api-key --type SecureString --value $k --region <REGION>
+$k = (Select-String -Path .env -Pattern '^OPENROUTER_API_KEY=(.+)$').Matches[0].Groups[1].Value.Trim('"')
+aws ssm put-parameter --name /agil/openrouter-api-key --type SecureString --value $k --region <REGION>
 Remove-Variable k
 ```
 
@@ -160,23 +163,22 @@ Remove-Variable k
   visible de las funciones.
 - Qué ver: un JSON con `"Version": 1`. Si dice que ya existe, agrega `--overwrite` para reemplazarla.
 - Cobra: nada (parámetro estándar).
-- Deshacer: `aws ssm delete-parameter --name /agil/groq-api-key --region <REGION>`.
+- Deshacer: `aws ssm delete-parameter --name /agil/openrouter-api-key --region <REGION>`.
 
-**G.2 Redesplegar el agente y la API con Groq.**
+**G.2 Redesplegar el agente y la API con OpenRouter.**
 
 ```powershell
-cdk deploy AgilAgente AgilApi -c codigo=ProyectoAgil2026 -c proveedor=groq
+cdk deploy AgilAgente AgilApi -c codigo=ProyectoAgil2026 -c proveedor=openrouter
 ```
 
-- Qué hace: reconstruye las dos imágenes y cambia las variables del agente y de las Lambdas a Groq (con
-  el nombre del parámetro de la key y el permiso para leerlo). La tabla, la web y los datos no se tocan.
-- Qué ver: los dos stacks en `UPDATE_COMPLETE`. CDK muestra el permiso nuevo `ssm:GetParameter` y pregunta:
-  `y`.
-- Volver a Bedrock: el mismo comando sin `-c proveedor=groq`.
-
-**Límites del plan gratuito de Groq:** unas 6-8 conversaciones al día y ~1 turno por minuto por modelo
-(si el primero se agota, el agente pasa a qwen). Espacia las pruebas: un minuto entre turnos evita los
-límites.
+- Qué hace: reconstruye las dos imágenes y cambia las variables del agente y de las Lambdas a OpenRouter
+  (con el nombre del parámetro de la key y el permiso para leerlo). La tabla, la web y los datos no se
+  tocan.
+- Qué ver: los dos stacks en `UPDATE_COMPLETE`. CDK muestra el permiso `ssm:GetParameter` sobre el
+  parámetro nuevo y pregunta: `y`.
+- Cobra: cada turno consume saldo de OpenRouter (~USD 0.001-0.002 con Haiku 5.5); el límite de gasto de
+  la key es el tope.
+- Volver a Bedrock: el mismo comando sin `-c proveedor=openrouter`.
 
 ## Paso 1. Sintetizar (no crea nada)
 
@@ -266,9 +268,9 @@ Sube los archivos e invalida la caché de CloudFront: 2-5 minutos, sin tocar el 
 | La página carga pero dice `401` o vuelve a pedir el código | Código distinto al de `-c codigo=` | Usar el mismo; si se guardó uno errado, abrir la página en una ventana privada |
 | La conversación da error al primer mensaje | Lo más común: permisos del agente con Bedrock | Logs del agente (paso 3) y pegármelos |
 | `Cannot delete export ... as it is in use by AgilApi` | Un stack quiso dejar de exportar un valor que otro stack desplegado todavía usa; CloudFormation lo impide y deshace el cambio | Pegarme el mensaje: hay que mantener el export (así se resolvió en D50) |
-| `Access to Bedrock models is not allowed for this account` | La cuenta tiene Bedrock bloqueado | Usar Groq: sección "Modelo: Bedrock o Groq" |
-| `ParameterNotFound` o `Falta GROQ_API_KEY` en los logs | El deploy es con Groq pero falta el parámetro de la key | Paso G.1 y repetir el mensaje |
-| El agente responde "¿me lo puede repetir?" varias veces seguidas | Se agotó el límite por minuto o por día de Groq en los dos modelos | Esperar un minuto; si persiste, es el límite diario |
+| `Access to Bedrock models is not allowed for this account` | La cuenta tiene Bedrock bloqueado | Usar OpenRouter: sección "Modelo: Bedrock, OpenRouter o Groq" |
+| `ParameterNotFound` o `Falta OPENROUTER_API_KEY` en los logs | El deploy es con OpenRouter pero falta el parámetro de la key | Paso G.1 y repetir el mensaje |
+| El agente responde "¿me lo puede repetir?" varias veces seguidas | Sin saldo en OpenRouter o key en su límite de gasto (error 402 en los logs); con Groq, su límite por minuto o por día | Recargar saldo o subir el límite de la key; con Groq, esperar un minuto (si persiste, es el límite diario) |
 
 ## Paso 5. Apagar todo al terminar la evaluación
 

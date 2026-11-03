@@ -521,6 +521,24 @@ Trade-off: se aparta del "100 % AWS" de la consigna y los mensajes de los client
 van a un tercero; los límites del plan gratuito no aguantan muchas pruebas seguidas. Se declara así en el
 documento de arquitectura.
 
+### D51 OpenRouter en vez del plan gratuito de Groq
+**El agente usa OpenRouter con Claude Haiku 5.5 y respaldo en gpt-oss-120b, en local y, con `-c proveedor=openrouter`, en la nube
+mientras Bedrock siga bloqueado**
+(Pablo, 2-nov). Un turno con tools (~9.5K tokens) no cabe en los 8K tokens por minuto de Groq gratis, ya
+gastamos su cuota diaria con las pruebas, y Groq tiene suspendido el paso a plan de pago.
+1. **Integración:** OpenRouter usa la API de OpenAI, como Groq: cambian la URL, los modelos y la key en la
+   sección `dev` de `config.yaml`, sin dependencias nuevas. `LLM_PROVIDER` vale `openrouter` por defecto;
+   cada proveedor tiene su key (`OPENROUTER_API_KEY`, `GROQ_API_KEY`) y en la nube el stack pasa
+   `LLM_API_KEY_PARAM=/agil/<proveedor>-api-key` (`-c proveedor=openrouter`).
+2. **Modelos:** Haiku 5.5 (USD 0.10/0.50 por millón de tokens de entrada/salida) es más capaz que el 120b
+   con tools y en español; sin `reasoning` no razona, así que no se le pasa nada. El 120b (desde ~USD
+   0.03/0.15) queda de respaldo con `reasoning_effort: low`; estratega y moderador siguen en gpt-oss-20b y
+   safeguard-20b. Precios del listado de OpenRouter, 2-nov.
+3. **Costo:** ~USD 0.0015 por turno. Pablo pone un límite de
+   gasto en la key. Con saldo no hay tope de peticiones por minuto.
+Trade-off: es pago (centavos) y otro tercero más en el camino de los mensajes (sintéticos); sin caché de
+prompts, porque el modelo de Strands para OpenAI no la expone.
+
 ## Pendientes
 
 - **P2:** diagrama Mermaid del paso a paso de `orquestador.py` (bifurcaciones y procesos destino) en
