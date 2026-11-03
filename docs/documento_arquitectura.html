@@ -117,11 +117,19 @@ td.id{font-family:var(--font-mono);font-size:12.5px;white-space:nowrap;color:var
 tr.hl td{background:var(--det-soft)}
 .foot{font-size:13px;color:var(--muted);margin:0}
 code{font-family:var(--font-mono);font-size:13px}
+/* Las seis preguntas de la prueba: respuesta corta por pregunta, con enlace a la nota de diseño */
+.preguntas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));gap:16px}
+.pregunta h3{margin:0;font-size:17px;text-wrap:balance}
+.pregunta .num{font-family:var(--font-mono);font-size:12px;color:var(--det);letter-spacing:.06em}
+.pregunta ul{margin:0;padding-left:18px;display:grid;gap:6px}
+.pregunta table{font-size:13.5px}
+.pregunta .mas{font-size:13px;color:var(--muted);margin:0}
+.pregunta a{color:var(--det)}
 </style>
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">liberty-collection-agent · documento de arquitectura · v4 · 2026-11-02</div>
+    <div class="eyebrow">liberty-collection-agent · documento de arquitectura · v5 · 2026-11-03</div>
     <h1>Proyecto Ágil: cobranza por WhatsApp con agentes de IA</h1>
     <p class="lead">Principio rector: lo determinista decide, el LLM conversa. Quién recibe mensaje, cuándo, con qué plantilla, qué oferta es válida y qué montos se muestran lo decide código auditable; el modelo entiende al cliente, elige la siguiente acción entre tools acotadas y redacta. Dos vistas del mismo sistema: el flujo de proceso (qué pasa con un cliente en mora, del lote diario al humano) y los servicios de AWS. Toca cualquier componente para ver qué es, por qué está ahí, cómo corre en la demo y qué decisión lo sostiene.</p>
     <div class="key" aria-label="Leyenda de colores">
@@ -132,6 +140,94 @@ code{font-family:var(--font-mono);font-size:13px}
       <span><i class="k-ext"></i>Externo u otro equipo</span>
     </div>
   </header>
+
+  <section class="block" aria-labelledby="h_preg">
+    <h2 id="h_preg">Las seis preguntas de la propuesta</h2>
+    <p>La respuesta corta a cada pregunta del reto; los mapas de abajo la detallan componente por componente.</p>
+    <div class="preguntas">
+      <article class="card pregunta">
+        <div class="num">PREGUNTA 1 · DATOS</div>
+        <h3>¿Cómo sabe el agente con quién hablar y qué decirle?</h3>
+        <ul>
+          <li>Un lote diario cruza el data warehouse (facturas, pagos, historial) con los scores de ML que entrega el equipo de Data Science: propensión de pago, churn y riesgo de atraso.</li>
+          <li>Reglas de negocio auditables asignan uno de seis segmentos: olvidadizo, dificultad temporal, reincidente, valioso en riesgo de baja, mora avanzada y excluido. Cada segmento tiene un perfil con tono, plantillas, ofertas permitidas y nivel de presión.</li>
+          <li>Antes de cada envío, un filtro verifica consentimiento, lista de no contactar, horario, un contacto por día, grupo de control y si el cliente ya pagó.</li>
+        </ul>
+        <p class="mas">Detalle: <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/datos_y_segmentacion.md" target="_blank" rel="noopener">datos y segmentación</a> · <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/orquestacion_de_contacto.md" target="_blank" rel="noopener">orquestación de contacto</a></p>
+      </article>
+      <article class="card pregunta">
+        <div class="num">PREGUNTA 2 · EL AGENTE</div>
+        <h3>¿Cómo funciona el agente por dentro?</h3>
+        <ul>
+          <li><b>Puede:</b> consultar saldo y ofertas, aceptar una oferta por su ID, registrar una promesa de pago, generar un link de pago, guardar notas, registrar quejas o pedidos de no contacto y escalar a un humano. <b>No puede:</b> escribir cifras (usa placeholders que llena la base), inventar ofertas, ver la cédula ni comprometer nada sin que el cliente se haya verificado.</li>
+          <li>Un estratega pequeño clasifica el momento de la conversación y sugiere la táctica de cartera. Un contador de turnos lleva a un cierre antes del tope.</li>
+          <li><b>Recuerda</b> con el historial de la conversación y, al cerrar, guarda un resumen como nota del cliente para el próximo contacto.</li>
+        </ul>
+        <p class="mas">Detalle: <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/harness_del_agente.md" target="_blank" rel="noopener">harness del agente</a> · <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/tools.md" target="_blank" rel="noopener">tools</a> · <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/memoria.md" target="_blank" rel="noopener">memoria</a> · <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/flujo_orquestador.md" target="_blank" rel="noopener">paso a paso de cada mensaje</a></p>
+      </article>
+      <article class="card pregunta">
+        <div class="num">PREGUNTA 3 · INTEGRACIÓN</div>
+        <h3>¿Cómo se integra con los sistemas de la empresa?</h3>
+        <ul>
+          <li>Solo a través de tools, siempre filtradas por el cliente de la sesión: el agente no tiene acceso genérico a ninguna base.</li>
+          <li>Las lecturas son síncronas contra facturación (saldo real y pagos en tránsito). Las escrituras viajan como eventos idempotentes (p. ej. con EventBridge) hacia CRM y facturación: si el CRM se cae, la conversación sigue y el evento se reintenta.</li>
+          <li>WhatsApp entra por AWS End User Messaging Social. El data warehouse solo alimenta el lote diario, nunca la conversación en vivo, para no cobrar con datos de ayer.</li>
+        </ul>
+        <p class="mas">Detalle: <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/integraciones.md" target="_blank" rel="noopener">integraciones</a> · mapa de servicios abajo</p>
+      </article>
+      <article class="card pregunta">
+        <div class="num">PREGUNTA 4 · GESTIÓN</div>
+        <h3>¿Cómo se gestiona y controla el sistema?</h3>
+        <ul>
+          <li>El equipo de cartera opera una plataforma: asigna perfiles a segmentos, revisa conversaciones marcadas con flags, atiende tres colas de handoff y lanza pruebas A/B con grupo de control.</li>
+          <li>Las reglas del juego son los perfiles y la tabla de ofertas preaprobadas. Cada cambio de tono, oferta o plantilla pasa por cartera y legal y queda versionado.</li>
+          <li>El feedback de los asesores se convierte en casos de evaluación que se corren antes de activar un perfil, no en reentrenamiento. Un agente semanal sugiere cambios; el humano decide.</li>
+        </ul>
+        <p class="mas">Detalle: <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/plataforma_de_gestion.md" target="_blank" rel="noopener">plataforma de gestión</a></p>
+      </article>
+      <article class="card pregunta">
+        <div class="num">PREGUNTA 5 · RIESGOS</div>
+        <h3>¿Qué puede salir mal y cómo se mitiga?</h3>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Riesgo</th><th>Mitigación</th></tr></thead>
+          <tbody>
+            <tr><td>Revelar la deuda a un tercero (número compartido o reasignado)</td><td>Plantilla sin montos y últimos 4 dígitos de la cédula, verificados por código, antes de cualquier dato de la cuenta. Riesgo residual aceptado: la plantilla revela que hay un saldo pendiente</td></tr>
+            <tr><td>Cobrar a quien ya pagó</td><td>Saldo en tiempo real y pagos en tránsito antes de enviar y durante la conversación</td></tr>
+            <tr><td>Ofertas fuera de política o manipulación del agente</td><td>Las ofertas solo existen por ID en una tabla preaprobada y un motor de reglas valida cada aceptación</td></tr>
+            <tr><td>El modelo inventa montos o fechas</td><td>Placeholders y un validador que rechaza cifras escritas a mano antes de enviar</td></tr>
+            <tr><td>Hostigamiento o bloqueos que restringen el número de WhatsApp</td><td>Un contacto por día, horario permitido y "no me escriban" atendido sin LLM</td></tr>
+            <tr><td>Cliente vulnerable o factura disputada</td><td>Escalamiento a un humano, sin presión ni cobro</td></tr>
+            <tr><td>Falla del proveedor del modelo</td><td>Respuesta segura fija; tres turnos fallidos seguidos pasan a un asesor</td></tr>
+          </tbody>
+        </table></div>
+        <p class="mas">Detalle: <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/riesgos.md" target="_blank" rel="noopener">riesgos</a> · <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/marco_regulatorio.md" target="_blank" rel="noopener">marco regulatorio</a></p>
+      </article>
+      <article class="card pregunta">
+        <div class="num">PREGUNTA 6 · MÉTRICAS</div>
+        <h3>¿Cómo sabemos si el sistema funciona?</h3>
+        <ul>
+          <li><b>Métrica estrella: recuperación incremental.</b> El dinero recuperado de los contactados frente a un grupo de control que no recibe mensajes en el mismo periodo. Un "antes y después" confunde el efecto del agente con la estacionalidad.</li>
+          <li><b>Negocio:</b> roll rate (cuántos pasan de 30 a 60 a 90 días de mora), costo por dólar recuperado y churn de contactados frente al control.</li>
+          <li><b>Operación:</b> cumplimiento de promesas (no solo promesas hechas), resolución sin humano y descuento otorgado por dólar recuperado.</li>
+          <li><b>Salud y calidad:</b> opt-out y calificación del número de WhatsApp; intervenciones del validador y auditoría humana por muestreo.</li>
+        </ul>
+        <p class="mas">Detalle: <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/metricas.md" target="_blank" rel="noopener">métricas</a></p>
+      </article>
+    </div>
+    <article class="card pregunta">
+      <div class="num">SUPUESTOS</div>
+      <h3>Lo que la propuesta da por hecho</h3>
+      <ul>
+        <li>Los scores de ML los entrega el equipo de Data Science con un contrato (fecha de cálculo y versión). En la demo se inventan.</li>
+        <li>LLA tiene APIs de facturación, CRM y pagos que el sistema puede leer y a las que puede enviar eventos.</li>
+        <li>Los clientes dieron consentimiento para WhatsApp y Meta aprueba las plantillas de recordatorio de pago como categoría <i>utility</i>.</li>
+        <li>Se aplican como política interna la Ley 81 de 2019 de datos personales y el Proyecto de Ley 306 de cobranza; queda por validar con legal de LLA.</li>
+        <li>Las ofertas (cuotas, prórrogas, descuentos, liquidaciones) vienen de una tabla que aprueba cartera. El agente no negocia fuera de ella.</li>
+        <li>La plataforma de cartera la construye Desarrollo; Analítica define qué muestra.</li>
+        <li>La demo usa 65 clientes sintéticos y una fecha de referencia fija.</li>
+      </ul>
+    </article>
+  </section>
 
   <section class="block mapa" aria-labelledby="h_flujo">
     <h2 id="h_flujo">1 · Flujo de proceso</h2>
