@@ -55,6 +55,33 @@ def perfiles_nube() -> list[str]:
     return [m for rol in ("agente", "estratega") for m in prod[rol]["modelos"]]
 
 
+PROVEEDORES = ("bedrock", "groq")
+# SecureString que Pablo crea a mano (D50); nunca pasa por el repo ni por la plantilla.
+PARAMETRO_KEY_GROQ = "/agil/groq-api-key"
+
+
+def variables_modelo(proveedor: str, guardrail_id: str, guardrail_version: str) -> dict[str, str]:
+    """Qué proveedor de modelos usan el agente y las Lambdas (D50). Bedrock con su guardrail; Groq
+    con el nombre del parámetro de su key y la sección `dev` de config.yaml (con moderador)."""
+    if proveedor not in PROVEEDORES:
+        raise ValueError(f"Proveedor desconocido {proveedor!r}: usa uno de {PROVEEDORES}")
+    if proveedor == "groq":
+        return {"LLM_PROVIDER": "groq", "GROQ_API_KEY_PARAM": PARAMETRO_KEY_GROQ}
+    return {
+        "LLM_PROVIDER": "bedrock",
+        "GUARDRAIL_ID": guardrail_id,
+        "GUARDRAIL_VERSION": guardrail_version,
+    }
+
+
+def _leer_key_groq(stack: Stack) -> iam.PolicyStatement:
+    """Solo leer ese parámetro; la llave aws/ssm lo descifra para quien puede leerlo."""
+    return iam.PolicyStatement(
+        actions=["ssm:GetParameter"],
+        resources=[f"arn:aws:ssm:{stack.region}:{stack.account}:parameter{PARAMETRO_KEY_GROQ}"],
+    )
+
+
 def _invocar_nova(stack: Stack) -> iam.PolicyStatement:
     """Por perfil de inferencia: permiso sobre el perfil y sobre el modelo base (sin el prefijo
     geográfico) en cada región a la que el perfil enruta."""
@@ -97,7 +124,15 @@ class Datos(Stack):
 
 
 class Agente(Stack):
-    def __init__(self, scope: Construct, id_: str, *, tabla: dynamodb.ITable, **kwargs) -> None:
+    def __init__(
+        self,
+        scope: Construct,
+        id_: str,
+        *,
+        tabla: dynamodb.ITable,
+        proveedor: str = "bedrock",
+        **kwargs,
+    ) -> None:
         super().__init__(scope, id_, **kwargs)
         imagen = _imagen(self, "Imagen", "agente.Dockerfile")
 
@@ -209,11 +244,11 @@ class Agente(Stack):
             ),
             environment_variables={
                 "TABLA": tabla.table_name,
-                "LLM_PROVIDER": "bedrock",
-                "GUARDRAIL_ID": guardrail.attr_guardrail_id,
-                "GUARDRAIL_VERSION": version.attr_version,
+                **variables_modelo(proveedor, guardrail.attr_guardrail_id, version.attr_version),
             },
         )
+        if proveedor == "groq":
+            rol.add_to_policy(_leer_key_groq(self))
         runtime.node.add_dependency(rol)
         self.runtime_arn = runtime.attr_agent_runtime_arn
         self.guardrail_id = guardrail.attr_guardrail_id
@@ -231,15 +266,14 @@ class Api(Stack):
         tabla: dynamodb.ITable,
         agente: Agente,
         codigo_acceso: str,
+        proveedor: str = "bedrock",
         **kwargs,
     ) -> None:
         super().__init__(scope, id_, **kwargs)
         imagen = _imagen(self, "Imagen", "lambda.Dockerfile")
         entorno = {
             "TABLA": tabla.table_name,
-            "LLM_PROVIDER": "bedrock",
-            "GUARDRAIL_ID": agente.guardrail_id,
-            "GUARDRAIL_VERSION": agente.guardrail_version,
+            **variables_modelo(proveedor, agente.guardrail_id, agente.guardrail_version),
         }
 
         def funcion(id_: str, handler: str, timeout: int) -> lambda_.DockerImageFunction:
@@ -263,6 +297,8 @@ class Api(Stack):
             )
             tabla.grant_read_write_data(f)
             f.add_to_role_policy(_invocar_nova(self))  # el estratega resume los cierres fijos
+            if proveedor == "groq":
+                f.add_to_role_policy(_leer_key_groq(self))
             return f
 
         filtro = funcion("Filtro", "agil.nube.lambda_api.filtro", 30)

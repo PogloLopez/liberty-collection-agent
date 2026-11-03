@@ -13,22 +13,49 @@ from aws_cdk.assertions import Match, Template
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "infra"))
 
-from pilas import NOMBRE_AGENTE, Agente, Api, Datos, Web, perfiles_nube, region_demo
+from pilas import (
+    NOMBRE_AGENTE,
+    PARAMETRO_KEY_GROQ,
+    Agente,
+    Api,
+    Datos,
+    Web,
+    perfiles_nube,
+    region_demo,
+    variables_modelo,
+)
 
 PROD = yaml.safe_load(
     (Path(__file__).resolve().parents[1] / "config.yaml").read_text(encoding="utf-8")
 )["prod"]
 
 
-@pytest.fixture(scope="module")
-def plantillas() -> dict[str, Template]:
+def _sintetizar(**proveedor) -> dict[str, Template]:
     app = cdk.App()
     entorno = cdk.Environment(account="123456789012", region="us-east-1")
     datos = Datos(app, "AgilDatos", env=entorno)
-    agente = Agente(app, "AgilAgente", tabla=datos.tabla, env=entorno)
-    api = Api(app, "AgilApi", tabla=datos.tabla, agente=agente, codigo_acceso="x", env=entorno)
+    agente = Agente(app, "AgilAgente", tabla=datos.tabla, env=entorno, **proveedor)
+    api = Api(
+        app,
+        "AgilApi",
+        tabla=datos.tabla,
+        agente=agente,
+        codigo_acceso="x",
+        env=entorno,
+        **proveedor,
+    )
     web = Web(app, "AgilWeb", url_api=api.url, env=entorno)
     return {p.stack_name: Template.from_stack(p) for p in (datos, agente, api, web)}
+
+
+@pytest.fixture(scope="module")
+def plantillas() -> dict[str, Template]:
+    return _sintetizar()  # proveedor por defecto: bedrock
+
+
+@pytest.fixture(scope="module")
+def plantillas_groq() -> dict[str, Template]:
+    return _sintetizar(proveedor="groq")
 
 
 def test_tabla_por_demanda_y_destruible(plantillas):
@@ -180,3 +207,70 @@ def test_guia_documenta_el_error_de_codigo_faltante():
     mensaje = re.search(r'SystemExit\("([^:"]+)', app).group(1)
     guia = (RAIZ / "docs" / "despliegue" / "guia_despliegue.md").read_text(encoding="utf-8")
     assert f"| `{mensaje}` |" in guia
+
+
+ARN_KEY_GROQ = f"arn:aws:ssm:us-east-1:123456789012:parameter{PARAMETRO_KEY_GROQ}"
+
+
+def _variables(plantillas) -> list[dict]:
+    """Variables de entorno del Runtime y de las tres Lambdas."""
+    runtime = plantillas["AgilAgente"].find_resources("AWS::BedrockAgentCore::Runtime")
+    lambdas = plantillas["AgilApi"].find_resources("AWS::Lambda::Function")
+    return [r["Properties"]["EnvironmentVariables"] for r in runtime.values()] + [
+        f["Properties"]["Environment"]["Variables"] for f in lambdas.values()
+    ]
+
+
+def _leen_la_key(plantilla) -> list[dict]:
+    """Políticas IAM con ssm:GetParameter sobre el parámetro de la key de Groq."""
+    return [
+        p
+        for p in plantilla.find_resources("AWS::IAM::Policy").values()
+        if any(
+            s["Action"] == "ssm:GetParameter" and s["Resource"] == ARN_KEY_GROQ
+            for s in p["Properties"]["PolicyDocument"]["Statement"]
+        )
+    ]
+
+
+def test_groq_en_runtime_y_lambdas_sin_guardrail(plantillas_groq):  # D50
+    variables = _variables(plantillas_groq)
+    assert len(variables) == 4
+    for v in variables:
+        assert v["LLM_PROVIDER"] == "groq"
+        assert v["GROQ_API_KEY_PARAM"] == PARAMETRO_KEY_GROQ
+        assert "GUARDRAIL_ID" not in v and "GUARDRAIL_VERSION" not in v
+
+
+def test_groq_runtime_y_lambdas_solo_leen_su_parametro(plantillas_groq):  # D50
+    agente = _leen_la_key(plantillas_groq["AgilAgente"])
+    assert len(agente) == 1
+    assert len(_leen_la_key(plantillas_groq["AgilApi"])) == 3  # una por Lambda
+    roles = plantillas_groq["AgilAgente"].find_resources(
+        "AWS::IAM::Role",
+        {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        Match.object_like(
+                            {"Principal": {"Service": "bedrock-agentcore.amazonaws.com"}}
+                        )
+                    ]
+                }
+            }
+        },
+    )
+    assert agente[0]["Properties"]["Roles"] == [{"Ref": next(iter(roles))}]
+
+
+def test_por_defecto_sigue_bedrock_con_guardrail_y_sin_ssm(plantillas):
+    for v in _variables(plantillas):
+        assert v["LLM_PROVIDER"] == "bedrock" and "GUARDRAIL_ID" in v
+        assert "GROQ_API_KEY_PARAM" not in v
+    for t in plantillas.values():
+        assert "ssm:GetParameter" not in json.dumps(t.to_json())
+
+
+def test_proveedor_desconocido_falla():
+    with pytest.raises(ValueError, match="Proveedor desconocido"):
+        variables_modelo("openai", "gr", "1")
