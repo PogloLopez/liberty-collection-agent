@@ -541,11 +541,7 @@ prompts, porque el modelo de Strands para OpenAI no la expone.
 
 ## Pendientes
 
-- **P2:** diagrama Mermaid del paso a paso de `orquestador.py` (bifurcaciones y procesos destino) en
-  `docs/diseno/`, enlazado desde el documento de arquitectura (pedido de Pablo, 1-nov). Se hace junto con
-  el README del proyecto.
-
-Cerrados (Pablo, 2-nov): V1 (precios de WhatsApp) y V3 (precios de Nova) no interesan para la demo; V2
+Ninguno. Cerrados (Pablo, 2-nov): P2 (diagrama del orquestador) quedó en [[flujo_orquestador]]; V1 (precios de WhatsApp) y V3 (precios de Nova) no interesan para la demo; V2
 (Proyecto de Ley 306) se adopta como política interna sin seguir su estado; P1 (perfiles de los
 segmentos) quedó aprobado a lo largo del desarrollo (D40, D41, D47).
 
