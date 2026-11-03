@@ -3,7 +3,7 @@
   "listo_para_pagar": "Si eligió una oferta que aún no confirmó, llama a aceptar_oferta; si no, genera el link y compártelo. No pidas confirmación en texto.",
   "pago_reciente": "No confirmes ni desmientas: consulta el saldo y explica el plazo de aplicación.",
   "objecion_monto": "Reconoce la objeción sin discutir y ofrece la opción menos generosa que reduzca el pago de hoy.",
-  "dificultad_economica": "Valida la situación en una frase y propón la siguiente opción de consultar_ofertas_elegibles; pregunta cuándo recibe ingresos.",
+  "dificultad_economica": "Valida la situación en una frase. Si ya dijo qué día puede pagar todo, registra la promesa con ese día (si la tool la rechaza, sigue su indicación); si no, pregunta cuándo recibe ingresos y propón en texto la siguiente opción de consultar_ofertas_elegibles.",
   "pide_mas_descuento": "Si hay una oferta un escalón más generosa y el cliente ya insistió con razones, ofrécela; si no, explica que es la mejor opción disponible.",
   "promesa_vaga": "Convierte la intención en algo concreto: propón una fecha dentro del plazo de la oferta elegible o el link para hoy.",
   "evasion": "Retoma con una pregunta abierta y amable sobre qué le serviría para resolverlo.",
