@@ -93,6 +93,7 @@ _CONFIRMA = re.compile(
     r"\b(?:confirma(?:mos)?|confirmo|l[ao] registr(?:o|amos)|registramos|procedo|procedemos)\b",
     re.I,
 )
+_REESCRIBE = "Reescríbela para el cliente, sin disculparte ni mencionar que la corriges."
 _USA_LA_TARJETA = (
     "No pidas confirmación en texto. Si el cliente ya eligió una oferta o un día, llama a "
     "aceptar_oferta o registrar_promesa_pago: la tarjeta con botones es la confirmación. Si aún no "
@@ -340,7 +341,7 @@ class Orquestador:
             for _ in range(REINTENTOS):  # hasta tres intentos por turno (D40)
                 if v.ok or sesion.cerrada:
                     break
-                texto, v = self._corregir(agente, controles, sesion, f"{v.motivo} Reescríbela.")
+                texto, v = self._corregir(agente, controles, sesion, f"{v.motivo} {_REESCRIBE}")
                 sesion.paso("Reintento", "aprobado" if v.ok else f"rechazado: {v.motivo}")
             if not v.ok and agente.messages and agente.messages[-1]["role"] == "assistant":
                 # Lo que el cliente recibe es el texto seguro: así queda en el historial y los
