@@ -41,6 +41,8 @@ h2{font-size:21px;margin:0;font-weight:700;text-wrap:balance}
 .k-hum{background:var(--hum-soft);border-color:var(--hum)!important}
 .k-ext{background:var(--bg);border-color:var(--muted)!important;border-style:dashed!important}
 .block{display:grid;gap:14px}
+/* Los dos tableros salen de la columna de texto y usan el ancho de la ventana, hasta 2000 px */
+.block.mapa{--ancho:min(calc(100vw - 48px),2000px);width:var(--ancho);margin-inline:calc((100% - var(--ancho))/2)}
 .block>p{margin:0;color:var(--muted);max-width:78ch}
 .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .controls span{font-size:13px;color:var(--muted);margin-right:4px}
@@ -51,7 +53,7 @@ h2{font-size:21px;margin:0;font-weight:700;text-wrap:balance}
 .main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
 @media (max-width:1100px){.main{grid-template-columns:minmax(0,1fr)}}
 .board{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto;min-width:0}
-.board svg{display:block;min-width:1120px;width:100%;height:auto}
+.board svg{display:block;min-width:940px;width:100%;height:auto}
 /* SVG */
 .zone{fill:var(--zone);stroke:var(--line);stroke-width:1.2}
 .zone.lane{stroke-dasharray:8 6;stroke:var(--muted)}
@@ -131,7 +133,7 @@ code{font-family:var(--font-mono);font-size:13px}
     </div>
   </header>
 
-  <section class="block" aria-labelledby="h_flujo">
+  <section class="block mapa" aria-labelledby="h_flujo">
     <h2 id="h_flujo">1 · Flujo de proceso</h2>
     <p>Lo determinista decide quién recibe mensaje, cuándo y con qué plantilla. El LLM entra solo cuando el cliente responde, y siempre entre controles.</p>
     <div class="controls" id="c_flow" role="group" aria-label="Recorrido del flujo"></div>
@@ -141,7 +143,7 @@ code{font-family:var(--font-mono);font-size:13px}
     </div>
   </section>
 
-  <section class="block" aria-labelledby="h_svc">
+  <section class="block mapa" aria-labelledby="h_svc">
     <h2 id="h_svc">2 · Servicios y despliegue en AWS</h2>
     <p>Arquitectura de producción propuesta. La demo se despliega de verdad con CDK, encendida solo durante la evaluación. Cambia de vista para ver qué servicio ocupa cada lugar en la demo y qué reemplaza de producción.</p>
     <div class="controls" id="v_svc" role="group" aria-label="Vista de servicios">
