@@ -1,6 +1,6 @@
 """Modelos del agente según `config.yaml` y `.env` (D7, D26, D36).
 
-En local, Groq vía su API compatible con OpenAI; en la nube, Bedrock con Guardrails (D46). Cambiar
+Groq u OpenRouter vía su API compatible con OpenAI, o Bedrock con Guardrails (D46, D51). Cambiar
 de proveedor no cambia tools, hooks ni prompts. Las variables de entorno pisan al `.env`.
 """
 
@@ -27,8 +27,11 @@ class Rol(BaseModel):
     max_tokens: int
 
 
+Proveedor = Literal["groq", "openrouter", "bedrock"]
+
+
 class Entorno(BaseModel):
-    proveedor: Literal["groq", "bedrock"]
+    proveedor: Proveedor
     url: str | None = None
     region: str | None = None
     timeout_s: float
@@ -42,10 +45,11 @@ class Configuracion(BaseSettings):
         env_file=RAIZ / ".env", yaml_file=RAIZ / "config.yaml", extra="ignore"
     )
 
-    llm_provider: Literal["groq", "bedrock"] = "groq"
+    llm_provider: Proveedor = "openrouter"
     groq_api_key: SecretStr | None = None
+    openrouter_api_key: SecretStr | None = None
     # En la nube la key no viaja en variables: el stack pasa el nombre del parámetro cifrado (D50).
-    groq_api_key_param: str | None = None
+    llm_api_key_param: str | None = None
     modo_demo: bool = False  # sin el tope de un contacto por día (D38)
     guardrail_id: str | None = None  # los pone el stack en la nube (D4, D24, D46)
     guardrail_version: str | None = None
@@ -67,12 +71,20 @@ class Configuracion(BaseSettings):
         secciones = [e for e in (self.dev, self.prod) if e.proveedor == self.llm_provider]
         if len(secciones) != 1:
             raise ValueError(f"config.yaml necesita una sola sección de {self.llm_provider}")
-        if self.llm_provider == "groq" and not self.groq_api_key and self.groq_api_key_param:
-            key = leer_parametro(self.groq_api_key_param, self.prod.region)
-            self.groq_api_key = SecretStr(key)
-        if self.llm_provider == "groq" and not self.groq_api_key:
-            raise ValueError("Falta GROQ_API_KEY en .env")
+        if self.llm_provider == "bedrock":
+            return self
+        campo = f"{self.llm_provider}_api_key"
+        if not getattr(self, campo) and self.llm_api_key_param:
+            key = leer_parametro(self.llm_api_key_param, self.prod.region)
+            setattr(self, campo, SecretStr(key))
+        if not getattr(self, campo):
+            raise ValueError(f"Falta {campo.upper()} en .env")
         return self
+
+    @property
+    def api_key(self) -> SecretStr:
+        """La key del proveedor compatible con OpenAI elegido."""
+        return getattr(self, f"{self.llm_provider}_api_key")
 
 
 def leer_parametro(nombre: str, region: str | None) -> str:
@@ -161,17 +173,21 @@ class ConRespaldo(Model):
 
 # Razonamiento corto en gpt-oss; en qwen, fuera del texto: por defecto va en `content` (D42).
 # `reasoning_format` es propio de Groq: el SDK de OpenAI solo lo acepta en `extra_body` (D50).
+# Claude en OpenRouter no razona si no se le pide (D51).
 _RAZONAMIENTO = {
     "openai/gpt-oss": {"reasoning_effort": "low"},
     "qwen/": {"extra_body": {"reasoning_format": "hidden"}},
 }
 
 
-def _groq(cfg: Configuracion, entorno: Entorno, model_id: str, max_tokens: int) -> OpenAIModel:
+def _compatible(
+    cfg: Configuracion, entorno: Entorno, model_id: str, max_tokens: int
+) -> OpenAIModel:
+    """Groq u OpenRouter: la misma API de OpenAI; cambian la URL y la key."""
     extra = next((p for pre, p in _RAZONAMIENTO.items() if model_id.startswith(pre)), {})
     return OpenAIModel(
         client_args={
-            "api_key": cfg.groq_api_key.get_secret_value(),
+            "api_key": cfg.api_key.get_secret_value(),
             "base_url": entorno.url,
             "timeout": entorno.timeout_s,
             # Sin los 2 reintentos del SDK: el respaldo y Strands deciden, y el turno cabe en 55 s.
@@ -193,8 +209,8 @@ def _bedrock(
             "guardrail_version": cfg.guardrail_version,
             "guardrail_latest_message": True,
         }
-    # Como en Groq: timeout de config.yaml y pocos reintentos, para que el turno quepa en los 55 s
-    # que la Lambda espera al Runtime.
+    # Como en los compatibles: timeout de config.yaml y pocos reintentos, para que el turno quepa en
+    # los 55 s que la Lambda espera al Runtime.
     tiempos = Config(read_timeout=entorno.timeout_s, connect_timeout=5, retries={"max_attempts": 2})
     return BedrockModel(
         model_id=model_id,
@@ -215,7 +231,7 @@ def crear_modelos(cfg: Configuracion | None = None) -> Modelos:
         if entorno.proveedor == "bedrock":
             modelos = [_bedrock(cfg, entorno, m, r.max_tokens, guardia) for m in r.modelos]
         else:
-            modelos = [_groq(cfg, entorno, m, r.max_tokens) for m in r.modelos]
+            modelos = [_compatible(cfg, entorno, m, r.max_tokens) for m in r.modelos]
         return modelos[0] if len(modelos) == 1 else ConRespaldo(modelos)
 
     def auxiliar(r: Rol | None) -> Model | None:

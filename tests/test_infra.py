@@ -15,11 +15,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "infra"))
 
 from pilas import (
     NOMBRE_AGENTE,
-    PARAMETRO_KEY_GROQ,
     Agente,
     Api,
     Datos,
     Web,
+    parametro_key,
     perfiles_nube,
     region_demo,
     variables_modelo,
@@ -54,8 +54,8 @@ def plantillas() -> dict[str, Template]:
 
 
 @pytest.fixture(scope="module")
-def plantillas_groq() -> dict[str, Template]:
-    return _sintetizar(proveedor="groq")
+def plantillas_openrouter() -> dict[str, Template]:
+    return _sintetizar(proveedor="openrouter")  # Groq pasa por la misma rama
 
 
 def test_tabla_por_demanda_y_destruible(plantillas):
@@ -209,9 +209,6 @@ def test_guia_documenta_el_error_de_codigo_faltante():
     assert f"| `{mensaje}` |" in guia
 
 
-ARN_KEY_GROQ = f"arn:aws:ssm:us-east-1:123456789012:parameter{PARAMETRO_KEY_GROQ}"
-
-
 def _variables(plantillas) -> list[dict]:
     """Variables de entorno del Runtime y de las tres Lambdas."""
     runtime = plantillas["AgilAgente"].find_resources("AWS::BedrockAgentCore::Runtime")
@@ -222,31 +219,32 @@ def _variables(plantillas) -> list[dict]:
 
 
 def _leen_la_key(plantilla) -> list[dict]:
-    """Políticas IAM con ssm:GetParameter sobre el parámetro de la key de Groq."""
+    """Políticas IAM con ssm:GetParameter sobre el parámetro de la key de OpenRouter."""
+    arn = f"arn:aws:ssm:us-east-1:123456789012:parameter{parametro_key('openrouter')}"
     return [
         p
         for p in plantilla.find_resources("AWS::IAM::Policy").values()
         if any(
-            s["Action"] == "ssm:GetParameter" and s["Resource"] == ARN_KEY_GROQ
+            s["Action"] == "ssm:GetParameter" and s["Resource"] == arn
             for s in p["Properties"]["PolicyDocument"]["Statement"]
         )
     ]
 
 
-def test_groq_en_runtime_y_lambdas(plantillas_groq):  # D50
-    variables = _variables(plantillas_groq)
+def test_openrouter_en_runtime_y_lambdas(plantillas_openrouter):  # D50, D51
+    variables = _variables(plantillas_openrouter)
     assert len(variables) == 4
     for v in variables:
-        assert v["LLM_PROVIDER"] == "groq"
-        assert v["GROQ_API_KEY_PARAM"] == PARAMETRO_KEY_GROQ
+        assert v["LLM_PROVIDER"] == "openrouter"
+        assert v["LLM_API_KEY_PARAM"] == "/agil/openrouter-api-key"
         assert "GUARDRAIL_ID" in v and "GUARDRAIL_VERSION" in v
 
 
-def test_groq_runtime_y_lambdas_solo_leen_su_parametro(plantillas_groq):  # D50
-    agente = _leen_la_key(plantillas_groq["AgilAgente"])
+def test_openrouter_runtime_y_lambdas_solo_leen_su_parametro(plantillas_openrouter):  # D50
+    agente = _leen_la_key(plantillas_openrouter["AgilAgente"])
     assert len(agente) == 1
-    assert len(_leen_la_key(plantillas_groq["AgilApi"])) == 3  # una por Lambda
-    roles = plantillas_groq["AgilAgente"].find_resources(
+    assert len(_leen_la_key(plantillas_openrouter["AgilApi"])) == 3  # una por Lambda
+    roles = plantillas_openrouter["AgilAgente"].find_resources(
         "AWS::IAM::Role",
         {
             "Properties": {
@@ -266,14 +264,15 @@ def test_groq_runtime_y_lambdas_solo_leen_su_parametro(plantillas_groq):  # D50
 def test_por_defecto_sigue_bedrock_con_guardrail_y_sin_ssm(plantillas):
     for v in _variables(plantillas):
         assert v["LLM_PROVIDER"] == "bedrock" and "GUARDRAIL_ID" in v
-        assert "GROQ_API_KEY_PARAM" not in v
+        assert "LLM_API_KEY_PARAM" not in v
     for t in plantillas.values():
         assert "ssm:GetParameter" not in json.dumps(t.to_json())
 
 
-def test_proveedor_desconocido_falla():
+@pytest.mark.parametrize("proveedor", ["openai", "groq"])  # groq: sin sección en config.yaml
+def test_proveedor_sin_seccion_en_config_falla(proveedor):  # D51
     with pytest.raises(ValueError, match="Proveedor desconocido"):
-        variables_modelo("openai", "gr", "1")
+        variables_modelo(proveedor, "gr", "1")
 
 
 def _exports(plantilla: Template) -> set[str]:
@@ -281,7 +280,7 @@ def _exports(plantilla: Template) -> set[str]:
 
 
 @pytest.mark.parametrize("pila", ["AgilDatos", "AgilAgente"])
-def test_cambiar_de_proveedor_no_borra_exports(plantillas, plantillas_groq, pila):  # D50
-    # Si un export desaparece al pasar a groq, el deploy falla: AgilApi aún lo importa.
+def test_cambiar_de_proveedor_no_borra_exports(plantillas, plantillas_openrouter, pila):  # D50
+    # Si un export desaparece al cambiar de proveedor, el deploy falla: AgilApi aún lo importa.
     assert _exports(plantillas[pila])
-    assert _exports(plantillas[pila]) == _exports(plantillas_groq[pila])
+    assert _exports(plantillas[pila]) == _exports(plantillas_openrouter[pila])

@@ -2,13 +2,15 @@
 modo_demo: true
 
 # Modelos por entorno (D7, D36). `LLM_PROVIDER` elige la sección por su `proveedor` (por defecto
-# groq). Cada rol lista modelos en orden: los siguientes son alternativas si el anterior falla.
+# openrouter). Cada rol lista modelos en orden: los siguientes son alternativas si el anterior falla.
+# OpenRouter (D51): una key y saldo prepagado. Para volver a Groq gratis: proveedor groq, url
+# https://api.groq.com/openai/v1, agente [openai/gpt-oss-120b, qwen/qwen3.8-27b] y GROQ_API_KEY.
 dev:
-  proveedor: groq
-  url: https://api.groq.com/openai/v1
+  proveedor: openrouter
+  url: https://openrouter.ai/api/v1
   timeout_s: 20 # dos modelos sin reintentos caben en los 55 s que la Lambda espera al Runtime (D50)
   agente:
-    modelos: [openai/gpt-oss-120b, qwen/qwen3.8-27b]  # D42: el 20b rompía las tools
+    modelos: [anthropic/claude-haiku-5.5, openai/gpt-oss-120b]  # D42: el 20b rompía las tools
     max_tokens: 1500
   estratega: # también escribe el resumen al cierre (D34)
     modelos: [openai/gpt-oss-20b]

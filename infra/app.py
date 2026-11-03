@@ -1,7 +1,7 @@
 """App de CDK de la demo (D46). La ejecuta el CLI de CDK que corre Pablo (cdk.json); Claude no.
 
 El código de acceso de la demo llega por contexto: `-c codigo=<código>` (no se guarda en el repo).
-El proveedor de modelos también: `-c proveedor=groq`; sin él, Bedrock (D50).
+El proveedor de modelos también: `-c proveedor=openrouter`; sin él, Bedrock (D50, D51).
 """
 
 import sys

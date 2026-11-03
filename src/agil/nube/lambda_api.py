@@ -4,7 +4,7 @@
 - `filtro` y `envio`: los dos pasos de la campaña en Step Functions (botón "Que sean las 9 AM").
 
 Variables que pone el stack: TABLA, RUNTIME_ARN, CAMPANA_ARN, CODIGO_ACCESO, LLM_PROVIDER,
-GUARDRAIL_ID y GUARDRAIL_VERSION (siempre) y, con groq, GROQ_API_KEY_PARAM (D50).
+GUARDRAIL_ID y GUARDRAIL_VERSION (siempre) y, con groq u openrouter, LLM_API_KEY_PARAM (D50).
 """
 
 import json

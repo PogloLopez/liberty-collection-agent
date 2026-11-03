@@ -12,35 +12,44 @@ from agil.agente import config
 
 @pytest.fixture
 def env(tmp_path, monkeypatch):
-    for var in ("GROQ_API_KEY", "GROQ_API_KEY_PARAM", "LLM_PROVIDER"):
+    for var in ("GROQ_API_KEY", "OPENROUTER_API_KEY", "LLM_API_KEY_PARAM", "LLM_PROVIDER"):
         monkeypatch.delenv(var, raising=False)
     return tmp_path / ".env"
 
 
-def _cfg(env):
-    return config.Configuracion(_env_file=env)
+def _cfg(env, **kwargs):
+    return config.Configuracion(_env_file=env, **kwargs)
+
+
+# config.yaml ya no trae sección de Groq (D51): los tests que la usan la pasan aquí.
+DEV_GROQ = config.Entorno(
+    proveedor="groq",
+    url="https://api.groq.com/openai/v1",
+    timeout_s=20,
+    agente=config.Rol(modelos=["openai/gpt-oss-120b"], max_tokens=64),
+)
 
 
 def test_sin_key_falla_al_construir_la_configuracion(env):
-    with pytest.raises(ValidationError, match="GROQ_API_KEY"):
+    with pytest.raises(ValidationError, match="OPENROUTER_API_KEY"):
         _cfg(env)
 
 
 def test_la_key_no_se_imprime(env):
-    env.write_text('GROQ_API_KEY="clave-falsa"\n', encoding="utf-8")
+    env.write_text('OPENROUTER_API_KEY="clave-falsa"\n', encoding="utf-8")
     cfg = _cfg(env)
-    assert cfg.groq_api_key.get_secret_value() == "clave-falsa"
+    assert cfg.api_key.get_secret_value() == "clave-falsa"
     assert "clave-falsa" not in repr(cfg)
 
 
 def test_la_variable_de_entorno_pisa_al_env(env, monkeypatch):
-    env.write_text("GROQ_API_KEY=del_archivo\n", encoding="utf-8")
-    monkeypatch.setenv("GROQ_API_KEY", "de_la_shell")
-    assert _cfg(env).groq_api_key.get_secret_value() == "de_la_shell"
+    env.write_text("OPENROUTER_API_KEY=del_archivo\n", encoding="utf-8")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "de_la_shell")
+    assert _cfg(env).api_key.get_secret_value() == "de_la_shell"
 
 
 def test_yaml_sin_una_seccion_por_proveedor_falla(env, monkeypatch):
-    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "clave-falsa")
     dev = _cfg(env).dev
     with pytest.raises(ValidationError, match="una sola sección"):
         config.Configuracion(_env_file=env, dev=dev, prod=dev)
@@ -64,14 +73,14 @@ def test_nube_con_guardrails_solo_en_el_agente(env, monkeypatch):
 
 
 def test_crear_modelos_desde_el_yaml_sin_llamar(env, monkeypatch):
-    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "clave-falsa")
     cfg = _cfg(env)
-    assert cfg.entorno.url.startswith("https://api.groq.com") and cfg.entorno.agente.max_tokens
+    assert cfg.entorno.url.startswith("https://openrouter.ai") and cfg.entorno.agente.max_tokens
     m = config.crear_modelos(cfg)
     assert isinstance(m.agente, config.ConRespaldo)
     assert [x.get_config()["model_id"] for x in m.agente.modelos] == [
+        "anthropic/claude-haiku-5.5",
         "openai/gpt-oss-120b",
-        "qwen/qwen3.8-27b",
     ]
     assert m.estratega.get_config()["model_id"] == "openai/gpt-oss-20b"  # uno solo: sin envoltorio
     assert m.moderador.get_config()["model_id"] == "openai/gpt-oss-safeguard-20b"
@@ -171,7 +180,7 @@ def test_respaldo_propaga_la_config_a_todos_y_lee_la_del_primero():
 
 @pytest.mark.parametrize("valor", [True, False])
 def test_modo_demo_lo_pisa_el_entorno(env, monkeypatch, valor):
-    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "clave-falsa")
     monkeypatch.setenv("MODO_DEMO", str(valor).lower())
     assert _cfg(env).modo_demo is valor
 
@@ -183,10 +192,12 @@ def test_cuota_diaria_pasa_al_siguiente_modelo():
 
 
 def test_razonamiento_por_familia_de_modelo(env, monkeypatch):
-    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
-    m = config.crear_modelos(_cfg(env)).agente.modelos
-    assert m[0].get_config()["params"]["reasoning_effort"] == "low"
-    qwen = m[1].get_config()["params"]
+    monkeypatch.setenv("OPENROUTER_API_KEY", "clave-falsa")
+    cfg = _cfg(env)
+    m = config.crear_modelos(cfg).agente.modelos
+    assert m[0].get_config()["params"] == {"max_completion_tokens": 1500}  # Claude: sin razonar
+    assert m[1].get_config()["params"]["reasoning_effort"] == "low"
+    qwen = config._compatible(cfg, cfg.entorno, "qwen/qwen3.8-27b", 64).get_config()["params"]
     assert qwen["extra_body"] == {"reasoning_format": "hidden"} and "reasoning_effort" not in qwen
 
 
@@ -199,7 +210,7 @@ def test_parametros_que_acepta_el_sdk_de_openai(env, monkeypatch):
     from openai.resources.chat.completions import AsyncCompletions
 
     aceptados = set(inspect.signature(AsyncCompletions.create).parameters)
-    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "clave-falsa")
     modelos = config.crear_modelos(_cfg(env))
     for rol in (modelos.agente, modelos.estratega, modelos.moderador):
         if rol is None:  # estratega y moderador son opcionales
@@ -211,36 +222,38 @@ def test_parametros_que_acepta_el_sdk_de_openai(env, monkeypatch):
 
 
 def test_modelo_sin_familia_conocida_no_recibe_razonamiento(env, monkeypatch):
-    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "clave-falsa")
     cfg = _cfg(env)
-    params = config._groq(cfg, cfg.entorno, "llama-3.3-70b-versatile", 64).get_config()["params"]
+    params = config._compatible(cfg, cfg.entorno, "llama-3.3-70b-versatile", 64).get_config()[
+        "params"
+    ]
     assert params == {"max_completion_tokens": 64}
 
 
-def test_en_la_nube_la_key_sale_del_parametro(env, monkeypatch):  # D50, sin red
+def test_en_la_nube_la_key_sale_del_parametro(env, monkeypatch):  # D50, D51, sin red
     leidos = []
     monkeypatch.setattr(
         config, "leer_parametro", lambda nombre, region: leidos.append((nombre, region)) or "k"
     )
-    monkeypatch.setenv("LLM_PROVIDER", "groq")
-    monkeypatch.setenv("GROQ_API_KEY_PARAM", "/agil/groq-api-key")
+    monkeypatch.setenv("LLM_API_KEY_PARAM", "/agil/openrouter-api-key")
     cfg = _cfg(env)
-    assert cfg.groq_api_key.get_secret_value() == "k"
-    assert leidos == [("/agil/groq-api-key", cfg.prod.region)]
+    assert cfg.api_key.get_secret_value() == "k"
+    assert leidos == [("/agil/openrouter-api-key", cfg.prod.region)]
 
 
 def test_con_key_no_se_lee_el_parametro(env, monkeypatch):
     monkeypatch.setattr(config, "leer_parametro", lambda *a: pytest.fail("no debía leer"))
-    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
-    monkeypatch.setenv("GROQ_API_KEY_PARAM", "/agil/groq-api-key")
-    assert _cfg(env).groq_api_key.get_secret_value() == "clave-falsa"
+    monkeypatch.setenv("OPENROUTER_API_KEY", "clave-falsa")
+    monkeypatch.setenv("LLM_API_KEY_PARAM", "/agil/openrouter-api-key")
+    assert _cfg(env).api_key.get_secret_value() == "clave-falsa"
 
 
-def test_groq_sin_key_ni_parametro_falla(env, monkeypatch):
+def test_groq_sin_key_ni_parametro_falla(env, monkeypatch):  # aunque haya key de OpenRouter
     monkeypatch.setattr(config, "leer_parametro", lambda *a: pytest.fail("no debía leer"))
     monkeypatch.setenv("LLM_PROVIDER", "groq")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "clave-falsa")
     with pytest.raises(ValidationError, match="GROQ_API_KEY"):
-        _cfg(env)
+        _cfg(env, dev=DEV_GROQ)
 
 
 def test_sin_espera_convierte_la_cuota_en_error_inmediato():  # D50
@@ -253,7 +266,17 @@ def test_sin_espera_convierte_la_cuota_en_error_inmediato():  # D50
     assert _texto(config.SinEspera(ModeloGuionado("Hola."))) == "Hola."
 
 
-def test_groq_sin_reintentos_del_sdk(env, monkeypatch):  # D50
-    monkeypatch.setenv("GROQ_API_KEY", "clave-falsa")
+def test_compatible_sin_reintentos_del_sdk(env, monkeypatch):  # D50
+    monkeypatch.setenv("OPENROUTER_API_KEY", "clave-falsa")
     cfg = _cfg(env)
-    assert config._groq(cfg, cfg.entorno, "openai/gpt-oss-20b", 64).client_args["max_retries"] == 0
+    assert (
+        config._compatible(cfg, cfg.entorno, "openai/gpt-oss-20b", 64).client_args["max_retries"]
+        == 0
+    )
+
+
+def test_api_key_es_la_del_proveedor_elegido(env, monkeypatch):  # D51
+    monkeypatch.setenv("LLM_PROVIDER", "groq")
+    monkeypatch.setenv("GROQ_API_KEY", "de-groq")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "de-openrouter")
+    assert _cfg(env, dev=DEV_GROQ).api_key.get_secret_value() == "de-groq"

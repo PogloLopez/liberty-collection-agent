@@ -33,9 +33,10 @@ NOMBRE_AGENTE = "agil_agente"
 
 
 class _ConfigYaml(BaseSettings):
-    """Solo `prod` de config.yaml, sin `.env` ni variables: los stacks no los necesitan."""
+    """Las secciones de config.yaml, sin `.env` ni variables: los stacks no los necesitan."""
 
     model_config = SettingsConfigDict(yaml_file=RAIZ / "config.yaml", extra="ignore")
+    dev: dict
     prod: dict
 
     @classmethod
@@ -55,33 +56,40 @@ def perfiles_nube() -> list[str]:
     return [m for rol in ("agente", "estratega") for m in prod[rol]["modelos"]]
 
 
-PROVEEDORES = ("bedrock", "groq")
-# SecureString que Pablo crea a mano (D50); nunca pasa por el repo ni por la plantilla.
-PARAMETRO_KEY_GROQ = "/agil/groq-api-key"
+def proveedores() -> tuple[str, ...]:
+    """Los que tienen sección en config.yaml: otro desplegaría bien y fallaría al arrancar (D51)."""
+    c = _ConfigYaml()
+    return (c.dev["proveedor"], c.prod["proveedor"])
+
+
+def parametro_key(proveedor: str) -> str:
+    """SecureString que Pablo crea a mano (D50, D51); nunca pasa por el repo ni por la plantilla."""
+    return f"/agil/{proveedor}-api-key"
 
 
 def variables_modelo(proveedor: str, guardrail_id: str, guardrail_version: str) -> dict[str, str]:
-    """Qué proveedor de modelos usan el agente y las Lambdas (D50). Groq añade el nombre del
-    parámetro de su key y usa la sección `dev` de config.yaml (con moderador)."""
-    if proveedor not in PROVEEDORES:
-        raise ValueError(f"Proveedor desconocido {proveedor!r}: usa uno de {PROVEEDORES}")
-    # El guardrail va siempre, también con Groq (D50: exports entre stacks).
+    """Qué proveedor de modelos usan el agente y las Lambdas (D50). Groq u OpenRouter añaden el
+    nombre del parámetro de su key y usan la sección `dev` de config.yaml (con moderador)."""
+    if proveedor not in proveedores():
+        raise ValueError(
+            f"Proveedor desconocido {proveedor!r}: usa uno con sección en config.yaml "
+            f"{proveedores()}"
+        )
+    # El guardrail va siempre, con cualquier proveedor (D50: exports entre stacks).
     variables = {
         "LLM_PROVIDER": proveedor,
         "GUARDRAIL_ID": guardrail_id,
         "GUARDRAIL_VERSION": guardrail_version,
     }
-    if proveedor == "groq":
-        variables["GROQ_API_KEY_PARAM"] = PARAMETRO_KEY_GROQ
+    if proveedor != "bedrock":
+        variables["LLM_API_KEY_PARAM"] = parametro_key(proveedor)
     return variables
 
 
-def _leer_key_groq(stack: Stack) -> iam.PolicyStatement:
+def _leer_key(stack: Stack, proveedor: str) -> iam.PolicyStatement:
     """Solo leer ese parámetro; la llave aws/ssm lo descifra para quien puede leerlo."""
-    return iam.PolicyStatement(
-        actions=["ssm:GetParameter"],
-        resources=[f"arn:aws:ssm:{stack.region}:{stack.account}:parameter{PARAMETRO_KEY_GROQ}"],
-    )
+    arn = f"arn:aws:ssm:{stack.region}:{stack.account}:parameter{parametro_key(proveedor)}"
+    return iam.PolicyStatement(actions=["ssm:GetParameter"], resources=[arn])
 
 
 def _invocar_nova(stack: Stack) -> iam.PolicyStatement:
@@ -249,8 +257,8 @@ class Agente(Stack):
                 **variables_modelo(proveedor, guardrail.attr_guardrail_id, version.attr_version),
             },
         )
-        if proveedor == "groq":
-            rol.add_to_policy(_leer_key_groq(self))
+        if proveedor != "bedrock":
+            rol.add_to_policy(_leer_key(self, proveedor))
         runtime.node.add_dependency(rol)
         self.runtime_arn = runtime.attr_agent_runtime_arn
         self.guardrail_id = guardrail.attr_guardrail_id
@@ -299,8 +307,8 @@ class Api(Stack):
             )
             tabla.grant_read_write_data(f)
             f.add_to_role_policy(_invocar_nova(self))  # el estratega resume los cierres fijos
-            if proveedor == "groq":
-                f.add_to_role_policy(_leer_key_groq(self))
+            if proveedor != "bedrock":
+                f.add_to_role_policy(_leer_key(self, proveedor))
             return f
 
         filtro = funcion("Filtro", "agil.nube.lambda_api.filtro", 30)
