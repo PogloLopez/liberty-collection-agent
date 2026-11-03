@@ -1,8 +1,7 @@
 # Despliegue de la demo
 
-Decisión en [[decisiones#D9 Alcance del prototipo]]. Todo se define con CDK ([[infraestructura_como_codigo]])
-y se enciende solo durante la evaluación: `cdk deploy` antes de enviar el link a Santiago y `cdk destroy`
-cuando termine. Pablo ejecuta esos comandos; Claude no toca AWS.
+Decisión en [[decisiones#D9 Alcance del prototipo]]. Todo se define con CDK y se enciende solo durante la
+evaluación ([[guia_despliegue]]).
 
 ## Cómo se ve
 
@@ -53,7 +52,7 @@ Memory, Lambda, API Gateway y DynamoDB.
 | Uso | Corridas | Costo |
 |---|---|---|
 | Una corrida | 1 | ~USD 0.012-0.018 |
-| Pruebas de Santiago (3 escenarios × 10) | 30 | ~USD 0.50 |
+| Pruebas del evaluador (3 escenarios × 10) | 30 | ~USD 0.50 |
 | Pruebas de Pablo en la nube | 150 | ~USD 2.60 |
 | Fijos por 5 días (imagen en ECR, logs, S3) | — | ~USD 0.03 |
 | **Total** | | **~USD 3** |

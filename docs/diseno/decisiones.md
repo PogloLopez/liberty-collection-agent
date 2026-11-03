@@ -82,7 +82,10 @@ Detalle y costos en [[despliegue_demo]]. Trade-off: más trabajo de infraestruct
 grupo control a cambio de medir la recuperación incremental. → [[metricas]]
 
 ### D12 Infraestructura como código
-**CDK en Python** (Pablo, 31-oct). → [[infraestructura_como_codigo]]
+**CDK en Python** (Pablo, 31-oct). Descartados: CloudFormation directo (YAML largo que CDK genera),
+Terraform (multinube y HCL, con una restricción 100 % AWS y un equipo que escribe Python) y SAM (no cubre
+bien AgentCore). Trade-off: una dependencia de desarrollo más (`aws-cdk-lib`), a cambio de una
+infraestructura versionada, revisable y destruible con un comando. → [[guia_despliegue]]
 
 ### D13 No contactar
 **Derivar y pausar WhatsApp** (Pablo, 31-oct). La deuda sigue exigible por contrato (Ley 81 lo permite sin
