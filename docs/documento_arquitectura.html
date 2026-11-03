@@ -141,9 +141,40 @@ code{font-family:var(--font-mono);font-size:13px}
     </div>
   </header>
 
+  <section class="block mapa" aria-labelledby="h_flujo">
+    <h2 id="h_flujo">1 · Flujo de proceso</h2>
+    <p>Lo determinista decide quién recibe mensaje, cuándo y con qué plantilla. El LLM entra solo cuando el cliente responde, y siempre entre controles.</p>
+    <div class="controls" id="c_flow" role="group" aria-label="Recorrido del flujo"></div>
+    <div class="main">
+      <div class="board"><svg id="s_flow" viewBox="0 0 1500 880" role="img" aria-label="Diagrama de flujo de proceso"></svg></div>
+      <aside class="panel" id="p_flow" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <section class="block mapa" aria-labelledby="h_svc">
+    <h2 id="h_svc">2 · Servicios y despliegue en AWS</h2>
+    <p>Arquitectura de producción propuesta. La demo se despliega de verdad con CDK, encendida solo durante la evaluación. Cambia de vista para ver qué servicio ocupa cada lugar en la demo y qué reemplaza de producción.</p>
+    <div class="controls" id="v_svc" role="group" aria-label="Vista de servicios">
+      <span>Vista</span>
+      <button class="chip" id="v_prod" aria-pressed="true">Producción</button>
+      <button class="chip" id="v_demo" aria-pressed="false">Demo desplegada</button>
+    </div>
+    <div class="key" id="k_demo" aria-label="Leyenda de la demo" hidden>
+      <span><i class="k-igual"></i>Desplegado igual</span>
+      <span><i class="k-distinto"></i>Desplegado de otra forma</span>
+      <span><i class="k-mock"></i>Simulado (mock)</span>
+      <span><i class="k-fuera"></i>No se despliega</span>
+    </div>
+    <div class="controls" id="c_svc" role="group" aria-label="Recorrido de servicios"></div>
+    <div class="main">
+      <div class="board"><svg id="s_svc" viewBox="0 0 1500 900" role="img" aria-label="Diagrama de servicios y comunicaciones"></svg></div>
+      <aside class="panel" id="p_svc" aria-live="polite"></aside>
+    </div>
+  </section>
+
   <section class="block" aria-labelledby="h_preg">
-    <h2 id="h_preg">Las seis preguntas de la propuesta</h2>
-    <p>La respuesta corta a cada pregunta del reto; los mapas de abajo la detallan componente por componente.</p>
+    <h2 id="h_preg">3 · Las seis preguntas de la propuesta</h2>
+    <p>La respuesta corta a cada pregunta del reto; los mapas de arriba la detallan componente por componente.</p>
     <div class="preguntas">
       <article class="card pregunta">
         <div class="num">PREGUNTA 1 · DATOS</div>
@@ -173,7 +204,7 @@ code{font-family:var(--font-mono);font-size:13px}
           <li>Las lecturas son síncronas contra facturación (saldo real y pagos en tránsito). Las escrituras viajan como eventos idempotentes (p. ej. con EventBridge) hacia CRM y facturación: si el CRM se cae, la conversación sigue y el evento se reintenta.</li>
           <li>WhatsApp entra por AWS End User Messaging Social. El data warehouse solo alimenta el lote diario, nunca la conversación en vivo, para no cobrar con datos de ayer.</li>
         </ul>
-        <p class="mas">Detalle: <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/integraciones.md" target="_blank" rel="noopener">integraciones</a> · mapa de servicios abajo</p>
+        <p class="mas">Detalle: <a href="https://github.com/PogloLopez/liberty-collection-agent/blob/main/docs/diseno/integraciones.md" target="_blank" rel="noopener">integraciones</a> · mapa de servicios arriba</p>
       </article>
       <article class="card pregunta">
         <div class="num">PREGUNTA 4 · GESTIÓN</div>
@@ -227,37 +258,6 @@ code{font-family:var(--font-mono);font-size:13px}
         <li>La demo usa 65 clientes sintéticos y una fecha de referencia fija.</li>
       </ul>
     </article>
-  </section>
-
-  <section class="block mapa" aria-labelledby="h_flujo">
-    <h2 id="h_flujo">1 · Flujo de proceso</h2>
-    <p>Lo determinista decide quién recibe mensaje, cuándo y con qué plantilla. El LLM entra solo cuando el cliente responde, y siempre entre controles.</p>
-    <div class="controls" id="c_flow" role="group" aria-label="Recorrido del flujo"></div>
-    <div class="main">
-      <div class="board"><svg id="s_flow" viewBox="0 0 1500 880" role="img" aria-label="Diagrama de flujo de proceso"></svg></div>
-      <aside class="panel" id="p_flow" aria-live="polite"></aside>
-    </div>
-  </section>
-
-  <section class="block mapa" aria-labelledby="h_svc">
-    <h2 id="h_svc">2 · Servicios y despliegue en AWS</h2>
-    <p>Arquitectura de producción propuesta. La demo se despliega de verdad con CDK, encendida solo durante la evaluación. Cambia de vista para ver qué servicio ocupa cada lugar en la demo y qué reemplaza de producción.</p>
-    <div class="controls" id="v_svc" role="group" aria-label="Vista de servicios">
-      <span>Vista</span>
-      <button class="chip" id="v_prod" aria-pressed="true">Producción</button>
-      <button class="chip" id="v_demo" aria-pressed="false">Demo desplegada</button>
-    </div>
-    <div class="key" id="k_demo" aria-label="Leyenda de la demo" hidden>
-      <span><i class="k-igual"></i>Desplegado igual</span>
-      <span><i class="k-distinto"></i>Desplegado de otra forma</span>
-      <span><i class="k-mock"></i>Simulado (mock)</span>
-      <span><i class="k-fuera"></i>No se despliega</span>
-    </div>
-    <div class="controls" id="c_svc" role="group" aria-label="Recorrido de servicios"></div>
-    <div class="main">
-      <div class="board"><svg id="s_svc" viewBox="0 0 1500 900" role="img" aria-label="Diagrama de servicios y comunicaciones"></svg></div>
-      <aside class="panel" id="p_svc" aria-live="polite"></aside>
-    </div>
   </section>
 
   <div class="grid2">
