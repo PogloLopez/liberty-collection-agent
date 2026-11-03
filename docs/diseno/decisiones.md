@@ -498,7 +498,9 @@ ya en plan de pago; el caso de Soporte no responderá antes de la entrega. La in
 queda (cuatro stacks); solo cambia el proveedor del modelo:
 1. **Un valor elige el proveedor:** `-c proveedor=groq` en el deploy (por defecto, `bedrock`). Con Groq,
    el agente y las Lambdas usan la sección `dev` de `config.yaml` (gpt-oss-120b con respaldo en qwen,
-   estratega gpt-oss-20b y el moderador en lugar de Guardrails) y no reciben las variables del guardrail.
+   estratega gpt-oss-20b y el moderador en lugar de Guardrails). Las variables del guardrail llegan igual
+   aunque no se usen: si cambiar de proveedor las quitara, CloudFormation rechazaría borrar el export que
+   `AgilApi` todavía usa (le pasó al primer deploy con Groq, 2-nov).
    Volver a Bedrock es redesplegar `AgilAgente` y `AgilApi` sin ese valor; el guardrail sigue creado.
 2. **La key no pasa por el repo, el chat ni la plantilla:** Pablo la guarda como SecureString en SSM
    Parameter Store (`/agil/groq-api-key`, gratis con la llave `aws/ssm`); el stack pasa solo el nombre

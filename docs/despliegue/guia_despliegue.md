@@ -265,6 +265,7 @@ Sube los archivos e invalida la caché de CloudFront: 2-5 minutos, sin tocar el 
 | Stack en `ROLLBACK_COMPLETE` | Falló la creación y CloudFormation lo deshizo | Pegarme el evento que falló (pestaña Events); después de arreglar, `cdk destroy <stack>` y desplegar de nuevo |
 | La página carga pero dice `401` o vuelve a pedir el código | Código distinto al de `-c codigo=` | Usar el mismo; si se guardó uno errado, abrir la página en una ventana privada |
 | La conversación da error al primer mensaje | Lo más común: permisos del agente con Bedrock | Logs del agente (paso 3) y pegármelos |
+| `Cannot delete export ... as it is in use by AgilApi` | Un stack quiso dejar de exportar un valor que otro stack desplegado todavía usa; CloudFormation lo impide y deshace el cambio | Pegarme el mensaje: hay que mantener el export (así se resolvió en D50) |
 | `Access to Bedrock models is not allowed for this account` | La cuenta tiene Bedrock bloqueado | Usar Groq: sección "Modelo: Bedrock o Groq" |
 | `ParameterNotFound` o `Falta GROQ_API_KEY` en los logs | El deploy es con Groq pero falta el parámetro de la key | Paso G.1 y repetir el mensaje |
 | El agente responde "¿me lo puede repetir?" varias veces seguidas | Se agotó el límite por minuto o por día de Groq en los dos modelos | Esperar un minuto; si persiste, es el límite diario |

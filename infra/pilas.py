@@ -61,17 +61,19 @@ PARAMETRO_KEY_GROQ = "/agil/groq-api-key"
 
 
 def variables_modelo(proveedor: str, guardrail_id: str, guardrail_version: str) -> dict[str, str]:
-    """Qué proveedor de modelos usan el agente y las Lambdas (D50). Bedrock con su guardrail; Groq
-    con el nombre del parámetro de su key y la sección `dev` de config.yaml (con moderador)."""
+    """Qué proveedor de modelos usan el agente y las Lambdas (D50). Groq añade el nombre del
+    parámetro de su key y usa la sección `dev` de config.yaml (con moderador)."""
     if proveedor not in PROVEEDORES:
         raise ValueError(f"Proveedor desconocido {proveedor!r}: usa uno de {PROVEEDORES}")
-    if proveedor == "groq":
-        return {"LLM_PROVIDER": "groq", "GROQ_API_KEY_PARAM": PARAMETRO_KEY_GROQ}
-    return {
-        "LLM_PROVIDER": "bedrock",
+    # El guardrail va siempre, también con Groq (D50: exports entre stacks).
+    variables = {
+        "LLM_PROVIDER": proveedor,
         "GUARDRAIL_ID": guardrail_id,
         "GUARDRAIL_VERSION": guardrail_version,
     }
+    if proveedor == "groq":
+        variables["GROQ_API_KEY_PARAM"] = PARAMETRO_KEY_GROQ
+    return variables
 
 
 def _leer_key_groq(stack: Stack) -> iam.PolicyStatement:

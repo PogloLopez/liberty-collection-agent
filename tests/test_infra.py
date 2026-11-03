@@ -233,13 +233,13 @@ def _leen_la_key(plantilla) -> list[dict]:
     ]
 
 
-def test_groq_en_runtime_y_lambdas_sin_guardrail(plantillas_groq):  # D50
+def test_groq_en_runtime_y_lambdas(plantillas_groq):  # D50
     variables = _variables(plantillas_groq)
     assert len(variables) == 4
     for v in variables:
         assert v["LLM_PROVIDER"] == "groq"
         assert v["GROQ_API_KEY_PARAM"] == PARAMETRO_KEY_GROQ
-        assert "GUARDRAIL_ID" not in v and "GUARDRAIL_VERSION" not in v
+        assert "GUARDRAIL_ID" in v and "GUARDRAIL_VERSION" in v
 
 
 def test_groq_runtime_y_lambdas_solo_leen_su_parametro(plantillas_groq):  # D50
@@ -274,3 +274,14 @@ def test_por_defecto_sigue_bedrock_con_guardrail_y_sin_ssm(plantillas):
 def test_proveedor_desconocido_falla():
     with pytest.raises(ValueError, match="Proveedor desconocido"):
         variables_modelo("openai", "gr", "1")
+
+
+def _exports(plantilla: Template) -> set[str]:
+    return {k for k in plantilla.to_json().get("Outputs", {}) if k.startswith("ExportsOutput")}
+
+
+@pytest.mark.parametrize("pila", ["AgilDatos", "AgilAgente"])
+def test_cambiar_de_proveedor_no_borra_exports(plantillas, plantillas_groq, pila):  # D50
+    # Si un export desaparece al pasar a groq, el deploy falla: AgilApi aún lo importa.
+    assert _exports(plantillas[pila])
+    assert _exports(plantillas[pila]) == _exports(plantillas_groq[pila])
