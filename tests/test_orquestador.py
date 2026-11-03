@@ -139,6 +139,15 @@ def test_validador_reintenta_una_vez_y_limpia_el_historial(repo, ahora):
     assert "$76.40" not in historial and "no se envió" not in historial
 
 
+def test_el_reintento_pide_no_disculparse(repo, ahora):
+    agente = ModeloGuionado("Su saldo es $76.40.", "Le comparto su saldo en un momento.")
+    orq = _orq(repo, ahora, agente)
+    orq.atender(orq.iniciar(CID, "CV-1"), "cuánto debo")
+    assert "sin disculparte ni mencionar que la corriges" in json.dumps(
+        agente.recibido[-1][1], ensure_ascii=False
+    )
+
+
 def test_tres_intentos_por_turno_y_tres_turnos_fallidos_van_a_humano(repo, ahora):
     malas = ["Son $76.40.", "Son 76 dólares.", "Son setenta y seis."] * 3
     agente = ModeloGuionado(*malas)

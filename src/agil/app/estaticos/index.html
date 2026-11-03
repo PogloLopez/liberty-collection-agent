@@ -9,10 +9,21 @@
 </head>
 <body>
   <header class="barra">
-    <h1>Proyecto Ágil <span>demo de cobranza por WhatsApp</span></h1>
-    <nav>
+    <div class="marca">
+      <h1>Proyecto Ágil</h1>
+      <span>Demo de cobranza por WhatsApp con agentes de IA</span>
+    </div>
+    <nav class="pestanas" aria-label="Vistas">
       <button class="pestana activa" data-vista="demo">Conversación</button>
       <button class="pestana" data-vista="consola">Consola de cartera</button>
+    </nav>
+    <nav class="enlaces" aria-label="Documentación externa">
+      <a href="https://claude.ai/artifact/2M7xQgMLm1MioFVa9TBBmL" target="_blank" rel="noopener">Documento de
+        arquitectura<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3H3v10h10v-3M9 3h4v4M13 3 7 9"/></svg>
+        <span class="sr">(abre en otra pestaña)</span></a>
+      <a href="https://github.com/PogloLopez/liberty-collection-agent" target="_blank" rel="noopener">Código en
+        GitHub<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3H3v10h10v-3M9 3h4v4M13 3 7 9"/></svg>
+        <span class="sr">(abre en otra pestaña)</span></a>
     </nav>
   </header>
 
@@ -22,14 +33,21 @@
         <select id="cliente"></select>
       </label>
       <button id="nueve" class="primario">Que sean las 9 AM</button>
-      <span id="hoy" class="hoy"></span>
-      <span id="estado" class="estado"></span>
+      <span id="hoy" class="fecha"></span>
+      <span id="estado" class="estado" aria-live="polite"></span>
     </section>
 
     <section class="paneles">
-      <aside id="globo" class="globo apagado" aria-live="polite"></aside>
+      <aside class="guia">
+        <div id="ficha" class="panel ficha"></div>
+        <div id="globo" class="globo apagado" aria-live="polite"></div>
+      </aside>
+
       <div class="telefono">
-        <div class="cabecera-chat">LLA Panamá · WhatsApp (simulado)</div>
+        <div class="cabecera-chat">
+          <div class="avatar" aria-hidden="true">L</div>
+          <div><b>LLA Panamá</b><small id="presencia">Cuenta de empresa · simulado</small></div>
+        </div>
         <div id="chat" class="chat"><p class="vacio">Elija un cliente y pulse «Que sean las 9 AM».</p></div>
         <form id="formulario" class="entrada">
           <input id="texto" autocomplete="off" placeholder="Escriba como el cliente…" disabled>
@@ -37,20 +55,32 @@
         </form>
       </div>
 
-      <div class="pipeline">
+      <div class="panel pipeline">
         <h2>Recorrido del pipeline</h2>
-        <p class="nota">Pasos reales de cada mensaje: lo determinista decide, el LLM conversa.</p>
+        <p class="nota">Los pasos reales de cada mensaje: lo determinista decide, el LLM conversa.</p>
+        <div class="leyenda">
+          <span><i class="c-det"></i>Código</span>
+          <span><i class="c-llm"></i>Modelo (LLM)</span>
+          <span><i class="c-val"></i>Control</span>
+          <span><i class="c-alerta"></i>Bloqueo o rechazo</span>
+        </div>
         <ol id="pasos" class="pasos"></ol>
       </div>
     </section>
   </main>
 
   <main id="consola" class="vista oculta">
-    <p class="acciones"><button id="reiniciar">Reiniciar demo</button>
-      <span class="nota">Borra conversaciones y escrituras y vuelve a cargar los datos de ejemplo.</span></p>
+    <div class="acciones">
+      <h2>Consola de cartera</h2>
+      <p class="nota">Lo que el agente registró en esta sesión de la demo.</p>
+      <button id="reiniciar">Reiniciar demo</button>
+    </div>
+    <section class="indicadores" id="indicadores"></section>
     <section class="tarjetas" id="vivo"></section>
-    <h2>Otros módulos <span class="nota">datos de ejemplo</span></h2>
-    <section class="tarjetas" id="modulos"></section>
+    <section class="modulos">
+      <h2>Otros módulos <span class="nota">datos de ejemplo</span></h2>
+      <div class="tarjetas" id="modulos"></div>
+    </section>
   </main>
 
   <dialog id="dialogo"><div id="dialogo-cuerpo"></div><form method="dialog"><button>Cerrar</button></form></dialog>
