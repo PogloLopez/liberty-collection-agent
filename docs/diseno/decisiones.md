@@ -542,6 +542,11 @@ gastamos su cuota diaria con las pruebas, y Groq tiene suspendido el paso a plan
 Trade-off: es pago (centavos) y otro tercero más en el camino de los mensajes (sintéticos); sin caché de
 prompts, porque el modelo de Strands para OpenAI no la expone.
 
+### D52 Versión de la entrega
+**La entrega se publica como `v0.1.0`** (Pablo, 3-nov), siguiendo SemVer: es un prototipo para la
+evaluación, no un sistema en producción. La `1.0.0` queda para cuando corra con WhatsApp real y
+Bedrock. Trade-off: el número comunica "inicial", a cambio de no prometer una estabilidad que no hay.
+
 ## Pendientes
 
 Ninguno. Cerrados (Pablo, 2-nov): P2 (diagrama del orquestador) quedó en [[flujo_orquestador]]; V1 (precios de WhatsApp) y V3 (precios de Nova) no interesan para la demo; V2
